@@ -1,0 +1,67 @@
+name: Auto-Generate Blog Index
+
+on:
+  push:
+    paths:
+      - 'blog/**.html' # Triggers only when you add/change HTML files in the blog folder
+
+permissions:
+  contents: write # Allows GitHub to update blogs.json for you
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Generate blogs.json
+        run: |
+          echo "Scanning blog directory..."
+          cd blog
+          
+          # Start JSON array
+          echo "[" > temp_blogs.json
+          
+          first=true
+          # Loop through all HTML files, sorting by newest modification time
+          for file in $(ls -t *.html); do
+            if [ "$file" != "index.html" ]; then
+              # Extract title from <title> tag, fallback to filename if missing
+              title=$(grep -oP '(?<=<title>).*?(?=</title>)' "$file" || echo "${file%.html}")
+              
+              # Extract an excerpt/description from a meta tag if it exists
+              desc=$(grep -oP '(?<=<meta name="description" content=").*?(?=")' "$file" || echo "Security research module documentation.")
+              
+              # Get file creation/commit date or current date
+              date=$(date -r "$file" +"%Y-%m-%d")
+              
+              if [ "$first" = true ]; then
+                first=false
+              else
+                echo "," >> temp_blogs.json
+              fi
+              
+              # Append structural block
+              echo "  {" >> temp_blogs.json
+              echo "    \"title\": \"$title\"," >> temp_blogs.json
+              echo "    \"filename\": \"$file\"," >> temp_blogs.json
+              echo "    \"date\": \"$date\"," >> temp_blogs.json
+              echo "    \"description\": \"$desc\"," >> temp_blogs.json
+              echo "    \"image\": \"\"" >> temp_blogs.json
+              echo "  }" >> temp_blogs.json
+            fi
+          done
+          
+          # Close JSON array
+          echo "]" >> temp_blogs.json
+          mv temp_blogs.json blogs.json
+          cat blogs.json
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add blog/blogs.json
+          git diff-index --quiet HEAD || git commit -m "chore: auto-update blogs.json index [skip ci]"
+          git push
