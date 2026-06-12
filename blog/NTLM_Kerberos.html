@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NTLM & Kerberos — Auth for Beginners</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0d1117;
+    --surface:   #161b22;
+    --border:    #30363d;
+    --text:      #e6edf3;
+    --muted:     #7d8590;
+    --ntlm:      #f78166;
+    --ntlm-dim:  #3d1a15;
+    --kerb:      #3fb950;
+    --kerb-dim:  #0d2e16;
+    --accent:    #58a6ff;
+    --accent-dim:#0d2043;
+    --gold:      #e3b341;
+    --font-head: 'Space Grotesk', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-head);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(88,166,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88,166,255,.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridDrift 20s linear infinite;
+  }
+
+  @keyframes gridDrift {
+    from { background-position: 0 0; }
+    to   { background-position: 40px 40px; }
+  }
+
+  .hero-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(88,166,255,.08), transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: .75rem;
+    letter-spacing: .2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    position: relative;
+    opacity: 0;
+    animation: fadeUp .6s .2s forwards;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    position: relative;
+    opacity: 0;
+    animation: fadeUp .7s .4s forwards;
+  }
+
+  .hero-title .ntlm { color: var(--ntlm); }
+  .hero-title .kerb { color: var(--kerb); }
+
+  .hero-sub {
+    max-width: 520px;
+    color: var(--muted);
+    font-size: 1.1rem;
+    margin: 1.5rem auto 0;
+    position: relative;
+    opacity: 0;
+    animation: fadeUp .7s .6s forwards;
+  }
+
+  .hero-cta {
+    margin-top: 2.5rem;
+    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    position: relative;
+    opacity: 0;
+    animation: fadeUp .7s .8s forwards;
+  }
+
+  .btn {
+    padding: .7rem 1.6rem;
+    border-radius: 6px;
+    font-family: var(--font-head);
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+
+  .btn-ntlm {
+    background: var(--ntlm);
+    color: #0d0d0d;
+    box-shadow: 0 0 20px rgba(247,129,102,.3);
+  }
+  .btn-ntlm:hover { box-shadow: 0 0 30px rgba(247,129,102,.5); }
+
+  .btn-kerb {
+    background: var(--kerb);
+    color: #0d0d0d;
+    box-shadow: 0 0 20px rgba(63,185,80,.3);
+  }
+  .btn-kerb:hover { box-shadow: 0 0 30px rgba(63,185,80,.5); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── CONCEPT CARDS ── */
+  .section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .75rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .section-intro {
+    color: var(--muted);
+    max-width: 620px;
+    margin-bottom: 3rem;
+    font-size: 1rem;
+  }
+
+  .concept-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 700px) {
+    .concept-grid { grid-template-columns: 1fr; }
+  }
+
+  .concept-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s, border-color .2s;
+  }
+  .concept-card:hover { transform: translateY(-4px); }
+  .concept-card.ntlm { border-color: var(--ntlm-dim); }
+  .concept-card.ntlm:hover { border-color: var(--ntlm); }
+  .concept-card.kerb { border-color: var(--kerb-dim); }
+  .concept-card.kerb:hover { border-color: var(--kerb); }
+
+  .concept-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    border-radius: 12px 12px 0 0;
+  }
+  .concept-card.ntlm::before { background: var(--ntlm); }
+  .concept-card.kerb::before { background: var(--kerb); }
+
+  .card-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: .5rem;
+  }
+  .ntlm .card-title { color: var(--ntlm); }
+  .kerb .card-title { color: var(--kerb); }
+
+  .card-body { color: var(--muted); font-size: .95rem; line-height: 1.7; }
+
+  .tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    padding: .25rem .6rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    margin-right: .4rem;
+  }
+  .tag-ntlm { background: var(--ntlm-dim); color: var(--ntlm); }
+  .tag-kerb { background: var(--kerb-dim); color: var(--kerb); }
+
+  /* ── FLOW DIAGRAMS ── */
+  .flow-section { padding: 4rem 2rem; }
+
+  .flow-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .flow-tabs {
+    display: flex; gap: .5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: .5rem 1.2rem;
+    border-radius: 6px;
+    font-family: var(--font-head);
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    transition: all .2s;
+  }
+  .tab-btn.active-ntlm { background: var(--ntlm-dim); border-color: var(--ntlm); color: var(--ntlm); }
+  .tab-btn.active-kerb { background: var(--kerb-dim); border-color: var(--kerb); color: var(--kerb); }
+
+  .flow-panel { display: none; }
+  .flow-panel.active { display: block; }
+
+  /* ── ANIMATED FLOW ── */
+  .flow-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    overflow-x: auto;
+  }
+
+  .flow-actors {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .actor {
+    display: flex; flex-direction: column; align-items: center; gap: .5rem;
+    min-width: 80px;
+  }
+
+  .actor-icon {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    border: 2px solid var(--border);
+    background: var(--bg);
+  }
+
+  .actor-label {
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .steps-list { display: flex; flex-direction: column; gap: .75rem; }
+
+  .step-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: .9rem 1.2rem;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    opacity: 0;
+    transform: translateX(-12px);
+    transition: opacity .4s, transform .4s;
+    cursor: default;
+  }
+
+  .step-row.visible { opacity: 1; transform: translateX(0); }
+
+  .step-num {
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    font-weight: 600;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .ntlm .step-num, .step-num.ntlm { background: var(--ntlm-dim); color: var(--ntlm); }
+  .kerb .step-num, .step-num.kerb { background: var(--kerb-dim); color: var(--kerb); }
+
+  .step-arrow {
+    font-size: .75rem;
+    color: var(--muted);
+    white-space: nowrap;
+    font-family: var(--font-mono);
+  }
+
+  .step-desc {
+    flex: 1;
+    font-size: .9rem;
+    color: var(--text);
+  }
+
+  .step-desc strong { color: var(--accent); }
+
+  .step-badge {
+    font-family: var(--font-mono);
+    font-size: .65rem;
+    padding: .2rem .5rem;
+    border-radius: 4px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  /* ── REPLAY BUTTON ── */
+  .replay-btn {
+    margin-top: 1.5rem;
+    padding: .5rem 1.2rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 6px;
+    font-family: var(--font-head);
+    font-size: .85rem;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .replay-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── COMPARISON TABLE ── */
+  .compare-section { padding: 4rem 2rem 6rem; }
+  .compare-wrapper { max-width: 900px; margin: 0 auto; }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: .9rem;
+  }
+
+  thead th {
+    padding: 1rem 1.2rem;
+    text-align: left;
+    font-weight: 600;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  thead th:nth-child(2) { color: var(--ntlm); }
+  thead th:nth-child(3) { color: var(--kerb); }
+
+  tbody tr { transition: background .15s; }
+  tbody tr:hover { background: var(--surface); }
+
+  td {
+    padding: .85rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    vertical-align: top;
+  }
+
+  td:first-child { color: var(--text); font-weight: 500; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .check { color: var(--kerb); }
+  .cross { color: var(--ntlm); }
+
+  /* ── QUIZ ── */
+  .quiz-section { padding: 4rem 2rem; }
+  .quiz-wrapper { max-width: 700px; margin: 0 auto; }
+
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+  }
+
+  .quiz-q {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  .quiz-options { display: flex; flex-direction: column; gap: .7rem; }
+
+  .quiz-opt {
+    padding: .8rem 1.2rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    font-family: var(--font-head);
+    font-size: .95rem;
+    text-align: left;
+    transition: all .2s;
+  }
+  .quiz-opt:hover { border-color: var(--accent); }
+  .quiz-opt.correct { border-color: var(--kerb); background: var(--kerb-dim); color: var(--kerb); }
+  .quiz-opt.wrong   { border-color: var(--ntlm); background: var(--ntlm-dim); color: var(--ntlm); }
+
+  .quiz-feedback {
+    margin-top: 1rem;
+    font-size: .9rem;
+    min-height: 1.4em;
+    color: var(--muted);
+  }
+
+  .quiz-nav {
+    margin-top: 1.5rem;
+    display: flex; gap: 1rem; align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .quiz-progress {
+    font-family: var(--font-mono);
+    font-size: .8rem;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: .85rem;
+    font-family: var(--font-mono);
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity .6s, transform .6s;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 2rem;
+  }
+
+  /* ── TOOLTIP ── */
+  [data-tip] { position: relative; cursor: help; border-bottom: 1px dashed var(--muted); }
+  [data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 130%; left: 50%;
+    transform: translateX(-50%);
+    background: #1c2128;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: .5rem .8rem;
+    border-radius: 6px;
+    font-size: .8rem;
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <p class="hero-eyebrow">// Windows Authentication Protocols</p>
+  <h1 class="hero-title">
+    <span class="ntlm">NTLM</span> &amp; <span class="kerb">Kerberos</span><br>
+    from scratch
+  </h1>
+  <p class="hero-sub">No prior knowledge needed. Learn how your PC proves who you are — every time you log in.</p>
+  <div class="hero-cta">
+    <a href="#ntlm-section" class="btn btn-ntlm">Explore NTLM</a>
+    <a href="#kerb-section" class="btn btn-kerb">Explore Kerberos</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════ WHAT IS AUTH? ══════════ -->
+<section class="section reveal">
+  <p class="section-label">// foundation</p>
+  <h2 class="section-title">First, what is authentication?</h2>
+  <p class="section-intro">Authentication is the process of proving your identity to a computer system. Think of it like showing your ID at the door — the system needs to know <em>you are who you say you are</em> before letting you in.</p>
+
+  <div class="concept-grid">
+    <div class="concept-card ntlm">
+      <div class="card-icon">🔐</div>
+      <div class="card-title">NTLM</div>
+      <div class="card-body">
+        <strong style="color:var(--text)">NT LAN Manager</strong> — a challenge-response protocol developed by Microsoft in the early 1990s. The server challenges you with a random number; your PC uses your password hash to encrypt it and sends it back.
+        <br><br>
+        Think of it as: <em>"Prove you know the secret without saying it out loud."</em>
+      </div>
+      <span class="tag tag-ntlm">Legacy</span>
+      <span class="tag tag-ntlm">Peer-to-peer</span>
+      <span class="tag tag-ntlm">No 3rd party needed</span>
+    </div>
+
+    <div class="concept-card kerb">
+      <div class="card-icon">🎟️</div>
+      <div class="card-title">Kerberos</div>
+      <div class="card-body">
+        <strong style="color:var(--text)">Named after the 3-headed dog of Greek mythology</strong> — a ticket-based protocol designed at MIT and used in Windows domains. A trusted authority (the KDC) hands you a "ticket" so you can access services without re-entering your password.
+        <br><br>
+        Think of it as: <em>"Get a wristband at the entrance, use it all day."</em>
+      </div>
+      <span class="tag tag-kerb">Modern</span>
+      <span class="tag tag-kerb">Domain-based</span>
+      <span class="tag tag-kerb">Requires KDC</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════ FLOW DIAGRAMS ══════════ -->
+<section class="flow-section" id="ntlm-section">
+  <div class="flow-wrapper reveal">
+    <p class="section-label">// step-by-step flows</p>
+    <h2 class="section-title">How does each protocol work?</h2>
+    <p class="section-intro">Click a protocol and watch the authentication steps animate in real-time.</p>
+
+    <div class="flow-tabs">
+      <button class="tab-btn active-ntlm" onclick="switchTab('ntlm')">🔐 NTLM Flow</button>
+      <button class="tab-btn" id="kerb-tab" onclick="switchTab('kerb')">🎟️ Kerberos Flow</button>
+    </div>
+
+    <!-- NTLM PANEL -->
+    <div class="flow-panel active" id="panel-ntlm">
+      <div class="flow-diagram">
+        <div class="flow-actors">
+          <div class="actor">
+            <div class="actor-icon">💻</div>
+            <div class="actor-label">Client<br>(Your PC)</div>
+          </div>
+          <div class="actor">
+            <div class="actor-icon">🖥️</div>
+            <div class="actor-label">Server<br>(Resource)</div>
+          </div>
+        </div>
+
+        <div class="steps-list" id="ntlm-steps">
+          <div class="step-row">
+            <span class="step-num ntlm">1</span>
+            <span class="step-arrow">Client → Server</span>
+            <span class="step-desc">Client sends a <strong>Negotiate</strong> message — "Hello, I want to authenticate using NTLM."</span>
+            <span class="step-badge">NEGOTIATE</span>
+          </div>
+          <div class="step-row">
+            <span class="step-num ntlm">2</span>
+            <span class="step-arrow">Server → Client</span>
+            <span class="step-desc">Server replies with a <strong>Challenge</strong> — a random 8-byte number called a <span data-tip="A random value used once to prevent replay attacks">nonce</span>.</span>
+            <span class="step-badge">CHALLENGE</span>
+          </div>
+          <div class="step-row">
+            <span class="step-num ntlm">3</span>
+            <span class="step-arrow">Client hashes</span>
+            <span class="step-desc">Client takes the <strong>challenge + NT hash of your password</strong> and encrypts it using HMAC-MD5.</span>
+            <span class="step-badge">CRYPTO</span>
+          </div>
+          <div class="step-row">
+            <span class="step-num ntlm">4</span>
+            <span class="step-arrow">Client → Server</span>
+            <span class="step-desc">Client sends the encrypted result — the <strong>Response</strong>. Password never travels on the wire.</span>
+            <span class="step-badge">AUTHENTICATE</span>
+          </div>
+          <div class="step-row">
+            <span class="step-num ntlm">5</span>
+            <span class="step-arrow">Server verifies</span>
+            <span class="step-desc">Server does the <strong>same calculation</strong> with the stored hash. If responses match → ✅ Access granted.</span>
+            <span class="step-badge">VERIFY</span>
+          </div>
+        </div>
+
+        <button class="replay-btn" onclick="replayFlow('ntlm')">↺ Replay animation</button>
+      </div>
+    </div>
+
+    <!-- KERBEROS PANEL -->
+    <div class="flow-panel" id="panel-kerb">
+      <div class="flow-diagram" id="kerb-section">
+        <div class="flow-actors">
+          <div class="actor">
+            <div class="actor-icon">💻</div>
+            <div class="actor-label">Client<br>(Your PC)</div>
+          </div>
+          <div class="actor">
+            <div class="actor-icon">🏛️</div>
+            <div class="actor-label">KDC / DC<br>(Ticket Office)</div>
+          </div>
+          <div class="actor">
+            <div class="actor-icon">🖥️</div>
+            <div class="actor-label">Service<br>(Resource)</div>
+          </div>
+        </div>
+
+        <div class="steps-list" id="kerb-steps">
+          <div class="step-row">
+            <span class="step-num kerb">1</span>
+            <span class="step-arrow">Client → KDC</span>
+            <span class="step-desc">Client sends an <strong>AS-REQ</strong> — "I am Alice, please give me a ticket." Includes a <span data-tip="A timestamp encrypted with Alice's key to prove freshness">pre-auth timestamp</span>.</span>
+            <span class="step-badge">AS-REQ</span>
+          </div>
+          <div class="step-row">
+            <span class="step-num kerb">2</span>
+            <span class="step-arrow">KDC → Client</span>
+            <span class="step-desc">KDC verifies Alice's identity and returns an <strong>AS-REP</strong>: a <span data-tip="Ticket Granting Ticket — a master pass to request service tickets">TGT</span> + session key, encrypted with Alice's key.</span>
+            <span class="step-badge">AS-REP + TGT</span>
+          </div>
+          <div class="step-row">
+            <span class="step-num kerb">3</span>
+            <span class="step-arrow">Client → KDC</span>
+            <span class="step-desc">Client presents the TGT and asks for a <strong>Service Ticket</strong> for the target server — a <span data-tip="Ticket Granting Service request">TGS-REQ</span>.</span>
+            <span class="step-badge">TGS-REQ</span>
+          </div>
+          <div class="step-row">
+            <span class="step-num kerb">4</span>
+            <span class="step-arrow">KDC → Client</span>
+            <span class="step-desc">KDC returns a <strong>Service Ticket</strong> (TGS-REP) encrypted with the <em>service's</em> secret — the client can't tamper with it.</span>
+            <span class="step-badge">TGS-REP</span>
+          </div>
+          <div class="step-row">
+            <span class="step-num kerb">5</span>
+            <span class="step-arrow">Client → Service</span>
+            <span class="step-desc">Client presents the Service Ticket as an <strong>AP-REQ</strong>. No password exchange ever happens with the service.</span>
+            <span class="step-badge">AP-REQ</span>
+          </div>
+          <div class="step-row">
+            <span class="step-num kerb">6</span>
+            <span class="step-arrow">Service verifies</span>
+            <span class="step-desc">Service decrypts the ticket with its own key, reads the identity inside → ✅ Access granted. Optionally sends <strong>AP-REP</strong> for mutual auth.</span>
+            <span class="step-badge">AP-REP</span>
+          </div>
+        </div>
+
+        <button class="replay-btn" onclick="replayFlow('kerb')">↺ Replay animation</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════ COMPARISON TABLE ══════════ -->
+<section class="compare-section reveal">
+  <div class="compare-wrapper">
+    <p class="section-label">// side by side</p>
+    <h2 class="section-title" style="margin-bottom:2rem">NTLM vs Kerberos at a glance</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>🔐 NTLM</th>
+          <th>🎟️ Kerberos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Invented</td>
+          <td>~1993, Microsoft</td>
+          <td>1988, MIT</td>
+        </tr>
+        <tr>
+          <td>Requires Active Directory?</td>
+          <td class="cross">✗ No</td>
+          <td class="check">✓ Yes (KDC)</td>
+        </tr>
+        <tr>
+          <td>Password on wire?</td>
+          <td class="check">✓ Never (hash-based)</td>
+          <td class="check">✓ Never (ticket-based)</td>
+        </tr>
+        <tr>
+          <td>Mutual Authentication</td>
+          <td class="cross">✗ No</td>
+          <td class="check">✓ Yes</td>
+        </tr>
+        <tr>
+          <td>Single Sign-On (SSO)</td>
+          <td class="cross">✗ Limited</td>
+          <td class="check">✓ Full SSO</td>
+        </tr>
+        <tr>
+          <td>Delegation support</td>
+          <td class="cross">✗ No</td>
+          <td class="check">✓ Yes</td>
+        </tr>
+        <tr>
+          <td>Works without DNS?</td>
+          <td class="check">✓ Yes</td>
+          <td class="cross">✗ Requires DNS + KDC</td>
+        </tr>
+        <tr>
+          <td>Common attack</td>
+          <td>Pass-the-Hash, Relay</td>
+          <td>Pass-the-Ticket, Kerberoasting</td>
+        </tr>
+        <tr>
+          <td>Still used today?</td>
+          <td>Fallback only (legacy)</td>
+          <td>Default in Windows domains</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════ QUICK QUIZ ══════════ -->
+<section class="quiz-section reveal">
+  <div class="quiz-wrapper">
+    <p class="section-label">// knowledge check</p>
+    <h2 class="section-title" style="margin-bottom:2rem">Test yourself</h2>
+
+    <div class="quiz-card">
+      <div class="quiz-q" id="quiz-q">Loading…</div>
+      <div class="quiz-options" id="quiz-opts"></div>
+      <div class="quiz-feedback" id="quiz-fb"></div>
+      <div class="quiz-nav">
+        <button class="btn btn-kerb" onclick="nextQ()" id="next-btn" style="display:none;font-size:.85rem;padding:.5rem 1rem">Next →</button>
+        <span class="quiz-progress" id="quiz-prog"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>// Built for curious beginners · NTLM &amp; Kerberos Auth Explainer</p>
+  <p style="margin-top:.5rem;color:#3d444d">Hover underlined terms for quick definitions</p>
+</footer>
+
+<script>
+// ── TAB SWITCHING ──
+function switchTab(which) {
+  document.getElementById('panel-ntlm').classList.toggle('active', which === 'ntlm');
+  document.getElementById('panel-kerb').classList.toggle('active', which === 'kerb');
+
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.remove('active-ntlm', 'active-kerb');
+    if ((which === 'ntlm' && i === 0) || (which === 'kerb' && i === 1)) {
+      b.classList.add(which === 'ntlm' ? 'active-ntlm' : 'active-kerb');
+    }
+  });
+
+  replayFlow(which);
+}
+
+// ── STEP ANIMATIONS ──
+function animateSteps(containerId) {
+  const steps = document.querySelectorAll(`#${containerId} .step-row`);
+  steps.forEach(s => s.classList.remove('visible'));
+  steps.forEach((s, i) => {
+    setTimeout(() => s.classList.add('visible'), 300 + i * 450);
+  });
+}
+
+function replayFlow(which) {
+  animateSteps(which === 'ntlm' ? 'ntlm-steps' : 'kerb-steps');
+}
+
+// Animate on first load
+setTimeout(() => animateSteps('ntlm-steps'), 400);
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── QUIZ ──
+const questions = [
+  {
+    q: "What does NTLM stand for?",
+    opts: ["New Token Login Method", "NT LAN Manager", "Network Token Layer Manager", "None of the above"],
+    ans: 1,
+    exp: "NTLM = NT LAN Manager, a Microsoft challenge-response authentication protocol."
+  },
+  {
+    q: "In Kerberos, what does KDC stand for?",
+    opts: ["Key Distribution Center", "Kernel Domain Controller", "Kerberos Data Cache", "Key Delegation Certificate"],
+    ans: 0,
+    exp: "KDC = Key Distribution Center. It's the trusted authority that issues tickets."
+  },
+  {
+    q: "Which protocol supports full Single Sign-On (SSO) in a Windows domain?",
+    opts: ["NTLM", "Kerberos", "Both equally", "Neither"],
+    ans: 1,
+    exp: "Kerberos is the default in Windows Active Directory and supports full SSO via its TGT system."
+  },
+  {
+    q: "In NTLM, does your actual password travel over the network?",
+    opts: ["Yes, encrypted", "Yes, in plain text", "No — only a hash-based response", "No — a ticket is used instead"],
+    ans: 2,
+    exp: "NTLM uses a challenge-response: the client computes a response using the NT hash. The password itself never leaves your machine."
+  },
+  {
+    q: "What is a 'TGT' in Kerberos?",
+    opts: [
+      "Ticket Granting Ticket — a master pass used to request service tickets",
+      "Token Gateway Token — used to authenticate with the gateway",
+      "Timed Grant Token — expires after 60 seconds",
+      "Trust Group Ticket — issued to groups"
+    ],
+    ans: 0,
+    exp: "TGT = Ticket Granting Ticket. It's your master pass from the KDC, used to get individual service tickets without re-entering your password."
+  },
+  {
+    q: "Which protocol requires DNS and a domain controller to function?",
+    opts: ["NTLM", "Kerberos", "Both", "Neither"],
+    ans: 1,
+    exp: "Kerberos requires DNS to locate the KDC (Domain Controller). NTLM can work in isolated workgroup environments without DNS."
+  }
+];
+
+let qi = 0, score = 0, answered = false;
+
+function loadQ() {
+  answered = false;
+  const q = questions[qi];
+  document.getElementById('quiz-q').textContent = q.q;
+  document.getElementById('quiz-fb').textContent = '';
+  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('quiz-prog').textContent = `${qi + 1} / ${questions.length}`;
+
+  const opts = document.getElementById('quiz-opts');
+  opts.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = o;
+    btn.onclick = () => pickAnswer(i, btn);
+    opts.appendChild(btn);
+  });
+}
+
+function pickAnswer(i, btn) {
+  if (answered) return;
+  answered = true;
+  const q = questions[qi];
+  const allBtns = document.querySelectorAll('.quiz-opt');
+
+  if (i === q.ans) {
+    btn.classList.add('correct');
+    score++;
+    document.getElementById('quiz-fb').textContent = '✅ Correct! ' + q.exp;
+    document.getElementById('quiz-fb').style.color = 'var(--kerb)';
+  } else {
+    btn.classList.add('wrong');
+    allBtns[q.ans].classList.add('correct');
+    document.getElementById('quiz-fb').textContent = '❌ Not quite. ' + q.exp;
+    document.getElementById('quiz-fb').style.color = 'var(--ntlm)';
+  }
+
+  const nb = document.getElementById('next-btn');
+  nb.style.display = 'inline-block';
+  nb.textContent = qi < questions.length - 1 ? 'Next →' : `Finish (${score}/${questions.length})`;
+}
+
+function nextQ() {
+  qi++;
+  if (qi >= questions.length) {
+    const card = document.querySelector('.quiz-card');
+    card.innerHTML = `
+      <div style="text-align:center;padding:1rem">
+        <div style="font-size:3rem;margin-bottom:1rem">${score >= 5 ? '🏆' : score >= 3 ? '🎟️' : '🔐'}</div>
+        <div style="font-size:1.4rem;font-weight:700;margin-bottom:.5rem">You scored ${score} / ${questions.length}</div>
+        <div style="color:var(--muted);margin-bottom:1.5rem">${score === questions.length ? 'Perfect score! You\'re ready to tackle Active Directory.' : score >= 4 ? 'Great work! Review the flows above to solidify the rest.' : 'Good start — replay the animations and try again!'}</div>
+        <button class="btn btn-kerb" onclick="location.reload()" style="font-size:.85rem;padding:.5rem 1.2rem">↺ Restart Quiz</button>
+      </div>`;
+  } else {
+    loadQ();
+  }
+}
+
+loadQ();
+</script>
+</body>
+</html>
