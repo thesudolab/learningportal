@@ -1,9 +1,9 @@
 [
   {
-    "title": "Differense between NTLM vs Kerberos Authentication",
+    "title": "Windows Authentication: NTLM vs Kerberos Security Flaws",
     "filename": "NTLM_Kerberos.html",
-    "date": "2026-06-10",
+    "date": "2026-06-12",
+    "description": "An architectural breakdown of legacy NTLM relay attacks versus Kerberoasting techniques in Active Directory environments.",
     "image": ""
-  },
-
+  }
 ]
