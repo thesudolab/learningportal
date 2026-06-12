@@ -45,7 +45,7 @@
 
         .logo-area {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
         }
 
@@ -54,10 +54,19 @@
             font-weight: bold;
             color: var(--text-main);
             text-decoration: none;
+            margin-top: 0.5rem;
         }
 
         .logo span {
             color: var(--accent);
+        }
+
+        /* Right Header Widget Group */
+        .header-status-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.75rem;
         }
 
         .status-tag {
@@ -83,6 +92,42 @@
             0% { opacity: 0.2; }
             50% { opacity: 1; }
             100% { opacity: 0.2; }
+        }
+
+        /* --- LOGO ANIMATION STYLES --- */
+        .animated-logo-box {
+            width: 130px; /* Scaled perfectly for a subtle right corner logo widget */
+            height: auto;
+        }
+
+        .animated-thread {
+            stroke: #558B2F; /* Matching identity green color */
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            stroke-dasharray: 4000;
+            stroke-dashoffset: 4000;
+            animation: drawThread 4s cubic-bezier(0.42, 0, 0.58, 1) forwards;
+        }
+
+        .logo-subtext {
+            font-family: var(--font);
+            fill: var(--text-main);
+            opacity: 0;
+            animation: fadeInText 1s ease-out 3s forwards; /* Delays to coordinate with thread completion */
+        }
+
+        @keyframes drawThread {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes fadeInText {
+            to {
+                opacity: 1;
+            }
         }
 
         /* Navigation Terminal Tabs */
@@ -194,7 +239,6 @@
             position: relative;
         }
 
-        /* Visual placeholder styling to look like a file/terminal snippet */
         .blog-thumb::before {
             content: "[ SRC ]";
             font-size: 0.8rem;
@@ -251,8 +295,37 @@
     <header>
         <div class="logo-area">
             <a href="#" class="logo">$ sudo ./<span>TheSudoLab</span></a>
-            <div class="status-tag">
-                <div class="pulse"></div> SecOps Online
+            
+            <div class="header-status-group">
+                <div class="status-tag">
+                    <div class="pulse"></div> SecOps Online
+                </div>
+                
+                <div class="animated-logo-box">
+                    <svg viewBox="150 140 550 400" xmlns="http://www.w3.org/2000/svg">
+                        <path class="animated-thread" d="
+                            M 250,250 
+                            C 220,200 170,220 180,260 
+                            C 190,300 240,240 250,280 
+                            C 260,320 200,350 180,310 
+                            C 160,270 210,230 230,210 
+                            C 260,180 320,220 310,270 
+                            C 300,320 240,310 230,340 
+                            C 210,380 290,380 310,330 
+                            C 320,300 300,270 330,270
+                            C 360,270 390,360 450,340 
+                            C 510,320 520,220 590,220
+                            C 660,220 680,290 660,340
+                            C 630,400 550,380 540,300
+                            C 530,240 610,240 630,280
+                            C 650,320 600,340 580,310
+                            C 560,280 580,260 600,270
+                            C 610,275 610,290 600,290
+                        " />
+                        
+                        <text class="logo-subtext" x="425" y="470" font-size="52" text-anchor="middle" font-weight="bold">TheSudoLab</text>
+                    </svg>
+                </div>
             </div>
         </div>
         
@@ -314,7 +387,6 @@
         const container = document.getElementById('blog-container');
         
         try {
-            // Fetching directory index file mapped to your blog folder
             const response = await fetch('./blog/blogs.json');
             if (!response.ok) throw new Error('Directory index missing');
             
