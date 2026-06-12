@@ -387,7 +387,7 @@
         const container = document.getElementById('blog-container');
         
         try {
-            const response = await fetch('./blog/blogs.json');
+            const response = await fetch(`./blog/blogs.json?_=${new Date().getTime()}`);
             if (!response.ok) throw new Error('Directory index missing');
             
             const blogs = await response.json();
