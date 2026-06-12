@@ -1,9 +1,17 @@
 [
   {
-    "title": "Windows Authentication: NTLM vs Kerberos Security Flaws",
+    "title": "AI Engineering, Architecture & Student Learning Hub",
+    "filename": "AI_BASICS.html",
+    "date": "2026-06-12",
+    "description": "Security research module documentation.",
+    "image": ""
+  }
+,
+  {
+    "title": "NTLM & Kerberos — Auth for Beginners",
     "filename": "NTLM_Kerberos.html",
     "date": "2026-06-12",
-    "description": "An architectural breakdown of legacy NTLM relay attacks versus Kerberoasting techniques in Active Directory environments.",
+    "description": "Security research module documentation.",
     "image": ""
   }
 ]
