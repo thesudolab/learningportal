@@ -1,9 +1,8 @@
 [
   {
-    "title": "Bypassing Strict SSL Pinning on Modern Android Builds",
+    "title": "Differense between NTLM vs Kerberos Authentication",
     "filename": "NTLM_Kerberos.html",
     "date": "2026-06-10",
-    "description": Differense between NTLM vs Kerberos Authentication.",
     "image": ""
   },
 
