@@ -96,12 +96,12 @@
 
         /* --- LOGO ANIMATION STYLES --- */
         .animated-logo-box {
-            width: 130px; /* Scaled perfectly for a subtle right corner logo widget */
+            width: 130px; 
             height: auto;
         }
 
         .animated-thread {
-            stroke: #558B2F; /* Matching identity green color */
+            stroke: #558B2F; 
             stroke-width: 4;
             stroke-linecap: round;
             stroke-linejoin: round;
@@ -115,19 +115,15 @@
             font-family: var(--font);
             fill: var(--text-main);
             opacity: 0;
-            animation: fadeInText 1s ease-out 3s forwards; /* Delays to coordinate with thread completion */
+            animation: fadeInText 1s ease-out 3s forwards; 
         }
 
         @keyframes drawThread {
-            to {
-                stroke-dashoffset: 0;
-            }
+            to { stroke-dashoffset: 0; }
         }
 
         @keyframes fadeInText {
-            to {
-                opacity: 1;
-            }
+            to { opacity: 1; }
         }
 
         /* Navigation Terminal Tabs */
@@ -201,12 +197,50 @@
             margin-bottom: 0.5rem;
         }
 
+        /* Search Box Utility Element */
+        .search-container {
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--accent);
+        }
+
+        .search-prefix {
+            color: var(--accent);
+            font-weight: bold;
+            margin-right: 0.5rem;
+            user-select: none;
+        }
+
+        .search-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: var(--font);
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
         /* Blog Section (Grid Dynamic Thumbnails) */
         .blog-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
-            margin-top: 1rem;
         }
 
         .blog-card {
@@ -226,6 +260,10 @@
             border-color: var(--accent);
         }
 
+        .blog-card.hidden {
+            display: none !important;
+        }
+
         .blog-thumb {
             width: 100%;
             height: 160px;
@@ -239,7 +277,33 @@
             position: relative;
         }
 
-        #loading {
+        .blog-content {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .blog-date {
+            font-size: 0.75rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .blog-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            flex-grow: 1;
+        }
+
+        #loading, .empty-search-msg {
             grid-column: 1 / -1;
             text-align: center;
             padding: 2rem;
@@ -324,6 +388,11 @@
         </section>
 
         <section id="blog" class="section">
+            <div class="search-container">
+                <span class="search-prefix">grep -i</span>
+                <input type="text" id="blog-search" class="search-input" placeholder="'keyword' directory..." oninput="filterBlogs()">
+            </div>
+
             <div class="blog-grid" id="blog-container">
                 <div id="loading">> Initializing directory scan...</div>
             </div>
@@ -349,18 +418,25 @@
         }
     }
 
+    // Global memory to preserve post logs for filtering
+    let runtimeBlogRegistry = [];
+
     // Dynamic Static Blog Parser
     async function loadBlogs() {
         const container = document.getElementById('blog-container');
+        const searchInput = document.getElementById('blog-search');
         
+        // Reset search term when refreshing page directory view
+        if(searchInput) searchInput.value = '';
+
         try {
             const response = await fetch(`./blog/blogs.json?_=${new Date().getTime()}`);
             if (!response.ok) throw new Error('Directory index missing');
             
-            const blogs = await response.json();
+            runtimeBlogRegistry = await response.json();
             container.innerHTML = '';
             
-            if(blogs.length === 0) {
+            if(runtimeBlogRegistry.length === 0) {
                 container.innerHTML = '<div>[ Empty Directory ] No articles compiled yet.</div>';
                 return;
             }
@@ -385,12 +461,15 @@
             </svg>
             `;
 
-            blogs.forEach(post => {
+            runtimeBlogRegistry.forEach(post => {
                 const card = document.createElement('a');
                 card.className = 'blog-card';
                 card.href = `./blog/${post.filename}`;
                 
-                // Switch styling/content based on whether an image exists
+                // Store lowercase fields for high-efficiency dynamic filtering comparisons
+                card.setAttribute('data-title', post.title.toLowerCase());
+                card.setAttribute('data-desc', (post.description || '').toLowerCase());
+                
                 const thumbnailStyle = post.image 
                     ? `background-image:url(${post.image}); background-size:cover; background-position:center;` 
                     : `background: #0d1117;`;
@@ -416,6 +495,39 @@
                     [ERROR] Failed to scan blog tree directory index.<br>
                     Verify that 'blog/blogs.json' exists and contains structural post metadata.
                 </div>`;
+        }
+    }
+
+    // Client-Side Dynamic Real-Time Grep/Filter Engine
+    function filterBlogs() {
+        const query = document.getElementById('blog-search').value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.blog-card');
+        const container = document.getElementById('blog-container');
+        
+        // Wipe existing temporary empty feedback messages if present
+        const existingMsg = container.querySelector('.empty-search-msg');
+        if (existingMsg) existingMsg.remove();
+
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const title = card.getAttribute('data-title') || '';
+            const desc = card.getAttribute('data-desc') || '';
+            
+            if (title.includes(query) || desc.includes(query)) {
+                card.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        // Trigger dynamic system warning when search matches nothing
+        if (visibleCount === 0 && runtimeBlogRegistry.length > 0) {
+            const errorFeedback = document.createElement('div');
+            errorFeedback.className = 'empty-search-msg';
+            errorFeedback.innerHTML = `> No modules matched criteria: [${query}]. Try scanning another pointer.`;
+            container.appendChild(errorFeedback);
         }
     }
 </script>
