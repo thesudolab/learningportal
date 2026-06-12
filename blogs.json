@@ -1,0 +1,16 @@
+[
+  {
+    "title": "Bypassing Strict SSL Pinning on Modern Android Builds",
+    "filename": "apk-pinning.html",
+    "date": "2026-06-10",
+    "description": "A deep dive look into structural instrumentation techniques to force traffic interception tools over hardcoded validation layers.",
+    "image": ""
+  },
+  {
+    "title": "OWASP Top 10 API Hazards: Defensive Engineering Frameworks",
+    "filename": "owasp-api.html",
+    "date": "2026-05-24",
+    "description": "Analyzing Broken Object Level Authorization paradigms and building runtime validation layers into local proxies.",
+    "image": ""
+  }
+]
