@@ -1,13 +1,5 @@
 [
   {
-    "title": "AI Basics - Beginner Student Learning Hub",
-    "filename": "LLM_Basics.html",
-    "date": "2026-06-12",
-    "description": "Security research module documentation.",
-    "image": ""
-  }
-,
-  {
     "title": "NTLM & Kerberos — Auth for Beginners",
     "filename": "NTLM_Kerberos.html",
     "date": "2026-06-12",
@@ -16,8 +8,8 @@
   }
 ,
   {
-    "title": "AI Engineering, Architecture & Student Learning Hub",
-    "filename": "AI_BASICS.html",
+    "title": "AI Basics - Beginner Student Learning Hub",
+    "filename": "LLM_Basics.html",
     "date": "2026-06-12",
     "description": "Security research module documentation.",
     "image": ""
