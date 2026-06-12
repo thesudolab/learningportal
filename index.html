@@ -239,39 +239,6 @@
             position: relative;
         }
 
-        .blog-thumb::before {
-            content: "[ SRC ]";
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            opacity: 0.5;
-        }
-
-        .blog-content {
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .blog-date {
-            font-size: 0.75rem;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-        }
-
-        .blog-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            line-height: 1.3;
-        }
-
-        .blog-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            flex-grow: 1;
-        }
-
         #loading {
             grid-column: 1 / -1;
             text-align: center;
@@ -398,13 +365,42 @@
                 return;
             }
 
+            // High-tech minimalist vector placeholder layout for fallback
+            const fallbackSvg = `
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' style='background:#0d1117; width:100%; height:100%; display:block;'>
+                <g stroke='rgba(16, 185, 129, 0.08)' stroke-width='1' fill='none'>
+                    <path d='M0,40 H400 M0,80 H400 M0,120 H400 M0,160 H400' />
+                    <path d='M50,0 V200 M100,0 V200 M150,0 V200 M200,0 V200 M250,0 V200 M300,0 V200 M350,0 V200' />
+                </g>
+                <g stroke='rgba(2, 132, 199, 0.3)' stroke-width='1.5' fill='none'>
+                    <path d='M50,80 L100,120 L250,120 L300,160' />
+                    <path d='M150,200 V120 L200,80 L350,80' />
+                </g>
+                <circle cx='200' cy='100' r='18' fill='#0d1117' stroke='#10b981' stroke-width='2' />
+                <polygon points='200,90 209,105 191,105' fill='none' stroke='#0284c7' stroke-width='2' />
+                <circle cx='200' cy='100' r='4' fill='#10b981' />
+                <circle cx='100' cy='120' r='3' fill='#0284c7' />
+                <circle cx='300' cy='160' r='3' fill='#10b981' />
+                <circle cx='150' cy='40' r='2.5' fill='#64748b' />
+            </svg>
+            `;
+
             blogs.forEach(post => {
                 const card = document.createElement('a');
                 card.className = 'blog-card';
                 card.href = `./blog/${post.filename}`;
                 
+                // Switch styling/content based on whether an image exists
+                const thumbnailStyle = post.image 
+                    ? `background-image:url(${post.image}); background-size:cover; background-position:center;` 
+                    : `background: #0d1117;`;
+
+                const thumbnailInnerContent = post.image ? '' : fallbackSvg;
+                
                 card.innerHTML = `
-                    <div class="blog-thumb" style="${post.image ? `background-image:url(${post.image}); background-size:cover; background-position:center;` : ''}"></div>
+                    <div class="blog-thumb" style="${thumbnailStyle}">
+                        ${thumbnailInnerContent}
+                    </div>
                     <div class="blog-content">
                         <span class="blog-date">[🕒 ${post.date}]</span>
                         <div class="blog-title">${post.title}</div>
