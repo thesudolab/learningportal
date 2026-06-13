@@ -1,13 +1,5 @@
 [
   {
-    "title": "NTLM & Kerberos — Auth for Beginners",
-    "filename": "NTLM_Kerberos.html",
-    "date": "2026-06-13",
-    "description": "Security research module documentation.",
-    "image": ""
-  }
-,
-  {
     "title": "How AI Models are Trained | Interactive Step-by-Step Guide – CybersecurityWaala",
     "filename": "how-ai-models-are-trained.html",
     "date": "2026-06-13",
@@ -18,6 +10,22 @@
   {
     "title": "MCP Flow Visualizer",
     "filename": "mcp-flow.html",
+    "date": "2026-06-13",
+    "description": "Security research module documentation.",
+    "image": ""
+  }
+,
+  {
+    "title": "RAG Pipeline & Vector DB — Interactive Guide",
+    "filename": "rag.html",
+    "date": "2026-06-13",
+    "description": "Security research module documentation.",
+    "image": ""
+  }
+,
+  {
+    "title": "NTLM & Kerberos — Auth for Beginners",
+    "filename": "NTLM_Kerberos.html",
     "date": "2026-06-13",
     "description": "Security research module documentation.",
     "image": ""
