@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RAG Pipeline & Vector DB — Interactive Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:    #020817;
+  --bg2:   #0f172a;
+  --bg3:   #1e293b;
+  --border: #1e293b;
+  --border2: #334155;
+  --text:  #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --blue:  #3b82f6;
+  --blue-dim: rgba(59,130,246,0.12);
+  --emerald: #10b981;
+  --em-dim: rgba(16,185,129,0.1);
+  --font-sans: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+.nav {
+  position: fixed; top: 2rem; left: 50%; transform: translateX(-50%); z-index: 100;
+  display: flex; gap: 4px; padding: 6px;
+  background: rgba(15,23,42,0.85); backdrop-filter: blur(20px);
+  border: 1px solid var(--border2); border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.nav-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 24px; border-radius: 12px; border: none; cursor: pointer;
+  font-family: var(--font-sans); font-size: 0.85rem; font-weight: 700;
+  color: var(--text3); background: transparent; transition: all 0.2s;
+}
+.nav-btn:hover { color: var(--text2); }
+.nav-btn.active { background: var(--blue); color: #fff; box-shadow: 0 4px 16px rgba(59,130,246,0.35); }
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
+
+main { padding: 8rem 2rem 4rem; max-width: 1200px; margin: 0 auto; }
+
+/* ── HERO ── */
+.hero { text-align: center; margin-bottom: 6rem; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 99px;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+  margin-bottom: 1.5rem; font-family: var(--font-mono);
+}
+.hero-badge.blue { background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.25); color: #60a5fa; }
+.hero-badge.green { background: var(--em-dim); border: 1px solid rgba(16,185,129,0.25); color: #34d399; }
+h1.hero-title {
+  font-size: clamp(3rem, 10vw, 7rem); font-weight: 900; letter-spacing: -0.04em; line-height: 0.9;
+  color: #fff; text-transform: uppercase; margin-bottom: 1.5rem;
+}
+h1.hero-title span { color: var(--text3); }
+.hero-sub { font-size: 1.1rem; color: var(--text2); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+/* ── SECTION HEADING ── */
+.section-head { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+.section-head-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.section-title { font-size: 2.5rem; font-weight: 800; color: #fff; letter-spacing: -0.03em; }
+.section-sub { color: var(--text2); font-size: 0.9rem; max-width: 400px; }
+
+/* Autoplay controls */
+.controls { display: flex; gap: 4px; padding: 4px; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; }
+.ctrl-btn {
+  padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+  font-family: var(--font-sans); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+  transition: all 0.2s; color: var(--text3); background: transparent;
+  display: flex; align-items: center; gap: 6px;
+}
+.ctrl-btn:hover { background: var(--bg3); color: var(--text); }
+.ctrl-btn.playing { background: var(--blue); color: #fff; }
+.ctrl-btn.next-btn { background: var(--bg3); color: #fff; }
+
+/* ── PIPELINE LAYOUT ── */
+.pipeline-grid { display: grid; grid-template-columns: 280px 1fr; gap: 2rem; }
+@media(max-width:900px){ .pipeline-grid { grid-template-columns: 1fr; } }
+
+/* Step Indicators */
+.step-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.step-indicator {
+  display: flex; align-items: flex-start; gap: 0.75rem; padding: 1rem;
+  border-radius: 14px; border: 1px solid var(--border); background: var(--bg2);
+  cursor: pointer; transition: all 0.25s; text-align: left; width: 100%;
+}
+.step-indicator:hover { border-color: var(--border2); }
+.step-indicator.active { background: var(--blue-dim); border-color: var(--blue); box-shadow: 0 0 20px rgba(59,130,246,0.1); }
+.step-indicator.done { background: var(--em-dim); border-color: rgba(16,185,129,0.3); }
+.step-icon {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+  background: var(--bg3); color: var(--text3); transition: all 0.25s;
+}
+.step-indicator.active .step-icon { background: var(--blue); color: #fff; }
+.step-indicator.done .step-icon { background: var(--emerald); color: #fff; }
+.step-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+.step-indicator.active .step-label { color: #60a5fa; }
+.step-indicator.done .step-label { color: #34d399; }
+.step-indicator:not(.active):not(.done) .step-label { color: var(--text3); }
+.step-desc { font-size: 0.75rem; color: var(--text2); margin-top: 4px; line-height: 1.5; display: none; }
+.step-indicator.active .step-desc { display: block; }
+
+/* ── RAG CANVAS ── */
+.rag-canvas-wrap {
+  position: relative; width: 100%; height: 520px;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+  box-shadow: inset 0 2px 32px rgba(0,0,0,0.5);
+}
+.dot-grid {
+  position: absolute; inset: 0; opacity: 0.07;
+  background-image: radial-gradient(circle, #334155 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+.rag-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* Active process card */
+.active-process {
+  position: absolute; top: 1.5rem; left: 1.5rem;
+  background: rgba(15,23,42,0.85); backdrop-filter: blur(12px);
+  border: 1px solid var(--border2); border-radius: 14px; padding: 1.25rem;
+  width: 220px; pointer-events: none; transition: all 0.3s;
+}
+.process-pulse { display: flex; align-items: center; gap: 8px; margin-bottom: 0.6rem; }
+.pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); animation: pulseDot 1.5s ease-in-out infinite; }
+@keyframes pulseDot { 0%,100%{opacity:0.4;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
+.process-label { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.15em; }
+.process-title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem; }
+.process-desc { font-size: 0.75rem; color: var(--text2); line-height: 1.5; }
+
+/* SVG node styles via JS */
+
+/* ── VECTOR DB ── */
+.vdb-grid { display: grid; grid-template-columns: 1fr 360px; gap: 2rem; }
+@media(max-width:1000px){ .vdb-grid { grid-template-columns: 1fr; } }
+
+.map-wrap {
+  position: relative; background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 24px; overflow: hidden; aspect-ratio: 1 / 1;
+}
+@media(min-width:700px){ .map-wrap { aspect-ratio: 16 / 10; } }
+
+.quadrant-overlay {
+  position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; pointer-events: none; opacity: 0.15;
+}
+.quad { border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; }
+.quad span { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #fff; }
+
+.map-inner {
+  position: absolute; inset: 2rem; background: rgba(2,8,23,0.5);
+  border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+}
+.bg-dot { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: rgba(51,65,85,0.4); }
+.kp {
+  position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--border2);
+  transform: translate(-50%, -50%); transition: all 0.5s; z-index: 10; cursor: pointer;
+}
+.kp.retrieved { background: var(--emerald); box-shadow: 0 0 12px #34d399; transform: translate(-50%,-50%) scale(2.2); }
+.kp.dimmed { opacity: 0.1; }
+.query-dot {
+  position: absolute; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--blue); box-shadow: 0 0 20px var(--blue);
+  transform: translate(-50%,-50%); z-index: 50; transition: left 0.6s ease, top 0.6s ease;
+  display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #fff;
+}
+.query-dot::before {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  background: var(--blue); animation: ping 1.5s ease-in-out infinite; opacity: 0.3;
+}
+@keyframes ping { 0%{transform:scale(1);opacity:0.3} 100%{transform:scale(2.5);opacity:0} }
+.radar {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(59,130,246,0.4); background: rgba(59,130,246,0.05);
+  transform: translate(-50%,-50%); pointer-events: none;
+  animation: radarExpand 0.8s ease-out forwards;
+}
+@keyframes radarExpand { from{width:20px;height:20px;opacity:0.8} to{width:200px;height:200px;opacity:0} }
+
+/* Sidebar */
+.vdb-sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
+.vdb-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 1.5rem; }
+.vdb-card-title { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem; }
+.vdb-card-sub { font-size: 0.8rem; color: var(--text2); line-height: 1.5; margin-bottom: 1rem; }
+
+.search-box { position: relative; margin-bottom: 0.75rem; }
+.search-input {
+  width: 100%; background: var(--bg); border: 1px solid var(--border2); border-radius: 12px;
+  padding: 10px 44px 10px 14px; font-family: var(--font-sans); font-size: 0.85rem; color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.search-input::placeholder { color: var(--text3); }
+.search-input:focus { border-color: var(--blue); }
+.search-btn {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  width: 30px; height: 30px; border-radius: 8px; background: var(--blue); border: none; cursor: pointer;
+  color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
+  transition: background 0.2s;
+}
+.search-btn:hover { background: #2563eb; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-size: 0.7rem; padding: 4px 10px; border-radius: 6px;
+  background: var(--bg3); border: 1px solid var(--border2); color: var(--text3);
+  cursor: pointer; transition: all 0.2s;
+}
+.tag:hover { color: var(--text); background: var(--border2); }
+.explain-box { background: var(--bg); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 0.75rem 1rem; margin-top: 0.75rem; }
+.explain-text { font-size: 0.75rem; color: #60a5fa; font-style: italic; line-height: 1.5; }
+
+/* Results */
+.results-label { font-size: 0.65rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 0.5rem; font-family: var(--font-mono); }
+.result-card { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1rem; margin-bottom: 0.6rem; transition: border-color 0.2s; }
+.result-card:hover { border-color: rgba(16,185,129,0.3); }
+.result-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.result-topic { font-size: 0.6rem; font-weight: 700; color: var(--emerald); text-transform: uppercase; letter-spacing: 0.15em; }
+.result-rel { font-size: 0.6rem; color: var(--text3); }
+.result-title { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.result-content { font-size: 0.75rem; color: var(--text2); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Bottom cards */
+.how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05); }
+@media(max-width:700px){ .how-grid { grid-template-columns: 1fr; } }
+.how-card { display: flex; gap: 0.75rem; padding: 1.25rem; background: rgba(15,23,42,0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; }
+.how-icon { font-size: 1.2rem; flex-shrink: 0; color: var(--emerald); }
+.how-title { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.how-desc { font-size: 0.75rem; color: var(--text3); line-height: 1.5; }
+
+/* Transitions */
+.fade-in { animation: fadeIn 0.35s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* SVG node text */
+.node-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+/* animated data packet */
+@keyframes movePacket {
+  from { offset-distance: 0%; }
+  to   { offset-distance: 100%; }
+}
+.packet {
+  position: absolute; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--blue); box-shadow: 0 0 10px var(--blue);
+  animation: movePacket 1s ease-in-out forwards;
+  offset-rotate: 0deg;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" data-page="pipeline" onclick="switchPage('pipeline')">⇌ Pipeline</button>
+  <button class="nav-btn" data-page="vectordb" onclick="switchPage('vectordb')">⬡ Vector DB</button>
+</nav>
+
+<!-- ══════════════════════════════ PIPELINE PAGE ══════════════════════════════ -->
+<div class="page active" id="page-pipeline">
+  <main>
+    <div class="hero fade-in">
+      <div class="hero-badge blue">⚡ Architecture</div>
+      <h1 class="hero-title">RAG PIPE<span>LINE</span></h1>
+      <p class="hero-sub">Visualization of the 5-stage Retrieval-Augmented Generation workflow.</p>
+    </div>
+
+    <div class="section-head">
+      <div class="section-head-row">
+        <div>
+          <div class="section-title">The Lifecycle</div>
+          <div class="section-sub">Observe the flow of data through the retrieval and generation stages.</div>
+        </div>
+        <div class="controls">
+          <button class="ctrl-btn" id="btn-autoplay" onclick="toggleAutoplay()">▶ Auto Play</button>
+          <button class="ctrl-btn next-btn" onclick="nextStep()">Next Stage →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipeline-grid">
+      <!-- Steps list -->
+      <div class="step-list" id="step-list"></div>
+
+      <!-- Canvas -->
+      <div class="rag-canvas-wrap">
+        <div class="dot-grid"></div>
+        <svg class="rag-svg" viewBox="0 0 900 520" id="rag-svg"></svg>
+        <div class="active-process" id="active-process">
+          <div class="process-pulse"><div class="pulse-dot"></div><div class="process-label">Active Process</div></div>
+          <div class="process-title" id="proc-title"></div>
+          <div class="process-desc" id="proc-desc"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════ VECTOR DB PAGE ══════════════════════════════ -->
+<div class="page" id="page-vectordb">
+  <main>
+    <div class="hero fade-in">
+      <div class="hero-badge green">⬡ Core Technology</div>
+      <h1 class="hero-title">VECTOR <span>MATH</span></h1>
+      <p class="hero-sub">Understand how data is matched by meaning using spatial coordinates and high-dimensional clustering.</p>
+    </div>
+
+    <div class="vdb-grid">
+      <!-- Map -->
+      <div class="map-wrap" id="map-wrap">
+        <div class="quadrant-overlay">
+          <div class="quad"><span>Connectivity</span></div>
+          <div class="quad"><span>Power</span></div>
+          <div class="quad"><span>Security</span></div>
+          <div class="quad"><span>Lighting</span></div>
+        </div>
+        <div class="map-inner" id="map-inner">
+          <!-- dots populated by JS -->
+          <div class="query-dot" id="query-dot">🔍</div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="vdb-sidebar">
+        <div class="vdb-card">
+          <div class="vdb-card-title">Scenario: Smart Home Support</div>
+          <div class="vdb-card-sub">Imagine a support bot for "SecureHome", integrated with a knowledge base.</div>
+          <div class="search-box">
+            <input class="search-input" id="search-input" type="text" placeholder="Ask about your battery, wifi..." onkeydown="if(event.key==='Enter') runSearch()"/>
+            <button class="search-btn" onclick="runSearch()">→</button>
+          </div>
+          <div class="tags">
+            <span class="tag" onclick="quickSearch('Battery low')">Battery low</span>
+            <span class="tag" onclick="quickSearch('Wifi down')">Wifi down</span>
+            <span class="tag" onclick="quickSearch('Camera alerts')">Camera alerts</span>
+            <span class="tag" onclick="quickSearch('Dim lights')">Dim lights</span>
+          </div>
+          <div class="explain-box">
+            <div class="explain-text" id="explain-text">Type a support question above (e.g. "My battery is dying")</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="results-label">Knowledge Base Snippets</div>
+          <div id="results-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="how-grid">
+      <div class="how-card"><div class="how-icon">◈</div><div><div class="how-title">1. Map It</div><div class="how-desc">Turn your text into a location on the map.</div></div></div>
+      <div class="how-card"><div class="how-icon">⊕</div><div><div class="how-title">2. Measure It</div><div class="how-desc">See which data points are physically closest.</div></div></div>
+      <div class="how-card"><div class="how-icon">⇉</div><div><div class="how-title">3. Grab It</div><div class="how-desc">Pick up the top 3 nearest neighbors to read.</div></div></div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ═══════════════════ DATA ═══════════════════
+const STEPS = [
+  { id: 'query',    title: 'Ask a Question', icon: '💬', desc: 'You ask the computer a question, just like you would ask a friend.' },
+  { id: 'embed',    title: 'Magic Mapping',  icon: '◈',  desc: 'The computer turns your words into a "location" on a giant information map.' },
+  { id: 'retrieve', title: 'Find the Books', icon: '🔍', desc: 'It searches its memory for "books" or files that are sitting closest to that location.' },
+  { id: 'augment',  title: 'Gather Info',    icon: '🗄', desc: 'It brings your question and those "books" together onto one desk so it can read them.' },
+  { id: 'generate', title: 'Write Answer',   icon: '🖥', desc: 'The computer reads your question and the extra info to write a smart, truthful answer.' },
+];
+
+const KNOWLEDGE_BASE = [
+  { id: 1,  x: 15, y: 15, topic: 'Connectivity', title: 'Wifi Reset Guide',      content: 'Hold the small pinhole button on the back of your hub for 15 seconds until the light flashes red.' },
+  { id: 2,  x: 20, y: 18, topic: 'Connectivity', title: 'Bluetooth Pairing',     content: 'Ensure Bluetooth is enabled on your phone. Press the Sync button on the side of the lock for 3 seconds.' },
+  { id: 3,  x: 12, y: 22, topic: 'Connectivity', title: 'Unstable Connection',   content: 'If your devices are dropping out, try moving your Smart Hub closer to the center of your home.' },
+  { id: 4,  x: 85, y: 15, topic: 'Power',         title: 'Battery Optimization', content: 'Reduce motion sensitivity in the app to extend your camera battery life by up to 2 months.' },
+  { id: 5,  x: 82, y: 22, topic: 'Power',         title: 'Solar Panel Setup',    content: 'Angle your solar panels at 45 degrees towards the south for maximum charging efficiency.' },
+  { id: 6,  x: 88, y: 18, topic: 'Power',         title: 'Low Battery Alerts',   content: 'Your phone will receive a notification when your doorbell reaches 15% battery remaining.' },
+  { id: 7,  x: 15, y: 82, topic: 'Security',      title: 'Camera Motion Zones',  content: 'Draw Custom Zones in the SecureView app to ignore street traffic and only alert for your driveway.' },
+  { id: 8,  x: 22, y: 85, topic: 'Security',      title: 'Siren Volume',         content: 'The external siren is 105dB. You can test the volume in the Settings > Alarm menu.' },
+  { id: 9,  x: 18, y: 78, topic: 'Security',      title: 'Two-Factor Auth',      content: 'Add an extra layer of safety by enabling SMS verification for all account logins.' },
+  { id: 10, x: 85, y: 82, topic: 'Lighting',      title: 'Scene Scheduling',     content: 'Create a "Movie Night" scene that dims the living room lights to 10% and closes the smart blinds.' },
+  { id: 11, x: 82, y: 78, topic: 'Lighting',      title: 'Bulb Power Cycle',     content: 'If a bulb is unreachable, turn the wall switch Off and On three times rapidly to reset it.' },
+  { id: 12, x: 78, y: 85, topic: 'Lighting',      title: 'Adaptive Brightness',  content: 'Your lights can automatically change color temperature based on the time of day (Warm at night).' },
+];
+
+// ═══════════════════ PIPELINE ═══════════════════
+let activeStepIdx = 0;
+let autoplay = false;
+let autoTimer = null;
+
+// Node positions in viewBox 900x520
+const NODES = {
+  user:       { x: 100, y: 260, label: 'User Query',           icon: '💬' },
+  embed:      { x: 300, y: 260, label: 'Embedding Model',      icon: '◈'  },
+  vectorDB:   { x: 500, y: 430, label: 'Vector DB',            icon: '🗄' },
+  augment:    { x: 600, y: 260, label: 'Context Augmentation', icon: '📄' },
+  llm:        { x: 800, y: 260, label: 'LLM Generator',        icon: '🖥' },
+};
+
+// Which node is "active" per step
+const STEP_ACTIVE_NODE = ['user', 'embed', 'vectorDB', 'augment', 'llm'];
+
+// Paths between nodes (static)
+const PATHS = [
+  { from: 'user',     to: 'embed',    dashed: false },
+  { from: 'embed',    to: 'vectorDB', dashed: false },
+  { from: 'vectorDB', to: 'augment',  dashed: true  },
+  { from: 'embed',    to: 'augment',  dashed: false },
+  { from: 'augment',  to: 'llm',      dashed: false },
+];
+
+function buildStepList() {
+  const list = document.getElementById('step-list');
+  list.innerHTML = '';
+  STEPS.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'step-indicator' + (i === activeStepIdx ? ' active' : i < activeStepIdx ? ' done' : '');
+    btn.innerHTML = `
+      <div class="step-icon">${i < activeStepIdx ? '✓' : s.icon}</div>
+      <div>
+        <div class="step-label">Step 0${i+1}: ${s.title}</div>
+        <div class="step-desc">${s.desc}</div>
+      </div>`;
+    btn.onclick = () => { setStep(i); setAutoplay(false); };
+    list.appendChild(btn);
+  });
+}
+
+function buildSVG() {
+  const svg = document.getElementById('rag-svg');
+  svg.innerHTML = '';
+
+  // Arrowhead marker
+  svg.innerHTML = `
+    <defs>
+      <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6"/>
+      </marker>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>`;
+
+  const activeNodeKey = STEP_ACTIVE_NODE[activeStepIdx];
+
+  // Draw paths
+  PATHS.forEach(p => {
+    const f = NODES[p.from], t = NODES[p.to];
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    // Simple straight line with offset
+    const dx = t.x - f.x, dy = t.y - f.y;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const ux = dx/len, uy = dy/len;
+    const sx = f.x + ux*44, sy = f.y + uy*44;
+    const ex = t.x - ux*44, ey = t.y - uy*44;
+    line.setAttribute('d', `M ${sx} ${sy} L ${ex} ${ey}`);
+    line.setAttribute('stroke', '#1e293b');
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('fill', 'none');
+    line.setAttribute('marker-end', 'url(#arr)');
+    if (p.dashed) line.setAttribute('stroke-dasharray', '5,5');
+    svg.appendChild(line);
+  });
+
+  // Draw animated packet for active step
+  const packetStep = activeStepIdx;
+  if (packetStep > 0) {
+    // draw moving circle along the relevant path
+    const pathMap = [null,
+      { from:'user', to:'embed' },
+      { from:'embed', to:'vectorDB' },
+      { from:'vectorDB', to:'augment' },
+      { from:'augment', to:'llm' }
+    ];
+    const pm = pathMap[packetStep];
+    if (pm) {
+      const f = NODES[pm.from], t = NODES[pm.to];
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('r', '7');
+      circle.setAttribute('fill', '#3b82f6');
+      circle.setAttribute('filter', 'url(#glow)');
+      svg.appendChild(circle);
+      // Animate with SMIL
+      const animX = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+      animX.setAttribute('attributeName', 'cx');
+      animX.setAttribute('values', `${f.x};${t.x}`);
+      animX.setAttribute('dur', '1.2s');
+      animX.setAttribute('repeatCount', 'indefinite');
+      circle.appendChild(animX);
+      const animY = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+      animY.setAttribute('attributeName', 'cy');
+      animY.setAttribute('values', `${f.y};${t.y}`);
+      animY.setAttribute('dur', '1.2s');
+      animY.setAttribute('repeatCount', 'indefinite');
+      circle.appendChild(animY);
+    }
+  }
+
+  // Draw nodes
+  Object.entries(NODES).forEach(([key, n]) => {
+    const isActive = key === activeNodeKey;
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+    // Glow ring if active
+    if (isActive) {
+      const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      ring.setAttribute('cx', n.x); ring.setAttribute('cy', n.y); ring.setAttribute('r', '50');
+      ring.setAttribute('fill', 'none'); ring.setAttribute('stroke', '#3b82f6'); ring.setAttribute('stroke-width', '1.5');
+      ring.setAttribute('opacity', '0.3');
+      const animR = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+      animR.setAttribute('attributeName', 'r'); animR.setAttribute('values', '44;52;44');
+      animR.setAttribute('dur', '2s'); animR.setAttribute('repeatCount', 'indefinite');
+      ring.appendChild(animR);
+      g.appendChild(ring);
+    }
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y); circle.setAttribute('r', '40');
+    circle.setAttribute('fill', isActive ? '#1e40af' : '#0f172a');
+    circle.setAttribute('stroke', isActive ? '#3b82f6' : '#1e293b');
+    circle.setAttribute('stroke-width', '2.5');
+    g.appendChild(circle);
+
+    const fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    fo.setAttribute('x', n.x - 16); fo.setAttribute('y', n.y - 16);
+    fo.setAttribute('width', '32'); fo.setAttribute('height', '32');
+    fo.innerHTML = `<div xmlns="http://www.w3.org/1999/xhtml" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:1.1rem;color:${isActive?'#93c5fd':'#64748b'}">${n.icon}</div>`;
+    g.appendChild(fo);
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', n.x); text.setAttribute('y', n.y + 62);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('class', 'node-label');
+    text.setAttribute('fill', isActive ? '#60a5fa' : '#475569');
+    text.setAttribute('font-weight', isActive ? 'bold' : 'normal');
+    text.textContent = n.label;
+    g.appendChild(text);
+
+    svg.appendChild(g);
+  });
+}
+
+function updateActiveProcess() {
+  const s = STEPS[activeStepIdx];
+  document.getElementById('proc-title').textContent = s.title;
+  document.getElementById('proc-desc').textContent = s.desc;
+}
+
+function setStep(idx) {
+  activeStepIdx = idx;
+  buildStepList();
+  buildSVG();
+  updateActiveProcess();
+}
+
+function nextStep() {
+  setStep((activeStepIdx + 1) % STEPS.length);
+}
+
+function setAutoplay(val) {
+  autoplay = val;
+  clearInterval(autoTimer);
+  const btn = document.getElementById('btn-autoplay');
+  if (autoplay) {
+    btn.classList.add('playing');
+    btn.textContent = '⏸ Pause';
+    autoTimer = setInterval(nextStep, 3000);
+  } else {
+    btn.classList.remove('playing');
+    btn.textContent = '▶ Auto Play';
+  }
+}
+
+function toggleAutoplay() {
+  setAutoplay(!autoplay);
+}
+
+// ═══════════════════ VECTOR DB ═══════════════════
+let queryPos = { x: 50, y: 50 };
+let searching = false;
+
+function buildMap() {
+  const inner = document.getElementById('map-inner');
+
+  // Background noise dots
+  for (let i = 0; i < 150; i++) {
+    const d = document.createElement('div');
+    d.className = 'bg-dot';
+    d.style.left = `${Math.random()*100}%`;
+    d.style.top = `${Math.random()*100}%`;
+    inner.appendChild(d);
+  }
+
+  // Knowledge points
+  KNOWLEDGE_BASE.forEach(p => {
+    const dot = document.createElement('div');
+    dot.className = 'kp';
+    dot.id = `kp-${p.id}`;
+    dot.style.left = `${p.x}%`;
+    dot.style.top = `${p.y}%`;
+    inner.appendChild(dot);
+  });
+
+  // Query dot (already in HTML, just make sure it's last)
+  const qd = document.getElementById('query-dot');
+  inner.appendChild(qd);
+
+  renderResults();
+}
+
+function mapInputToVector(input) {
+  const lower = input.toLowerCase();
+  if (/wifi|internet|connect|hub|bluetooth/.test(lower)) return { x: 15, y: 18 };
+  if (/battery|power|charge|solar/.test(lower))          return { x: 85, y: 18 };
+  if (/camera|security|alarm|siren|motion/.test(lower))  return { x: 18, y: 82 };
+  if (/light|bulb|color|bright|dim/.test(lower))         return { x: 82, y: 82 };
+  const code = input.split('').reduce((a,b)=>a+b.charCodeAt(0),0);
+  return { x: (input.length * 13) % 100, y: code % 100 };
+}
+
+function getTopicLabel(v) {
+  if (v.x < 50 && v.y < 50) return 'Connectivity';
+  if (v.x > 50 && v.y < 50) return 'Power & Energy';
+  if (v.x < 50 && v.y > 50) return 'Home Security';
+  return 'Smart Lighting';
+}
+
+function dist(a, b) { return Math.sqrt((a.x-b.x)**2 + (a.y-b.y)**2); }
+
+function getRetrieved() {
+  return KNOWLEDGE_BASE
+    .map(p => ({ ...p, d: dist(p, queryPos) }))
+    .sort((a,b) => a.d - b.d)
+    .slice(0, 3);
+}
+
+function renderResults() {
+  const retrieved = getRetrieved();
+  const list = document.getElementById('results-list');
+  list.innerHTML = '';
+  retrieved.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="result-head">
+        <span class="result-topic">${r.topic}</span>
+        <span class="result-rel">Relevance: ${(100 - r.d).toFixed(1)}%</span>
+      </div>
+      <div class="result-title">${r.title}</div>
+      <div class="result-content">${r.content}</div>`;
+    list.appendChild(card);
+  });
+
+  // Update dot states
+  KNOWLEDGE_BASE.forEach(p => {
+    const el = document.getElementById(`kp-${p.id}`);
+    if (!el) return;
+    const isRet = retrieved.some(r => r.id === p.id);
+    el.classList.toggle('retrieved', isRet);
+    el.classList.toggle('dimmed', searching && !isRet);
+  });
+}
+
+function runSearch() {
+  const input = document.getElementById('search-input').value.trim();
+  if (!input) return;
+
+  const vec = mapInputToVector(input);
+  queryPos = vec;
+
+  const qd = document.getElementById('query-dot');
+  qd.style.left = `${vec.x}%`;
+  qd.style.top = `${vec.y}%`;
+
+  document.getElementById('explain-text').textContent =
+    `The AI localized your request to the "${getTopicLabel(vec)}" quadrant and is now pulling related help articles.`;
+
+  // Radar
+  const inner = document.getElementById('map-inner');
+  const radar = document.createElement('div');
+  radar.className = 'radar';
+  radar.style.left = `${vec.x}%`;
+  radar.style.top = `${vec.y}%`;
+  inner.appendChild(radar);
+  setTimeout(() => radar.remove(), 900);
+
+  searching = true;
+  renderResults();
+  setTimeout(() => { searching = false; renderResults(); }, 800);
+}
+
+function quickSearch(text) {
+  document.getElementById('search-input').value = text;
+  runSearch();
+}
+
+// ═══════════════════ PAGE SWITCHING ═══════════════════
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === name);
+  });
+  document.getElementById(`page-${name}`).classList.add('active');
+  if (name === 'vectordb') {
+    // Re-render after visibility so layout is known
+    setTimeout(renderResults, 50);
+  }
+}
+
+// ═══════════════════ INIT ═══════════════════
+buildStepList();
+buildSVG();
+updateActiveProcess();
+buildMap();
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"c4a9a4acdf814479b92958761cbef4da","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
