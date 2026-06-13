@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ============================================================
+         PRIMARY SEO TAGS
+    ============================================================ -->
+    <title>How AI Models are Trained | Interactive Step-by-Step Guide – CybersecurityWaala</title>
+    <meta name="description" content="Learn how AI models are trained in 8 interactive steps — tokenization, word embeddings, transformer attention, loss functions, backpropagation & more. A beginner-friendly visual explainer by CybersecurityWaala covering how LLMs like ChatGPT actually learn from data." />
+    <meta name="keywords" content="how AI models are trained, AI model training explained, how does ChatGPT learn, large language model training, LLM training steps, neural network training for beginners, tokenization in AI, word embeddings explained, transformer model explained, self-attention mechanism, backpropagation explained, loss function in machine learning, deep learning explained, how AI learns from data, machine learning training process, AI training data, forward pass neural network, AI weights and parameters, generative AI training, cybersecurity AI, AI for beginners, how does an AI model work" />
+    <meta name="author" content="cybersecuritywaala" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="language" content="English" />
+    <meta name="revisit-after" content="7 days" />
+    <meta name="rating" content="general" />
+    <meta name="category" content="Artificial Intelligence, Cybersecurity, Machine Learning" />
+    <meta name="copyright" content="cybersecuritywaala" />
+    <link rel="canonical" href="https://cybersecuritywaala.com/resources/ai/how-ai-models-are-trained.html" />
+
+    <!-- ============================================================
+         OPEN GRAPH (Facebook, LinkedIn, WhatsApp previews)
+    ============================================================ -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="How AI Models are Trained | Interactive Step-by-Step Guide – CybersecurityWaala" />
+    <meta property="og:description" content="Learn how AI models are trained in 8 interactive steps — from raw data and tokenization to transformers, backpropagation & fine-tuning. A visual explainer for beginners by CybersecurityWaala." />
+    <meta property="og:url" content="https://cybersecuritywaala.com/resources/ai/how-ai-models-are-trained.html" />
+    <meta property="og:site_name" content="CybersecurityWaala" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content="https://cybersecuritywaala.com/wp-content/uploads/2026/03/cropped-cybersecuritywaala-favicon.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Interactive 8-step diagram showing how AI models are trained – CybersecurityWaala" />
+    <meta property="article:published_time" content="2025-01-01T00:00:00Z" />
+    <meta property="article:modified_time" content="2026-03-24T00:00:00Z" />
+    <meta property="article:author" content="https://cybersecuritywaala.com" />
+    <meta property="article:publisher" content="https://cybersecuritywaala.com" />
+    <meta property="article:tag" content="Artificial Intelligence" />
+    <meta property="article:tag" content="Machine Learning" />
+    <meta property="article:tag" content="Deep Learning" />
+    <meta property="article:tag" content="Neural Networks" />
+    <meta property="article:tag" content="Cybersecurity" />
+    <meta property="article:tag" content="LLM Training" />
+    <meta property="article:section" content="AI & Machine Learning" />
+
+    <!-- ============================================================
+         TWITTER / X CARD
+    ============================================================ -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="How AI Models are Trained | Interactive Step-by-Step Guide" />
+    <meta name="twitter:description" content="8 interactive steps to understand how AI models learn — tokenization, embeddings, transformers, backpropagation & more. By CybersecurityWaala." />
+    <meta name="twitter:image" content="https://cybersecuritywaala.com/wp-content/uploads/2026/03/cropped-cybersecuritywaala-favicon.png" />
+    <meta name="twitter:image:alt" content="Interactive AI training visualizer – 8 steps explained by CybersecurityWaala" />
+    <meta name="twitter:site" content="@cybersecwaala" />
+    <meta name="twitter:creator" content="@cybersecwaala" />
+
+    <!-- ============================================================
+         STRUCTURED DATA — JSON-LD (Google Rich Results)
+    ============================================================ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "How AI Models are Trained: A Step-by-Step Interactive Guide",
+      "description": "An interactive 8-step visual walkthrough explaining how AI language models are trained — covering tokenization, word embeddings, transformer self-attention, loss functions, backpropagation, and fine-tuning.",
+      "image": "https://cybersecuritywaala.com/wp-content/uploads/2026/03/cropped-cybersecuritywaala-favicon.png",
+      "author": {
+        "@type": "Organization",
+        "name": "cybersecuritywaala",
+        "url": "https://cybersecuritywaala.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "CybersecurityWaala",
+        "url": "https://cybersecuritywaala.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://cybersecuritywaala.com/wp-content/uploads/2026/03/cropped-cybersecuritywaala-favicon.png"
+        }
+      },
+      "datePublished": "2025-01-01",
+      "dateModified": "2026-03-24",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://cybersecuritywaala.com/resources/ai/how-ai-models-are-trained.html"
+      },
+      "keywords": "how AI models are trained, LLM training, tokenization, word embeddings, transformer, backpropagation, neural networks, deep learning, ChatGPT training, machine learning explained",
+      "articleSection": "Artificial Intelligence & Cybersecurity",
+      "inLanguage": "en-US",
+      "educationalLevel": "Beginner to Intermediate",
+      "learningResourceType": "Interactive Explainer",
+      "about": {
+        "@type": "Thing",
+        "name": "Artificial Intelligence Training",
+        "description": "The process by which AI and machine learning models learn from data through tokenization, vectorization, transformer attention, and backpropagation."
+      }
+    }
+    </script>
+
+    <!-- Tailwind + fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Page-level tweaks to match csw max-width and tone */
+          *, *::before, *::after{
+            font-family: 'Inter', sans-serif;
+        }
+        body{
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+
+        .fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px);} to {opacity:1; transform: translateY(0);} }
+
+        .glow-text { text-shadow: 0 0 12px rgba(56,189,248,0.35); }
+
+        .step-card { transition: all 0.3s ease; }
+        .step-card.active { border-left: 4px solid #38bdf8; background-color: rgba(30,41,59,0.8); }
+        .step-card.completed { opacity: 0.6; border-left: 4px solid #10b981; }
+
+        #canvas-container {
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+            background-size: 20px 20px;
+            box-shadow: inset 0 0 40px #0f172a;
+        }
+
+        /* When csw-chrome injects a fixed header (60px high), it adds csw-body-offset */
+        /* We respect that; nothing needed here. */
+
+        /* Slight adjustments for inner page header to not clash with csw site header */
+        .page-header { padding: 12px 0; }
+    </style>
+</head>
+
+<body class="min-h-screen bg-slate-950">
+
+  <!-- Centered app container matched to csw max width (1200px) -->
+  <div class="w-full max-w-[1200px] h-[90vh] mx-auto px-4 py-4">
+
+    <!-- Page-specific header (inside container; csw-chrome provides site header above) -->
+    <header class="bg-slate-900 border border-slate-800 rounded-lg p-3 flex items-center justify-between page-header shadow-sm">
+      <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+          </div>
+          <div>
+              <h1 class="text-lg font-semibold text-white tracking-tight"><strong>How AI Models are Trained</span></h1>
+          </div>
+      </div>
+
+      <div class="flex gap-3 items-center mono text-xs">
+          <div class="px-3 py-1 bg-slate-800 rounded border border-slate-700 text-blue-400">STEP 1/8</div>
+      </div>
+    </header>
+
+    <!-- Main card: split layout -->
+    <main class="flex flex-col lg:flex-row mt-4 h-[calc(100%-72px)] rounded-xl overflow-hidden border border-slate-800 bg-slate-900">
+
+      <!-- Left: Controls & Theory (35% on large screens) -->
+      <aside class="w-full lg:w-1/3 bg-slate-900 border-r border-slate-800 flex flex-col z-10">
+          <div class="flex-1 overflow-y-auto p-4 space-y-4" id="theory-container">
+              <!-- Dynamic content injected by JS -->
+          </div>
+
+          <!-- Navigation Controls -->
+          <div class="p-4 border-t border-slate-800 bg-slate-900">
+              <div class="flex justify-between items-center mb-3">
+                  <button id="prevBtn" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition disabled:opacity-30 disabled:cursor-not-allowed font-medium text-sm">
+                      ← Back
+                  </button>
+                  <div class="flex gap-1" id="progress-dots"></div>
+                  <button id="nextBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold shadow-md transition transform active:scale-95 text-sm flex items-center gap-2">
+                      Next Step
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                  </button>
+              </div>
+              <button id="replayBtn" class="w-full py-2 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 rounded text-xs transition uppercase tracking-wider hidden">
+                  Replay Animation
+              </button>
+          </div>
+      </aside>
+
+      <!-- Right: Visualization Stage (fills remaining width) -->
+      <section class="flex-1 relative bg-slate-950 flex flex-col p-4">
+          <!-- Canvas Layer (fills section) -->
+          <div id="canvas-container" class="absolute inset-4 w-[calc(100%-2rem)] h-[calc(100%-2rem)] rounded-lg z-0 overflow-hidden"></div>
+
+          <!-- Overlay UI for Visuals (pointer-events none so it doesn't block clicks) -->
+          <div class="absolute top-6 left-6 z-10 max-w-md pointer-events-none">
+              <h2 id="viz-title" class="text-2xl font-bold text-white mb-2 drop-shadow-md">The Raw Text</h2>
+              <p id="viz-desc" class="text-slate-300 text-sm bg-slate-900/80 backdrop-blur p-2 rounded border border-slate-700 shadow-md">
+                  We start with a simple sentence.
+              </p>
+          </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- --- Interactive visualizer script (updated sizes for boxed layout) --- -->
+  <script>
+    /**
+     * INTERACTIVE VISUALIZER ENGINE
+     * Updated to use slightly smaller fonts/boxes so content fits a boxed 1200px layout.
+     */
+
+    // --- Configuration & State ---
+    const steps = [
+      { id:0, title:"1. The Raw Text", theory:"The model starts with a simple sentence from a book or the internet. Think of this like a textbook. The model reads millions of sentences to learn patterns.", vizTitle:"Input Data", vizDesc:"The sentence enters the system.", color:"#3b82f6" },
+      { id:1, title:"2. Breaking into Tokens", theory:"The computer cannot read words directly. It first chops the sentence into smaller chunks called 'tokens' and assigns each a unique ID number.", vizTitle:"Tokenization", vizDesc:"Splitting text into chunks [100], [101]...", color:"#6366f1" },
+      { id:2, title:"3. Words as Maps (Vectors)", theory:"Imagine every word lives in a giant map. The computer turns each word into a list of numbers (coordinates) that places it on this map. Words with similar meanings—like 'King' and 'Queen'—end up close together.", vizTitle:"Vectorization", vizDesc:"Converting words to coordinates on a meaning-map.", color:"#a855f7" },
+      { id:3, title:"4. The Transformer Brain", theory:"This is where the AI 'thinks.' It uses two tricks: First, 'Self-Attention'—it looks at the whole sentence to see which words matter to each other. Second, 'Feed-Forward'—it does math to understand the deeper meaning.", vizTitle:"Attention Mechanism", vizDesc:"Finding connections between words...", color:"#ec4899" },
+      { id:4, title:"5. Making a Guess", theory:"The AI tries to predict the next word. It doesn't just pick one—it gives a score to every word it knows.", vizTitle:"Prediction (Forward Pass)", vizDesc:"Calculating probabilities for the next word...", color:"#f97316" },
+      { id:5, title:"6. Checking the Answer", theory:"We compare the AI's guess to the real word. If it guessed wrong, we calculate the error (Loss). The bigger the mistake, the higher the loss.", vizTitle:"Loss Calculation", vizDesc:"Comparing Guess vs Reality...", color:"#ef4444" },
+      { id:6, title:"7. Correcting Mistakes (Backprop)", theory:"The error signal travels backwards through the network. It adjusts the internal 'weights' slightly so it will do better next time.", vizTitle:"Backpropagation", vizDesc:"Adjusting internal weights...", color:"#14b8a6" },
+      { id:7, title:"8. What the Model Learned", theory:"After billions of steps, the model stores what it learned as 'weights' and 'embeddings'. The final result is a structured memory where concepts are connected.", vizTitle:"Knowledge Web Storage", vizDesc:"The trained model's memory structure...", color:"#10b981" }
+    ];
+
+    let currentStep = 0;
+    let isAnimating = false;
+    let animationFrameId;
+    let stepStartTime = Date.now();
+
+    // Canvas Setup
+    const container = document.getElementById('canvas-container');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    container.appendChild(canvas);
+
+    // Resize Handler
+    function resize() {
+      // match the container's inner size
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+      if (!isAnimating) renderScene();
+    }
+    window.addEventListener('resize', resize);
+
+    function resetCtx() {
+      ctx.globalAlpha = 1;
+      ctx.shadowBlur = 0;
+      ctx.shadowColor = 'transparent';
+      ctx.textBaseline = 'alphabetic';
+      ctx.textAlign = 'left';
+      ctx.lineWidth = 1;
+    }
+
+    // --- Particle class ---
+    class Particle {
+      constructor(x,y,color,type='dot'){
+        this.x = x; this.y = y; this.color = color;
+        this.size = Math.random() * 2 + 1.5;
+        this.speedX = (Math.random()-0.5)*1.5;
+        this.speedY = (Math.random()-0.5)*1.5;
+        this.life = 1;
+        this.type = type;
+      }
+      update(){ this.x += this.speedX; this.y += this.speedY; this.life -= 0.008; }
+      draw(ctx){
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        if (this.type === 'dot') { ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill(); }
+        else { ctx.fillRect(this.x, this.y, this.size*2, this.size*2); }
+        ctx.globalAlpha = 1;
+      }
+    }
+    let particles = [], staticElements = [];
+
+    // --- Render functions (reduced sizes) ---
+    function clearScene(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles=[]; staticElements=[]; }
+
+    function renderStep0(){
+      resetCtx();
+      const cx = canvas.width/2, cy = canvas.height/2;
+      ctx.fillStyle = "#e2e8f0";
+      ctx.font = "bold 24px Inter";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText('"Data protection is part of"', cx, cy - 20);
+      ctx.fillStyle = "#3b82f6";
+      ctx.font = "bold 24px Inter";
+      ctx.fillText("cybersecurity", cx, cy + 20);
+
+      if (Math.random()>0.92) particles.push(new Particle(Math.random()*canvas.width, Math.random()*canvas.height, "#3b82f6"));
+      particles.forEach((p,i)=>{ p.update(); p.draw(ctx); if (p.life<=0) particles.splice(i,1); });
+      resetCtx();
+    }
+
+    function renderStep1(){
+      resetCtx();
+      const words = ["Data","protection","is","part","of","cybersecurity"];
+      const boxW = 80, boxH = 50, gap = 8;
+      const totalW = words.length * (boxW + gap) - gap;
+      const startX = canvas.width/2 - totalW/2;
+      const y = canvas.height/2 - boxH/2;
+
+      const time = (Date.now() - stepStartTime)/1000;
+      const highlightIdx = Math.floor((time / 0.6) % words.length);
+
+      words.forEach((word,i)=>{
+        const x = startX + i*(boxW+gap);
+        const isHighlighted = i === highlightIdx;
+        ctx.fillStyle = isHighlighted ? "rgba(99,102,241,0.18)" : "rgba(30,41,59,0.6)";
+        ctx.fillRect(x, y, boxW, boxH);
+
+        if (isHighlighted) { ctx.shadowBlur=12; ctx.shadowColor="#6366f1"; ctx.strokeStyle="#6366f1"; ctx.lineWidth=2; }
+        else { ctx.shadowBlur=0; ctx.strokeStyle="#475569"; ctx.lineWidth=1.2; }
+        ctx.strokeRect(x,y,boxW,boxH);
+        ctx.shadowBlur=0;
+
+        ctx.fillStyle = isHighlighted ? "#fff" : "#cbd5e1";
+        ctx.font = `${isHighlighted ? "bold " : ""}13px Inter`;
+        ctx.textAlign = "center"; ctx.textBaseline="middle";
+        ctx.fillText(word, x + boxW/2, y + boxH/2 - 8);
+
+        ctx.fillStyle = isHighlighted ? "#818cf8" : "#6366f1";
+        ctx.font = "10px JetBrains Mono";
+        ctx.fillText(`[${100 + i}]`, x + boxW/2, y + boxH/2 + 12);
+      });
+
+      resetCtx();
+    }
+
+    function renderStep2(){
+      resetCtx();
+      const cx = canvas.width/2, cy = canvas.height/2 - 10;
+      const gridStep = 36, gridExtent = 160;
+      ctx.strokeStyle = "#334155"; ctx.lineWidth = 1;
+      for (let i=-4;i<=4;i++){
+        ctx.beginPath(); ctx.moveTo(cx + i*gridStep, cy - gridExtent); ctx.lineTo(cx + i*gridStep, cy + gridExtent); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx - gridExtent, cy + i*gridStep); ctx.lineTo(cx + gridExtent, cy + i*gridStep); ctx.stroke();
+      }
+      ctx.strokeStyle = "#475569"; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(cx, cy - gridExtent); ctx.lineTo(cx, cy + gridExtent); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx - gridExtent, cy); ctx.lineTo(cx + gridExtent, cy); ctx.stroke();
+
+      const words = [
+        { name: "King", x:-70, y:-50, color:"#a855f7" },
+        { name: "Queen", x:-30, y:-48, color:"#a855f7" },
+        { name: "Man", x:-70, y:18, color:"#c084fc" },
+        { name: "Woman", x:-30, y:22, color:"#c084fc" },
+        { name: "Apple", x:90, y:-70, color:"#22c55e" },
+        { name: "Fruit", x:110, y:-36, color:"#22c55e" },
+        { name: "Car", x:90, y:68, color:"#ef4444" },
+        { name: "Truck", x:120, y:92, color:"#ef4444" }
+      ];
+
+      // connections
+      ctx.lineWidth = 1.4; ctx.strokeStyle = "rgba(168,85,247,0.32)";
+      ctx.beginPath(); ctx.moveTo(cx + words[0].x, cy + words[0].y); ctx.lineTo(cx + words[1].x, cy + words[1].y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx + words[0].x, cy + words[0].y); ctx.lineTo(cx + words[2].x, cy + words[2].y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx + words[1].x, cy + words[1].y); ctx.lineTo(cx + words[3].x, cy + words[3].y); ctx.stroke();
+
+      ctx.strokeStyle = "rgba(34,197,94,0.32)"; ctx.beginPath();
+      ctx.moveTo(cx + words[4].x, cy + words[4].y); ctx.lineTo(cx + words[5].x, cy + words[5].y); ctx.stroke();
+      ctx.strokeStyle = "rgba(239,68,68,0.32)"; ctx.beginPath();
+      ctx.moveTo(cx + words[6].x, cy + words[6].y); ctx.lineTo(cx + words[7].x, cy + words[7].y); ctx.stroke();
+
+      words.forEach(word=>{
+        const wx = cx + word.x, wy = cy + word.y;
+        ctx.beginPath(); ctx.arc(wx, wy, 7, 0, Math.PI*2); ctx.fillStyle = word.color;
+        ctx.shadowBlur = 12; ctx.shadowColor = word.color; ctx.fill(); ctx.shadowBlur=0;
+        ctx.fillStyle = "#fff"; ctx.font = "11px Inter"; ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+        ctx.fillText(word.name, wx, wy - 9);
+      });
+
+      ctx.fillStyle = "#94a3b8"; ctx.font = "12px Inter"; ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+      ctx.fillText("Words with similar meanings live close together", cx, cy + gridExtent + 22);
+      resetCtx();
+    }
+
+    function renderStep3(){
+      resetCtx();
+      const cx = canvas.width/2, cy = canvas.height/2;
+      const words = [
+        { text:"Data", x: cx - 200 },
+        { text:"protection", x: cx - 90 },
+        { text:"is", x: cx + 5 },
+        { text:"part", x: cx + 90 },
+        { text:"of", x: cx + 165 }
+      ];
+      const boxW = 72, boxH = 36;
+      const time = Date.now()/1000;
+      const pulse = (Math.sin(time * 3) + 1) / 2;
+
+      ctx.beginPath();
+      ctx.moveTo(words[0].x, cy - boxH/2);
+      ctx.quadraticCurveTo((words[0].x + words[1].x)/2, cy - 90, words[1].x, cy - boxH/2);
+      ctx.strokeStyle = `rgba(236,72,153,${0.35 + pulse*0.65})`; ctx.lineWidth = 3 + pulse*3;
+      ctx.shadowBlur = 12; ctx.shadowColor = "#ec4899"; ctx.stroke(); ctx.shadowBlur=0;
+
+      ctx.lineWidth = 1; ctx.shadowBlur = 0;
+      for (let i=2;i<words.length;i++){
+        ctx.beginPath(); ctx.strokeStyle = "rgba(236,72,153,0.12)"; ctx.moveTo(words[0].x, cy); ctx.lineTo(words[i].x, cy); ctx.stroke();
+      }
+
+      words.forEach((word,i)=>{
+        const isStrong = i <= 1;
+        const bx = word.x - boxW/2, by = cy - boxH/2;
+        ctx.fillStyle = isStrong ? "rgba(236,72,153,0.16)" : "rgba(30,41,59,0.8)"; ctx.fillRect(bx,by,boxW,boxH);
+        if (isStrong) { ctx.shadowBlur=8; ctx.shadowColor="#ec4899"; ctx.strokeStyle="#ec4899"; ctx.lineWidth=2; }
+        else { ctx.shadowBlur=0; ctx.strokeStyle="#475569"; ctx.lineWidth=1.2; }
+        ctx.strokeRect(bx,by,boxW,boxH); ctx.shadowBlur=0;
+        ctx.fillStyle = isStrong ? "#fff" : "#94a3b8"; ctx.font = `${isStrong ? "bold " : ""}12px Inter`;
+        ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(word.text, word.x, cy);
+      });
+
+      ctx.fillStyle = "#ec4899"; ctx.font = "13px Inter"; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+      ctx.fillText("Strong Connection: 'Data' ↔ 'Protection'", cx, cy + 46);
+      ctx.fillStyle = "#94a3b8"; ctx.font = "11px Inter"; ctx.fillText("The AI learns these two words belong together", cx, cy + 64);
+
+      resetCtx();
+    }
+
+    function renderStep4(){
+      resetCtx();
+      const cx = canvas.width/2, cy = canvas.height/2;
+      ctx.fillStyle = "#94a3b8"; ctx.font = "13px Inter"; ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+      ctx.fillText('Input: "Data protection is part of..."', cx, cy - 78);
+
+      const predictions = [
+        { label: "cybersecurity", prob: 0.85, color: "#10b981" },
+        { label: "computers",     prob: 0.10, color: "#f59e0b" },
+        { label: "pizza",         prob: 0.03, color: "#ef4444" },
+        { label: "the moon",      prob: 0.02, color: "#64748b" }
+      ];
+
+      const barMaxWidth = 260, barHeight = 32, barGap = 12;
+      const totalHeight = predictions.length * (barHeight + barGap) - barGap;
+      const startY = cy - totalHeight/2 + 6;
+
+      const elapsed = (Date.now() - stepStartTime)/1000;
+      const fillProgress = Math.min(elapsed / 1.2, 1);
+
+      predictions.forEach((pred,i)=>{
+        const y = startY + i*(barHeight+barGap);
+        const targetWidth = pred.prob * barMaxWidth;
+        const currentWidth = targetWidth * fillProgress;
+        const bx = cx - barMaxWidth/2;
+
+        ctx.fillStyle = "#1e293b"; ctx.fillRect(bx, y, barMaxWidth, barHeight);
+        ctx.fillStyle = pred.color;
+        if (currentWidth > 0) ctx.fillRect(bx, y, currentWidth, barHeight);
+
+        if (i === 0) { ctx.strokeStyle = "#10b981"; ctx.lineWidth = 2; ctx.strokeRect(bx - 3, y - 3, barMaxWidth + 6, barHeight + 6); ctx.shadowBlur=0; }
+
+        ctx.textBaseline = "middle";
+        const pctText = `${(pred.prob*100).toFixed(0)}%`;
+        if (currentWidth > 38) {
+          ctx.fillStyle = "#fff"; ctx.font = "bold 12px Inter"; ctx.textAlign = "left";
+          ctx.fillText(pctText, bx + 8, y + barHeight/2);
+        } else {
+          ctx.fillStyle = "#94a3b8"; ctx.font = "bold 12px Inter"; ctx.textAlign = "left";
+          ctx.fillText(pctText, bx + currentWidth + 8, y + barHeight/2);
+        }
+
+        ctx.fillStyle = "#e2e8f0"; ctx.font = "12px Inter"; ctx.textAlign = "right";
+        ctx.fillText(pred.label, bx - 10, y + barHeight/2);
+      });
+
+      ctx.fillStyle = "#10b981"; ctx.font = "12px Inter"; ctx.textAlign = "center"; ctx.textBaseline="alphabetic";
+      ctx.fillText("↑ AI picks this one (highest confidence)", cx, startY + (barHeight + barGap) * 4 - 6);
+      resetCtx();
+    }
+
+    function renderStep5(){
+      resetCtx();
+      const cx = canvas.width/2, cy = canvas.height/2;
+      const boxW = 150, boxH = 50;
+
+      // GUESS box — left
+      ctx.fillStyle = "rgba(239,68,68,0.12)"; ctx.fillRect(cx - 260 - boxW/2, cy - boxH/2, boxW, boxH);
+      ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 1.8; ctx.strokeRect(cx - 260 - boxW/2, cy - boxH/2, boxW, boxH);
+      ctx.fillStyle = "#f87171"; ctx.font = "11px Inter"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("AI GUESS", cx - 260, cy - 12);
+      ctx.fillStyle = "#fff"; ctx.font = "bold 15px Inter"; ctx.fillText("Computers", cx - 260, cy + 10);
+
+      // REAL box — right
+      ctx.fillStyle = "rgba(16,185,129,0.12)"; ctx.fillRect(cx + 260 - boxW/2, cy - boxH/2, boxW, boxH);
+      ctx.strokeStyle = "#10b981"; ctx.lineWidth = 1.8; ctx.strokeRect(cx + 260 - boxW/2, cy - boxH/2, boxW, boxH);
+      ctx.fillStyle = "#6ee7b7"; ctx.font = "11px Inter"; ctx.fillText("CORRECT ANSWER", cx + 260, cy - 12);
+      ctx.fillStyle = "#fff"; ctx.font = "bold 15px Inter"; ctx.fillText("Cybersecurity", cx + 260, cy + 10);
+
+      // VS in center
+      ctx.fillStyle = "#fff"; ctx.font = "bold 28px Inter"; ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillText("VS", cx, cy);
+
+      // Loss box
+      const elapsed = (Date.now() - stepStartTime)/1000;
+      const fadeIn = Math.min(elapsed / 0.8, 1);
+      ctx.globalAlpha = fadeIn;
+      ctx.fillStyle = "rgba(30,41,59,0.94)"; ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 1.2;
+      ctx.fillRect(cx - 140, cy + 60, 280, 44); ctx.strokeRect(cx - 140, cy + 60, 280, 44);
+      ctx.fillStyle = "#fbbf24"; ctx.font = "bold 13px JetBrains Mono"; ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillText("Loss = |0.85 − 0.10| = 0.75", cx, cy + 82);
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = "#94a3b8"; ctx.font = "11px Inter"; ctx.textAlign="center"; ctx.fillText("High loss = big mistake → needs more training", cx, cy + 120);
+
+      resetCtx();
+    }
+
+    function renderStep6(){
+      resetCtx();
+      const time = Date.now()/1000;
+      const cx = canvas.width/2, cy = canvas.height/2;
+      const nodeCount = 5, spacing = 90;
+      const totalW = (nodeCount - 1) * spacing;
+      const startX = cx + totalW/2;
+
+      for (let i=0;i<nodeCount-1;i++){
+        const x1 = startX - i*spacing, x2 = startX - (i+1)*spacing;
+        const progress = ((time * 0.8 + i * 0.25) % 1);
+        const dotX = x1 + (x2 - x1) * progress;
+        ctx.beginPath(); ctx.strokeStyle = "rgba(20,184,166,0.24)"; ctx.lineWidth = 1.8;
+        ctx.moveTo(x1 - 18, cy); ctx.lineTo(x2 + 18, cy); ctx.stroke();
+
+        // arrow head
+        ctx.fillStyle = "#14b8a6";
+        ctx.beginPath(); ctx.moveTo(x2 + 18, cy); ctx.lineTo(x2 + 30, cy - 6); ctx.lineTo(x2 + 30, cy + 6); ctx.closePath(); ctx.fill();
+
+        // animated dot
+        ctx.beginPath(); ctx.arc(dotX, cy, 4, 0, Math.PI*2); ctx.fillStyle="#2dd4bf"; ctx.shadowBlur=10; ctx.shadowColor="#14b8a6"; ctx.fill(); ctx.shadowBlur=0;
+      }
+
+      for (let i=0;i<nodeCount;i++){
+        const x = startX - i*spacing;
+        const pulse = (Math.sin(time * 2.5 + i * 0.8) + 1)/2;
+        ctx.beginPath(); ctx.arc(x, cy, 18, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(20,184,166,${0.22 + pulse*0.22})`; ctx.fill();
+        ctx.strokeStyle = "#14b8a6"; ctx.lineWidth = 2; ctx.shadowBlur = 10; ctx.shadowColor="#14b8a6"; ctx.stroke(); ctx.shadowBlur=0;
+        ctx.fillStyle = "#fff"; ctx.font = "bold 10px Inter"; ctx.textAlign="center"; ctx.textBaseline="middle";
+        ctx.fillText(`L${nodeCount - i}`, x, cy);
+      }
+
+      ctx.fillStyle = "#14b8a6"; ctx.font = "12px Inter"; ctx.textAlign="center"; ctx.fillText("← Error Signal Travels Backwards", cx, cy - 48);
+      ctx.fillStyle = "#94a3b8"; ctx.font = "12px Inter"; ctx.fillText("Each layer's weights are nudged to reduce future error", cx, cy + 56);
+      resetCtx();
+    }
+
+    function renderStep7(){
+      resetCtx();
+      const cx = canvas.width/2, cy = canvas.height/2 - 20, time = Date.now()/1000;
+      ctx.fillStyle = "#fff"; ctx.font = "bold 14px Inter"; ctx.textAlign="center"; ctx.fillText("What the AI Remembered (Knowledge Web)", cx, cy - 145);
+
+      const centerR = 24;
+      const relatedConcepts = [
+        { name:"Cybersecurity", strength:0.95, angle:-Math.PI/2, dist:110 },
+        { name:"Encryption", strength:0.88, angle:-Math.PI/4, dist:100 },
+        { name:"Privacy Laws", strength:0.82, angle:-3*Math.PI/4, dist:100 },
+        { name:"GDPR", strength:0.75, angle:0, dist:95 },
+        { name:"Risk Mgmt", strength:0.70, angle:Math.PI/2, dist:105 },
+        { name:"Backup", strength:0.65, angle:3*Math.PI/4, dist:95 },
+        { name:"Firewall", strength:0.60, angle:Math.PI, dist:100 },
+        { name:"Access Control", strength:0.78, angle:-Math.PI/6 * 5, dist:105 }
+      ];
+
+      const nodes = relatedConcepts.map(c => ({ ...c, x: cx + Math.cos(c.angle) * c.dist, y: cy + Math.sin(c.angle) * c.dist }));
+
+      nodes.forEach((node,i)=>{
+        const pulse = (Math.sin(time * 2 + i * 0.7) + 1)/2;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(node.x, node.y);
+        ctx.lineWidth = 1.2 + node.strength * 3.2;
+        ctx.strokeStyle = `rgba(16,185,129,${0.25 + pulse*0.4})`; ctx.shadowBlur=10; ctx.shadowColor="#10b981"; ctx.stroke(); ctx.shadowBlur=0;
+
+        const midX = (cx + node.x)/2, midY = (cy + node.y)/2;
+        ctx.fillStyle = "rgba(16,185,129,0.9)"; ctx.font = "9px JetBrains Mono"; ctx.textAlign="center"; ctx.textBaseline="middle";
+        ctx.fillText(node.strength.toFixed(2), midX, midY - 6);
+      });
+
+      nodes.forEach((node,i)=>{
+        const pulse = (Math.sin(time * 2 + i * 0.7) + 1)/2;
+        const r = 12 + node.strength * 6;
+        ctx.beginPath(); ctx.arc(node.x, node.y, r, 0, Math.PI*2); ctx.fillStyle = `rgba(16,185,129,${0.14 + pulse*0.18})`; ctx.fill();
+        ctx.strokeStyle = "#34d399"; ctx.lineWidth = 1.6; ctx.shadowBlur=8; ctx.shadowColor="#10b981"; ctx.stroke(); ctx.shadowBlur=0;
+        const labelDist = r + 12; const lx = node.x + Math.cos(node.angle) * labelDist; const ly = node.y + Math.sin(node.angle) * labelDist;
+        ctx.fillStyle = "#e2e8f0"; ctx.font = "11px Inter"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(node.name, lx, ly);
+      });
+
+      // center node
+      ctx.beginPath(); ctx.arc(cx, cy, centerR, 0, Math.PI*2); ctx.fillStyle="#059669"; ctx.fill();
+      ctx.strokeStyle="#34d399"; ctx.lineWidth=2.5; ctx.shadowBlur=18; ctx.shadowColor="#10b981"; ctx.stroke(); ctx.shadowBlur=0;
+      ctx.fillStyle="#fff"; ctx.font="bold 11px Inter"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("Data", cx, cy - 6); ctx.fillText("Protection", cx, cy + 8);
+
+      // info box bottom
+      const boxY = cy + 140;
+      ctx.fillStyle = "rgba(15,23,42,0.92)"; ctx.strokeStyle="#10b981"; ctx.lineWidth=1.2; ctx.fillRect(cx - 200, boxY, 400, 66); ctx.strokeRect(cx - 200, boxY, 400, 66);
+      ctx.fillStyle = "#fff"; ctx.font = "bold 12px Inter"; ctx.textAlign="center"; ctx.textBaseline="alphabetic"; ctx.fillText("How Knowledge is Stored", cx, boxY + 18);
+
+      ctx.fillStyle = "#94a3b8"; ctx.font = "11px Inter"; ctx.fillText("• Word Embeddings: Vectors placing similar concepts close together", cx, boxY + 36);
+      ctx.fillText("• Attention Weights: Connection strengths between related ideas", cx, boxY + 52);
+      ctx.fillStyle = "#10b981"; ctx.font = "bold 12px Inter"; ctx.fillText("✓ Training Complete  |  Ready to Answer Questions", cx, boxY + 86);
+
+      resetCtx();
+    }
+
+    function renderScene(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      switch(currentStep){
+        case 0: renderStep0(); break;
+        case 1: renderStep1(); break;
+        case 2: renderStep2(); break;
+        case 3: renderStep3(); break;
+        case 4: renderStep4(); break;
+        case 5: renderStep5(); break;
+        case 6: renderStep6(); break;
+        case 7: renderStep7(); break;
+      }
+      if (isAnimating) animationFrameId = requestAnimationFrame(renderScene);
+    }
+
+    // --- UI wiring ---
+    const theoryContainer = document.getElementById('theory-container');
+    const vizTitle = document.getElementById('viz-title');
+    const vizDesc = document.getElementById('viz-desc');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const replayBtn = document.getElementById('replayBtn');
+    const progressDots = document.getElementById('progress-dots');
+    const statusBadge = document.querySelector('.page-header .mono') || document.getElementById('status-badge');
+
+    function updateUI(){
+      const step = steps[currentStep];
+      theoryContainer.innerHTML = `
+        <div class="fade-in-up p-1">
+          <div class="inline-block px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-blue-400 text-xs font-bold mb-3 tracking-wider">CONCEPT ${currentStep + 1} OF ${steps.length}</div>
+          <h2 class="text-2xl font-bold text-white mb-2 leading-tight">${step.title}</h2>
+          <div class="prose prose-invert">
+            <p class="text-base text-slate-300 leading-relaxed">${step.theory}</p>
+          </div>
+          <div class="mt-6 p-3 bg-blue-900/12 border border-blue-800/30 rounded-lg">
+            <h4 class="text-blue-400 font-bold text-sm mb-2 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Why this matters
+            </h4>
+            <p class="text-sm text-blue-200/80">${getInsight(currentStep)}</p>
+          </div>
+        </div>
+      `;
+      vizTitle.innerText = step.vizTitle;
+      vizDesc.innerText = step.vizDesc;
+      vizTitle.style.color = step.color;
+
+      prevBtn.disabled = currentStep === 0;
+      if (currentStep === steps.length - 1) {
+        nextBtn.innerHTML = `Finish <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+        nextBtn.classList.remove('bg-blue-600'); nextBtn.classList.add('bg-emerald-600');
+      } else {
+        nextBtn.innerHTML = `Next Step <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+        nextBtn.classList.remove('bg-emerald-600'); nextBtn.classList.add('bg-blue-600');
+      }
+
+      // simple progress dots
+      progressDots.innerHTML = steps.map((_, idx) => `<div class="h-1.5 rounded-full ${idx === currentStep ? 'w-6 bg-blue-500' : idx < currentStep ? 'w-1.5 bg-emerald-500' : 'w-1.5 bg-slate-700'} transition-all duration-300"></div>`).join('');
+    }
+
+    function getInsight(stepIndex){
+      const insights = [
+        "AI needs massive amounts of text to understand human language nuances.",
+        "Tokenization bridges the gap between human language and computer binary.",
+        "Vectors allow math to understand meaning. 'King - Man + Woman = Queen' is possible here.",
+        "Attention is the key breakthrough that made modern AI like ChatGPT possible.",
+        "The model isn't sure; it picks the statistically most likely next word.",
+        "Calculating loss is how the model knows it made a mistake without human help.",
+        "Backpropagation is the 'learning' part. It fine-tunes billions of parameters.",
+        "The final model is a web of connected concepts—ready to answer your questions!"
+      ];
+      return insights[stepIndex];
+    }
+
+    // Event listeners
+    nextBtn.addEventListener('click', ()=>{
+      if (currentStep < steps.length - 1) { currentStep++; stepStartTime = Date.now(); updateUI(); } 
+      else { currentStep = 0; stepStartTime = Date.now(); updateUI(); }
+    });
+    prevBtn.addEventListener('click', ()=>{
+      if (currentStep > 0) { currentStep--; stepStartTime = Date.now(); updateUI(); }
+    });
+
+    // Start animation loop
+    isAnimating = true;
+    resize();
+    updateUI();
+    renderScene();
+  </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"c4a9a4acdf814479b92958761cbef4da","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
