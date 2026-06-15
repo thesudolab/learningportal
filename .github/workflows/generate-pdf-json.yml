@@ -21,7 +21,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-node-version: '20'
+        node-version: '20' #  Fixed the node-node-version typo here
 
     - name: Generate pdfs.json
       run: |
@@ -31,15 +31,15 @@ jobs:
         const { execSync } = require('child_process');
 
         const pdfDir = path.join(process.cwd(), 'pdf');
-        // Fallback target to your pdf directory where the frontend code expects it
-        const outputFile = path.join(process.cwd(), 'pdf', 'pdfs.json');
+        const outputFile = path.join(pdfDir, 'pdfs.json');
 
         if (!fs.existsSync(pdfDir)) {
           console.log('PDF folder does not exist.');
           process.exit(0);
         }
 
-        const files = fs.readdirSync(pdfDir).filter(file => file.endsWith('.pdf'));
+        // Filters out the pdfs.json file itself so it doesn't try to index it!
+        const files = fs.readdirSync(pdfDir).filter(file => file.endsWith('.pdf') && file !== 'pdfs.json');
         
         const pdfArray = files.map(file => {
           const filePath = path.join(pdfDir, file);
