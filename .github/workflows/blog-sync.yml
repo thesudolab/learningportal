@@ -16,7 +16,7 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0 # Full history required to read file dates via git log
+        fetch-depth: 0
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -62,7 +62,7 @@ jobs:
           
           blogArray.sort((a, b) => b.date.localeCompare(a.date));
           fs.writeFileSync(path.join(blogDir, "blogs.json"), JSON.stringify(blogArray, null, 2));
-          console.log("Generated blogs.json successfully.");
+          console.log("Generated blog/blogs.json successfully.");
         }
         '
 
