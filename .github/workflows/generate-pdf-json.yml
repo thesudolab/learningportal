@@ -1,0 +1,84 @@
+name: Generate PDFs Index JSON
+
+on:
+  push:
+    paths:
+      - 'pdf/**' # Triggers only when changes occur inside the pdf folder
+
+permissions:
+  contents: write # Allows the action to commit the generated json back to your repo
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Fetches history so we can grab precise file creation dates
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-node-version: '20'
+
+    - name: Generate pdfs.json
+      run: |
+        node -e "
+        const fs = require('fs');
+        const path = require('path');
+        const { execSync } = require('child_process');
+
+        const pdfDir = path.join(process.cwd(), 'pdf');
+        // Fallback target to your blog directory where the frontend code expects it
+        const outputFile = path.join(process.cwd(), 'blog', 'pdfs.json');
+
+        if (!fs.existsSync(pdfDir)) {
+          console.log('PDF folder does not exist.');
+          process.exit(0);
+        }
+
+        const files = fs.readdirSync(pdfDir).filter(file => file.endsWith('.pdf'));
+        
+        const pdfArray = files.map(file => {
+          const filePath = path.join(pdfDir, file);
+          let dateStr = '2026-06-15'; // Default fallback matching current timeline
+          
+          try {
+            // Grab the actual git commit date of the file for precise records
+            const gitDate = execSync(\`git log -1 --format=%as -- \"\${filePath}\"\`).toString().trim();
+            if (gitDate) dateStr = gitDate;
+          } catch (e) {
+            // If file is untracked/newly staged, fallback to system creation time
+            const stat = fs.statSync(filePath);
+            dateStr = stat.birthtime.toISOString().split('T')[0];
+          }
+
+          return {
+            title: file,
+            filename: file,
+            date: dateStr
+          };
+        });
+
+        // Sort items by date descending (Newest first)
+        pdfArray.sort((a, b) => b.date.localeCompare(a.date));
+
+        fs.writeFileSync(outputFile, JSON.stringify(pdfArray, null, 2));
+        console.log(\`Successfully generated index map with \${pdfArray.length} assets.\`);
+        "
+
+    - name: Commit and Push Changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add blog/pdfs.json
+        
+        # Only commit if changes actually exist to avoid loop deployment crashes
+        if git diff --staged --quiet; then
+          echo "No structural layout adjustments detected. Skipping deployment cycle."
+        else
+          git commit -m "sys(automation): dynamically updated structural pdf mappings [skip ci]"
+          git push
+        fi
