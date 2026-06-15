@@ -1,0 +1,69 @@
+name: PDF Artifact Synchronization Engine
+
+on:
+  push:
+    paths:
+      - 'pdf/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-pdfs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Full history required to read file dates via git log
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Compile PDF Registry Tree
+      run: |
+        node -e '
+        const fs = require("fs");
+        const path = require("path");
+        const { execSync } = require("child_process");
+
+        function getGitDate(filePath, fallbackDate) {
+          try {
+            const gitDate = execSync(`git log -1 --format=%as -- "${filePath}"`).toString().trim();
+            return gitDate || fallbackDate;
+          } catch (e) {
+            return fallbackDate;
+          }
+        }
+
+        const pdfDir = path.join(process.cwd(), "pdf");
+        if (fs.existsSync(pdfDir)) {
+          const files = fs.readdirSync(pdfDir).filter(file => file.endsWith(".pdf"));
+          const pdfArray = files.map(file => {
+            const filePath = path.join(pdfDir, file);
+            let defaultDate = new Date().toISOString().split("T")[0];
+            try { defaultDate = fs.statSync(filePath).birthtime.toISOString().split("T")[0]; } catch(e){}
+            
+            const dateStr = getGitDate(filePath, defaultDate);
+            return { title: file, filename: file, date: dateStr };
+          });
+          
+          pdfArray.sort((a, b) => b.date.localeCompare(a.date));
+          fs.writeFileSync(path.join(process.cwd(), "blog", "pdfs.json"), JSON.stringify(pdfArray, null, 2));
+          console.log("Generated pdfs.json successfully.");
+        }
+        '
+
+    - name: Commit and Push PDF Map
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git pull origin main --rebase
+        git add blog/pdfs.json
+        if ! git diff --staged --quiet; then
+          git commit -m "sys(automation): dynamic re-indexing of pdf store [skip ci]"
+          git push origin main
+        fi
