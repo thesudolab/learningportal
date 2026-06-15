@@ -156,7 +156,7 @@
         }
 
         @media (min-width: 768px) {
-            nav { grid-template-columns: repeat(6, 1fr); } 
+            nav { grid-template-columns: repeat(7, 1fr); } 
         }
 
         .nav-btn { 
@@ -234,6 +234,73 @@
         .search-container:focus-within { border-color: var(--text-main); box-shadow: 0 0 10px rgba(15, 23, 42, 0.05); }
         .search-prefix { color: var(--accent); font-weight: bold; margin-right: 0.75rem; user-select: none; }
         .search-input { width: 100%; background: transparent; border: none; outline: none; font-family: var(--font); font-size: 1rem; color: var(--text-main); }
+
+        /* ==========================================================================
+           CONTACT FORM THEMING
+           ========================================================================== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        @media (min-width: 640px) {
+            .form-grid { grid-template-columns: repeat(2, 1fr); }
+            .form-full-width { grid-column: span 2; }
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+        .form-group label span {
+            color: #ef4444; /* Mandatory asterisks */
+        }
+        .form-control {
+            font-family: var(--font);
+            font-size: 1rem;
+            padding: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus {
+            border-color: var(--text-main);
+            background: var(--surface-card);
+        }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+        .submit-btn {
+            background: var(--text-main);
+            color: #ffffff;
+            border: 2px solid var(--text-main);
+            padding: 0.85rem 2rem;
+            font-family: var(--font);
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .submit-btn:hover {
+            background: var(--surface-card);
+            color: var(--text-main);
+            border-color: var(--text-main);
+        }
 
         /* Robust multi-column data viewport alignment layout engine */
         .media-grid { 
@@ -320,10 +387,12 @@
             <button class="nav-btn" onclick="switchTab('videos')">/videos</button>
             <button class="nav-btn" onclick="switchTab('plugins')">/plugins</button>
             <button class="nav-btn" onclick="switchTab('projects')">/projects</button>
+            <button class="nav-btn" onclick="switchTab('contact')">/contact</button>
         </nav>
     </header>
 
     <main>
+        <!-- ABOUT -->
         <section id="about" class="section active">
             <div class="about-card">
                 <h2>> Who Are We?</h2>
@@ -341,6 +410,7 @@
             </div>
         </section>
 
+        <!-- BLOG -->
         <section id="blog" class="section">
             <div class="search-container">
                 <span class="search-prefix">grep -i</span>
@@ -351,6 +421,7 @@
             </div>
         </section>
 
+        <!-- PDF -->
         <section id="pdf" class="section">
             <div class="search-container">
                 <span class="search-prefix">grep -i</span>
@@ -364,6 +435,7 @@
             </div>
         </section>
 
+        <!-- PRACTICAL VIDEOS -->
         <section id="videos" class="section">
             <div class="search-container">
                 <span class="search-prefix">grep -i</span>
@@ -374,6 +446,7 @@
             </div>
         </section>
 
+        <!-- PLUGINS -->
         <section id="plugins" class="section">
             <div class="search-container">
                 <span class="search-prefix">grep -i</span>
@@ -384,6 +457,7 @@
             </div>
         </section>
 
+        <!-- PROJECTS -->
         <section id="projects" class="section">
             <div class="search-container">
                 <span class="search-prefix">grep -i</span>
@@ -391,6 +465,50 @@
             </div>
             <div class="media-grid" id="project-container">
                 <div id="project-loading">> Parsing repository trees...</div>
+            </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact" class="section">
+            <div class="about-card" style="border-left-color: var(--accent);">
+                <h2>> Initialize Secure Transmission Channels</h2>
+                <p>Ensure all structural operational parameters are defined before transport confirmation.</p>
+                
+                <!-- NOTE: Replace YOUR_FORMSPREE_ID_HERE with your Formspree form ID once created -->
+                <form action="https://formspree.io/f/mzdqogkd" method="POST" class="form-grid">
+                    
+                    <!-- Hidden configuration field telling Formspree where to route the alerts -->
+                    <input type="hidden" name="_to" value="balaji.gandhi.m@gmail.com">
+                    
+                    <div class="form-group">
+                        <label for="first-name">First Name <span>*</span></label>
+                        <input type="text" id="first-name" name="first_name" class="form-control" placeholder="John" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="last-name">Last Name <span>*</span></label>
+                        <input type="text" id="last-name" name="last_name" class="form-control" placeholder="Doe" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address <span>*</span></label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="name@domain.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number <span>*</span></label>
+                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="+91 XXXXX XXXXX" required>
+                    </div>
+                    
+                    <div class="form-group form-full-width">
+                        <label for="message">Message Block <span>*</span></label>
+                        <textarea id="message" name="message" class="form-control" placeholder="Establish secure context packet details here..." required></textarea>
+                    </div>
+                    
+                    <div class="form-full-width">
+                        <button type="submit" class="submit-btn">$ dispatch --secure --payload</button>
+                    </div>
+                </form>
             </div>
         </section>
     </main>
