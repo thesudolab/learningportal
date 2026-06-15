@@ -595,7 +595,7 @@
 
         try {
             // Adjust the path below if you store your automated pdfs.json file elsewhere
-            const response = await fetch(`./blog/pdfs.json?_=${new Date().getTime()}`);
+            const response = await fetch(`./pdf/pdfs.json?_=${new Date().getTime()}`);
             if (!response.ok) throw new Error('PDF structural index missing');
 
             const pdfRegistry = await response.json();
