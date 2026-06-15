@@ -1,0 +1,89 @@
+name: Blog and PDF Artifact Synchronization Engine
+
+on:
+  push:
+    paths:
+      - 'pdf/**'
+      - 'blog/**.html'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Compile Document Registry Trees
+      run: |
+        node -e "
+        const fs = require('fs');
+        const path = require('path');
+        const { execSync } = require('child_process');
+
+        // --- 1. PDF COMPILATION ---
+        const pdfDir = path.join(process.cwd(), 'pdf');
+        if (fs.existsSync(pdfDir)) {
+          const files = fs.readdirSync(pdfDir).filter(file => file.endsWith('.pdf'));
+          const pdfArray = files.map(file => {
+            const filePath = path.join(pdfDir, file);
+            let dateStr = new Date().toISOString().split('T')[0];
+            try {
+              const gitDate = execSync(\`git log -1 --format=%as -- \"\${filePath}\"\`).toString().trim();
+              if (gitDate) dateStr = gitDate;
+            } catch (e) {
+              dateStr = fs.statSync(filePath).birthtime.toISOString().split('T')[0];
+            }
+            return { title: file, filename: file, date: dateStr };
+          });
+          pdfArray.sort((a, b) => b.date.localeCompare(a.date));
+          fs.writeFileSync(path.join(process.cwd(), 'blog', 'pdfs.json'), JSON.stringify(pdfArray, null, 2));
+        }
+
+        // --- 2. BLOG COMPILATION ---
+        const blogDir = path.join(process.cwd(), 'blog');
+        if (fs.existsSync(blogDir)) {
+          const files = fs.readdirSync(blogDir).filter(file => file.endsWith('.html') && file !== 'index.html');
+          const blogArray = files.map(file => {
+            const filePath = path.join(blogDir, file);
+            const htmlContent = fs.readFileSync(filePath, 'utf8');
+            const titleMatch = htmlContent.match(/<title>([\s\S]*?)<\/title>/i);
+            const descMatch = htmlContent.match(/<meta\s+name=\"description\"\s+content=\"([\s\S]*?)\"/i) || 
+                              htmlContent.match(/<meta\s+content=\"([\s\S]*?)\"\s+name=\"description\"/i);
+
+            const title = titleMatch ? titleMatch[1].trim() : file.replace('.html', '');
+            const description = descMatch ? descMatch[1].trim() : 'Security research module documentation.';
+            
+            let dateStr = new Date().toISOString().split('T')[0];
+            try {
+              const gitDate = execSync(\`git log -1 --format=%as -- \"\${filePath}\"\`).toString().trim();
+              if (gitDate) dateStr = gitDate;
+            } catch (e) {
+              dateStr = fs.statSync(filePath).mtime.toISOString().split('T')[0];
+            }
+            return { title, filename: file, date: dateStr, description, image: '' };
+          });
+          blogArray.sort((a, b) => b.date.localeCompare(a.date));
+          fs.writeFileSync(path.join(blogDir, 'blogs.json'), JSON.stringify(blogArray, null, 2));
+        }
+        "
+
+    - name: Commit and Push Document Maps
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git pull origin main --rebase
+        git add blog/pdfs.json blog/blogs.json
+        if ! git diff --staged --quiet; then
+          git commit -m "sys(automation): dynamic re-indexing of blogs and pdf stores [skip ci]"
+          git push origin main
+        fi

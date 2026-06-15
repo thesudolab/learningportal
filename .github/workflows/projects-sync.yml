@@ -1,0 +1,49 @@
+name: Engineering Repositories Sync
+
+on:
+  push:
+    paths:
+      - 'tabs/projects.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-projects:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Parse and Compile Tooling Registry
+      run: |
+        node -e "
+        const fs = require('fs');
+        const path = require('path');
+        const txtPath = path.join(process.cwd(), 'tabs', 'projects.txt');
+        
+        if (fs.existsSync(txtPath)) {
+          const content = fs.readFileSync(txtPath, 'utf8');
+          const projects = content.split('\n').map(l => l.trim()).filter(l => l.length > 0).map(line => {
+            const parts = line.split('||').map(p => p.trim());
+            return { 
+              link: parts[0] || '#', 
+              title: parts[1] || 'Untitled Tooling Project', 
+              language: parts[2] || 'Source', 
+              description: parts[3] || 'No core documentation available.' 
+            };
+          });
+          fs.writeFileSync(path.join(process.cwd(), 'projects.json'), JSON.stringify(projects, null, 2));
+        }
+        "
+
+    - name: Commit and Push Project Changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git pull origin main --rebase
+        git add projects.json
+        if ! git diff --staged --quiet; then
+          git commit -m "sys(automation): synced changes to projects.json [skip ci]"
+          git push origin main
+        fi
