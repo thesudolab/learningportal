@@ -768,3 +768,41 @@
 
 
 </body></html>
+
+<div id="security-ticker" style="background: #000; color: #10b981; padding: 1rem; border-radius: 4px; border: 1px solid #10b981; margin: 2rem 0; overflow: hidden; white-space: nowrap; font-family: 'Courier New', Courier, monospace; font-weight: 700; font-size: 1.1rem; text-shadow: 0 0 8px #10b981; position: relative;">
+    <div id="ticker-content" style="display: inline-block; padding-left: 100%; animation: scroll-left 30s linear infinite;">
+        > Synchronizing with CISA threat intelligence node...
+    </div>
+</div>
+
+<style>
+    @keyframes scroll-left {
+        from { transform: translateX(0); }
+        to { transform: translateX(-100%); }
+    }
+</style>
+//just a news scroll
+<script>
+    async function initTicker() {
+        const content = document.getElementById('ticker-content');
+        const rssUrl = "https://www.cisa.gov/cybersecurity-advisories/all.xml";
+        const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+        try {
+            const response = await fetch(api);
+            const data = await response.json();
+            
+            if (data.status === 'ok') {
+                const latest = data.items.slice(0, 5);
+                content.innerText = latest.map(item => `[!] ALERT: ${item.title}`).join(' | ');
+            } else {
+                content.innerText = "> [WARNING] Threat feed offline.";
+            }
+        } catch (e) {
+            content.innerText = "> [ERROR] Connection to intelligence center failed.";
+        }
+    }
+    
+    // Execute on page load
+    initTicker();
+</script>
