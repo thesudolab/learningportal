@@ -5,9 +5,9 @@ on:
     paths:
       - 'blog/**.html'
       - 'pdf/**'
-      - 'videos.txt'
-      - 'plugins.txt'
-      - 'projects.txt'
+      - 'tabs/videos.txt'
+      - 'tabs/plugins.txt'
+      - 'tabs/projects.txt'
 
 permissions:
   contents: write
@@ -36,7 +36,7 @@ jobs:
 
         // Core Helper: Gracefully parses custom structured text records into sanitised arrays
         function parseTxt(filename, mapper) {
-          const txtPath = path.join(process.cwd(), filename);
+          const txtPath = path.join(process.cwd(), 'tabs', filename);
           if (!fs.existsSync(txtPath)) return [];
           const content = fs.readFileSync(txtPath, 'utf8');
           return content.split('\n').map(l => l.trim()).filter(l => l.length > 0).map(mapper);
@@ -45,7 +45,7 @@ jobs:
 
         /* ==========================================================================
            SECTION 1: PRACTICAL LAB VIDEOS INDEXING
-           Source: /videos.txt
+           Source: /tabs/videos.txt
            Output: /videos.json
            
            TXT Layout Sample to Edit:
@@ -54,7 +54,7 @@ jobs:
            Example Line:
            dQw4w9WgXcQ || Exploiting Buffer Overflows || Deep dive into stack smash tactics.
            ========================================================================== */
-        console.log('Indexing practical lab logs...');
+        console.log('Indexing practical lab logs from tabs directory...');
         const videos = parseTxt('videos.txt', line => {
           const parts = line.split('||').map(p => p.trim());
           return { 
@@ -69,7 +69,7 @@ jobs:
 
         /* ==========================================================================
            SECTION 2: CHROME PLUGINS INDEXING
-           Source: /plugins.txt
+           Source: /tabs/plugins.txt
            Output: /plugins.json
            
            TXT Layout Sample to Edit:
@@ -78,7 +78,7 @@ jobs:
            Example Line:
            https://chromewebstore.google.com || DOM Scanner || v1.0.2 || Automates client side DOM flaw analysis.
            ========================================================================== */
-        console.log('Indexing web store plug-in modules...');
+        console.log('Indexing web store plug-in modules from tabs directory...');
         const plugins = parseTxt('plugins.txt', line => {
           const parts = line.split('||').map(p => p.trim());
           return { 
@@ -93,7 +93,7 @@ jobs:
 
         /* ==========================================================================
            SECTION 3: OPEN SOURCE PROJECTS INDEXING
-           Source: /projects.txt
+           Source: /tabs/projects.txt
            Output: /projects.json
            
            TXT Layout Sample to Edit:
@@ -102,7 +102,7 @@ jobs:
            Example Line:
            https://github.com || Strix Framework || Python / JS || Orchestration engine for localized LLMs.
            ========================================================================== */
-        console.log('Indexing open-source software project trees...');
+        console.log('Indexing open-source software project trees from tabs directory...');
         const projects = parseTxt('projects.txt', line => {
           const parts = line.split('||').map(p => p.trim());
           return { 
@@ -166,12 +166,10 @@ jobs:
         if (fs.existsSync(blogDir)) {
           const files = fs.readdirSync(blogDir).filter(file => file.endsWith('.html') && file !== 'index.html');
           
-          // Generate an array map structured by file creation or system read statistics
           const blogArray = files.map(file => {
             const filePath = path.join(blogDir, file);
             const content = fs.readFileSync(filePath, 'utf8');
             
-            // Regex extractions targeting Title & Description elements cleanly
             const titleMatch = content.match(/<title>([\s\S]*?)<\/title>/i);
             const descMatch = content.match(/<meta[^>]*name=[\"']description[\"'][^>]*content=[\"']([\s\S]*?)[\"']/i);
             
@@ -190,7 +188,6 @@ jobs:
             return { title, filename: file, date: dateStr, description: desc, image: '' };
           });
 
-          // Sort descending so freshest updates live at the top of our frontend grids
           blogArray.sort((a, b) => b.date.localeCompare(a.date));
           fs.writeFileSync(blogOutputFile, JSON.stringify(blogArray, null, 2));
         } else {
