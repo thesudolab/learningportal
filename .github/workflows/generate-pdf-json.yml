@@ -21,7 +21,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20' #  Fixed the node-node-version typo here
+        node-version: '20'
 
     - name: Generate pdfs.json
       run: |
@@ -30,33 +30,35 @@ jobs:
         const path = require('path');
         const { execSync } = require('child_process');
 
-        const pdfDir = path.join(process.cwd(), 'pdf');
+        // Dynamically find the correct folder path regardless of runtime environment
+        const pdfDir = path.resolve('pdf');
         const outputFile = path.join(pdfDir, 'pdfs.json');
 
+        console.log('Targeting Directory:', pdfDir);
+
         if (!fs.existsSync(pdfDir)) {
-          console.log('PDF folder does not exist.');
-          process.exit(0);
+          console.error('ERROR: The pdf directory was not found at:', pdfDir);
+          process.exit(1);
         }
 
-        // Filters out the pdfs.json file itself so it doesn't try to index it!
-        const files = fs.readdirSync(pdfDir).filter(file => file.endsWith('.pdf') && file !== 'pdfs.json');
+        // Read files and filter strictly for files ending in .pdf
+        const files = fs.readdirSync(pdfDir).filter(file => file.toLowerCase().endsWith('.pdf'));
+        console.log('Found PDF Files:', files);
         
         const pdfArray = files.map(file => {
           const filePath = path.join(pdfDir, file);
-          let dateStr = '2026-06-15'; // Default fallback matching current timeline
+          let dateStr = '2026-06-15'; // Accurate runtime calendar fallback
           
           try {
-            // Grab the actual git commit date of the file for precise records
             const gitDate = execSync(\`git log -1 --format=%as -- \"\${filePath}\"\`).toString().trim();
             if (gitDate) dateStr = gitDate;
           } catch (e) {
-            // If file is untracked/newly staged, fallback to system creation time
             const stat = fs.statSync(filePath);
             dateStr = stat.birthtime.toISOString().split('T')[0];
           }
 
           return {
-            title: file,
+            title: file.replace(/_/g, ' ').replace('.pdf', ''), // Formats file name beautifully for display
             filename: file,
             date: dateStr
           };
@@ -66,19 +68,22 @@ jobs:
         pdfArray.sort((a, b) => b.date.localeCompare(a.date));
 
         fs.writeFileSync(outputFile, JSON.stringify(pdfArray, null, 2));
-        console.log(\`Successfully generated index map with \${pdfArray.length} assets.\`);
+        console.log(\`Successfully compiled index map with \${pdfArray.length} assets.\`);
         "
 
     - name: Commit and Push Changes
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        
+        # Pull latest modifications to prevent state desync collisions
+        git pull origin main
+
         git add pdf/pdfs.json
         
-        # Only commit if changes actually exist to avoid loop deployment crashes
         if git diff --staged --quiet; then
           echo "No structural layout adjustments detected. Skipping deployment cycle."
         else
           git commit -m "sys(automation): dynamically updated structural pdf mappings [skip ci]"
-          git push
+          git push origin main
         fi
