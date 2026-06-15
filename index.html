@@ -94,7 +94,7 @@
             100% { opacity: 0.2; }
         }
 
-        /* --- LOGO ANIMATION STYLES --- */
+        /* --- LOGO ANIMATION STYLES (INFINITE LOOP) --- */
         .animated-logo-box {
             width: 130px; 
             height: auto;
@@ -106,20 +106,29 @@
             stroke-linecap: round;
             stroke-linejoin: round;
             fill: none;
-            stroke-dasharray: 4000;
-            stroke-dashoffset: 4000;
-            animation: drawThread 4s cubic-bezier(0.42, 0, 0.58, 1) forwards;
+            stroke-dasharray: 800;
+            stroke-dashoffset: 800;
+            /* Infinite linear tracing configuration */
+            animation: drawThread 8s linear infinite; 
         }
 
         .logo-subtext {
             font-family: var(--font);
             fill: var(--text-main);
             opacity: 0;
-            animation: fadeInText 1s ease-out 3s forwards; 
+            animation: fadeInText 1s ease-out 1.5s forwards; 
         }
 
         @keyframes drawThread {
-            to { stroke-dashoffset: 0; }
+            0% {
+                stroke-dashoffset: 800;
+            }
+            50% {
+                stroke-dashoffset: 0;
+            }
+            100% {
+                stroke-dashoffset: -800;
+            }
         }
 
         @keyframes fadeInText {
@@ -130,7 +139,8 @@
         nav {
             margin-top: 1.5rem;
             display: flex;
-            gap: 1rem;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .nav-btn {
@@ -236,14 +246,14 @@
             opacity: 0.7;
         }
 
-        /* Blog Section (Grid Dynamic Thumbnails) */
-        .blog-grid {
+        /* Media Container Grids (Blogs & Videos) */
+        .media-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
-        .blog-card {
+        .media-card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 4px;
@@ -255,19 +265,19 @@
             flex-direction: column;
         }
 
-        .blog-card:hover {
+        .media-card:hover {
             transform: translateY(-2px);
             border-color: var(--accent);
         }
 
-        .blog-card.hidden {
+        .media-card.hidden {
             display: none !important;
         }
 
-        .blog-thumb {
+        .media-thumb {
             width: 100%;
             height: 160px;
-            background: #eaeded;
+            background: #0d1117;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -275,39 +285,83 @@
             color: var(--text-muted);
             font-weight: bold;
             position: relative;
+            cursor: pointer;
         }
 
-        .blog-content {
+        /* Video Embed Aspect Container Box */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            width: 100%;
+            background: #000;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .media-content {
             padding: 1rem;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
 
-        .blog-date {
+        .media-date {
             font-size: 0.75rem;
             color: var(--accent);
             margin-bottom: 0.5rem;
         }
 
-        .blog-title {
+        .media-title {
             font-size: 1.1rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
             line-height: 1.3;
         }
 
-        .blog-desc {
+        .media-desc {
             font-size: 0.85rem;
             color: var(--text-muted);
             flex-grow: 1;
         }
 
-        #loading, #pdf-loading, .empty-search-msg, .empty-pdf-msg {
+        /* Play Button Trigger overlay for videos */
+        .play-overlay-btn {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.85);
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-family: var(--font);
+            pointer-events: none;
+            transition: all 0.2s;
+        }
+
+        .media-card:hover .play-overlay-btn {
+            background: var(--accent);
+            color: #0d1117;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        #loading, #pdf-loading, #video-loading, .empty-msg {
             grid-column: 1 / -1;
             text-align: center;
             padding: 2rem;
             color: var(--text-muted);
+        }
+        
+        .terminal-item.hidden {
+            display: none !important;
         }
 
         /* --- PDF LIST INTERFACE STYLING --- */
@@ -414,6 +468,7 @@
             <button class="nav-btn active" onclick="switchTab('about')">/about</button>
             <button class="nav-btn" onclick="switchTab('blog')">/blog</button>
             <button class="nav-btn" onclick="switchTab('pdf')">/pdf</button>
+            <button class="nav-btn" onclick="switchTab('videos')">/videos</button>
         </nav>
     </header>
 
@@ -444,17 +499,33 @@
                 <input type="text" id="blog-search" class="search-input" placeholder="'keyword' directory..." oninput="filterBlogs()">
             </div>
 
-            <div class="blog-grid" id="blog-container">
+            <div class="media-grid" id="blog-container">
                 <div id="loading">> Initializing directory scan...</div>
             </div>
         </section>
 
         <section id="pdf" class="section">
+            <div class="search-container">
+                <span class="search-prefix">grep -i</span>
+                <input type="text" id="pdf-search" class="search-input" placeholder="'document-name' directory..." oninput="filterPdfs()">
+            </div>
+
             <div class="pdf-list-wrapper">
                 <h2>> ls -la ./publications/</h2>
                 <ul class="terminal-list" id="pdf-container">
                     <div id="pdf-loading">> Indexing shared artifact stores...</div>
                 </ul>
+            </div>
+        </section>
+
+        <section id="videos" class="section">
+            <div class="search-container">
+                <span class="search-prefix">grep -i</span>
+                <input type="text" id="video-search" class="search-input" placeholder="'video-title' lab logs..." oninput="filterVideos()">
+            </div>
+
+            <div class="media-grid" id="video-container">
+                <div id="video-loading">> Compiling digital learning logs...</div>
             </div>
         </section>
     </main>
@@ -477,17 +548,35 @@
             loadBlogs();
         } else if (tabId === 'pdf') {
             loadPdfs();
+        } else if (tabId === 'videos') {
+            loadVideos();
         }
     }
 
-    // Global memory to preserve post logs for filtering
+    // Global memory registries to preserve datasets for real-time dynamic filtering
     let runtimeBlogRegistry = [];
+    let runtimePdfRegistry = [];
+    
+    // --- MANAGE YOUR YOUTUBE VIDEOS DICTIONARY HERE ---
+    const videoDataMatrix = [
+        {
+            title: "Advanced Buffer Overflow Exploitation Lab",
+            description: "Walking through stack smashing protection bypass operations inside an isolated x86 simulation framework.",
+            date: "2026-05-12",
+            youtubeId: "dQw4w9WgXcQ" 
+        },
+        {
+            title: "Cracking Active Directory Baselines",
+            description: "Deep dive demonstration mapping out silver ticket configurations and configuration audit frameworks.",
+            date: "2026-04-30",
+            youtubeId: "dQw4w9WgXcQ"
+        }
+    ];
 
     // Dynamic Static Blog Parser
     async function loadBlogs() {
         const container = document.getElementById('blog-container');
         const searchInput = document.getElementById('blog-search');
-        
         if(searchInput) searchInput.value = '';
 
         try {
@@ -498,7 +587,7 @@
             container.innerHTML = '';
             
             if(runtimeBlogRegistry.length === 0) {
-                container.innerHTML = '<div>[ Empty Directory ] No articles compiled yet.</div>';
+                container.innerHTML = '<div class="empty-msg">[ Empty Directory ] No articles compiled yet.</div>';
                 return;
             }
 
@@ -508,71 +597,45 @@
                     <path d='M0,40 H400 M0,80 H400 M0,120 H400 M0,160 H400' />
                     <path d='M50,0 V200 M100,0 V200 M150,0 V200 M200,0 V200 M250,0 V200 M300,0 V200 M350,0 V200' />
                 </g>
-                <g stroke='rgba(2, 132, 199, 0.3)' stroke-width='1.5' fill='none'>
-                    <path d='M50,80 L100,120 L250,120 L300,160' />
-                    <path d='M150,200 V120 L200,80 L350,80' />
-                </g>
                 <circle cx='200' cy='100' r='18' fill='#0d1117' stroke='#10b981' stroke-width='2' />
-                <polygon points='200,90 209,105 191,105' fill='none' stroke='#0284c7' stroke-width='2' />
                 <circle cx='200' cy='100' r='4' fill='#10b981' />
-                <circle cx='100' cy='120' r='3' fill='#0284c7' />
-                <circle cx='300' cy='160' r='3' fill='#10b981' />
-                <circle cx='150' cy='40' r='2.5' fill='#64748b' />
-            </svg>
-            `;
+            </svg>`;
 
             runtimeBlogRegistry.forEach(post => {
                 const card = document.createElement('a');
-                card.className = 'blog-card';
+                card.className = 'media-card';
                 card.href = `./blog/${post.filename}`;
-                
                 card.setAttribute('data-title', post.title.toLowerCase());
                 card.setAttribute('data-desc', (post.description || '').toLowerCase());
                 
-                const thumbnailStyle = post.image 
-                    ? `background-image:url(${post.image}); background-size:cover; background-position:center;` 
-                    : `background: #0d1117;`;
-
-                const thumbnailInnerContent = post.image ? '' : fallbackSvg;
+                const thumbnailStyle = post.image ? `background-image:url(${post.image}); background-size:cover; background-position:center;` : `background: #0d1117;`;
                 
                 card.innerHTML = `
-                    <div class="blog-thumb" style="${thumbnailStyle}">
-                        ${thumbnailInnerContent}
-                    </div>
-                    <div class="blog-content">
-                        <span class="blog-date">[🕒 ${post.date}]</span>
-                        <div class="blog-title">${post.title}</div>
-                        <p class="blog-desc">${post.description || 'No description available for this module.'}</p>
+                    <div class="media-thumb" style="${thumbnailStyle}">${post.image ? '' : fallbackSvg}</div>
+                    <div class="media-content">
+                        <span class="media-date">[🕒 ${post.date}]</span>
+                        <div class="media-title">${post.title}</div>
+                        <p class="media-desc">${post.description || 'No description available.'}</p>
                     </div>
                 `;
                 container.appendChild(card);
             });
-
         } catch (error) {
-            container.innerHTML = `
-                <div style="grid-column: 1/-1; padding: 1rem; border: 1px dashed #ef4444; color: #b91c1c;">
-                    [ERROR] Failed to scan blog tree directory index.<br>
-                    Verify that 'blog/blogs.json' exists and contains structural post metadata.
-                </div>`;
+            container.innerHTML = `<div class="empty-msg" style="color: #b91c1c;">[ERROR] Failed to scan blog tree directory index.</div>`;
         }
     }
 
-    // Client-Side Dynamic Real-Time Grep/Filter Engine
     function filterBlogs() {
         const query = document.getElementById('blog-search').value.toLowerCase().trim();
-        const cards = document.querySelectorAll('.blog-card');
+        const cards = document.querySelectorAll('#blog-container .media-card');
         const container = document.getElementById('blog-container');
         
-        const existingMsg = container.querySelector('.empty-search-msg');
+        const existingMsg = container.querySelector('.empty-msg');
         if (existingMsg) existingMsg.remove();
 
         let visibleCount = 0;
-
         cards.forEach(card => {
-            const title = card.getAttribute('data-title') || '';
-            const desc = card.getAttribute('data-desc') || '';
-            
-            if (title.includes(query) || desc.includes(query)) {
+            if (card.getAttribute('data-title').includes(query) || card.getAttribute('data-desc').includes(query)) {
                 card.classList.remove('hidden');
                 visibleCount++;
             } else {
@@ -581,51 +644,146 @@
         });
 
         if (visibleCount === 0 && runtimeBlogRegistry.length > 0) {
-            const errorFeedback = document.createElement('div');
-            errorFeedback.className = 'empty-search-msg';
-            errorFeedback.innerHTML = `> No modules matched criteria: [${query}]. Try scanning another pointer.`;
-            container.appendChild(errorFeedback);
+            const err = document.createElement('div'); err.className = 'empty-msg';
+            err.innerHTML = `> No modules matched criteria: [${query}].`;
+            container.appendChild(err);
         }
     }
 
-    // Dynamic Static PDF Parser (Hyperlink List Engine)
+    // Dynamic Static PDF Parser — Connected directly to absolute automated path mapping
     async function loadPdfs() {
         const container = document.getElementById('pdf-container');
+        const searchInput = document.getElementById('pdf-search');
+        if(searchInput) searchInput.value = '';
         container.innerHTML = '<div id="pdf-loading">> Indexing shared artifact stores...</div>';
 
         try {
-            // Adjust the path below if you store your automated pdfs.json file elsewhere
             const response = await fetch(`./pdf/pdfs.json?_=${new Date().getTime()}`);
-            if (!response.ok) throw new Error('PDF structural index missing');
+            if (!response.ok) throw new Error('PDF index missing');
 
-            const pdfRegistry = await response.json();
+            runtimePdfRegistry = await response.json();
             container.innerHTML = '';
 
-            if (pdfRegistry.length === 0) {
-                container.innerHTML = '<div class="empty-pdf-msg">total 0 <br> [ Empty Directory ] No advisory documentation loaded.</div>';
+            if (runtimePdfRegistry.length === 0) {
+                container.innerHTML = '<div class="empty-msg">total 0 <br> [ Empty Directory ] No documentation loaded.</div>';
                 return;
             }
 
-            pdfRegistry.forEach(pdf => {
+            runtimePdfRegistry.forEach(pdf => {
                 const li = document.createElement('li');
                 li.className = 'terminal-item';
-                
-                // Construct hyperlink entry targeting a clean modern blank background tab
+                li.setAttribute('data-title', pdf.title.toLowerCase());
                 li.innerHTML = `
-                    <span class="pdf-timestamp">[🕒 ${pdf.date || '0000-00-00'}]</span>
+                    <span class="pdf-timestamp">[🕒 ${pdf.date || '2026-06-15'}]</span>
                     <span style="color: var(--accent); margin-right: 0.5rem; user-select:none;">$ cat</span>
-                    <a href="./blog/${pdf.filename}" target="_blank" class="pdf-hyperlink">${pdf.title}</a>
+                    <a href="./pdf/${pdf.filename}" target="_blank" class="pdf-hyperlink">${pdf.title}</a>
                 `;
                 container.appendChild(li);
             });
-
         } catch (error) {
             container.innerHTML = `
-                <div style="padding: 1rem; border: 1px dashed #ef4444; color: #b91c1c; font-size: 0.9rem;">
+                <div class="empty-msg" style="color: #b91c1c; text-align: left; padding: 1rem; border: 1px dashed #ef4444;">
                     [ERROR] Failed to map filesystem structural array mappings.<br>
-                    Ensure 'pdf/pdfs.json' exists and contains array fields resembling: <br>
-                    [{"title": "advisory.pdf", "filename": "advisory.pdf", "date": "2026-06-15"}]
+                    Could not successfully locate './pdf/pdfs.json'. Check back in a moment or clear cache.
                 </div>`;
+        }
+    }
+
+    function filterPdfs() {
+        const query = document.getElementById('pdf-search').value.toLowerCase().trim();
+        const items = document.querySelectorAll('#pdf-container .terminal-item');
+        const container = document.getElementById('pdf-container');
+        
+        const existingMsg = container.querySelector('.empty-msg');
+        if (existingMsg) existingMsg.remove();
+
+        let visibleCount = 0;
+        items.forEach(item => {
+            if (item.getAttribute('data-title').includes(query)) {
+                item.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+
+        if (visibleCount === 0 && runtimePdfRegistry.length > 0) {
+            const err = document.createElement('div'); err.className = 'empty-msg';
+            err.innerHTML = `> No documents matched criteria: [${query}].`;
+            container.appendChild(err);
+        }
+    }
+
+    // --- PRACTICAL VIDEOS GENERATION ENGINE ---
+    function loadVideos() {
+        const container = document.getElementById('video-container');
+        const searchInput = document.getElementById('video-search');
+        if(searchInput) searchInput.value = '';
+        container.innerHTML = '';
+
+        if (videoDataMatrix.length === 0) {
+            container.innerHTML = '<div class="empty-msg">> No terminal video streams mapped to node asset indices.</div>';
+            return;
+        }
+
+        videoDataMatrix.forEach((video, index) => {
+            const card = document.createElement('div');
+            card.className = 'media-card';
+            card.setAttribute('data-title', video.title.toLowerCase());
+            card.setAttribute('data-desc', video.description.toLowerCase());
+
+            const thumbUrl = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
+
+            card.innerHTML = `
+                <div class="media-thumb" id="thumb-container-${index}" style="background-image: url('${thumbUrl}'); background-size: cover; background-position: center;" onclick="activateVideoPlayer(${index}, '${video.youtubeId}')">
+                    <div class="play-overlay-btn">$ run ./stream_logs</div>
+                </div>
+                <div class="media-content">
+                    <span class="media-date">[🕒 ${video.date}]</span>
+                    <div class="media-title">${video.title}</div>
+                    <p class="media-desc">${video.description}</p>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function activateVideoPlayer(index, videoId) {
+        const targetBox = document.getElementById(`thumb-container-${index}`);
+        targetBox.removeAttribute('onclick'); 
+        
+        targetBox.className = 'video-wrapper';
+        targetBox.style.backgroundImage = 'none';
+        targetBox.innerHTML = `
+            <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+            </iframe>
+        `;
+    }
+
+    function filterVideos() {
+        const query = document.getElementById('video-search').value.toLowerCase().trim();
+        const cards = document.querySelectorAll('#video-container .media-card');
+        const container = document.getElementById('video-container');
+
+        const existingMsg = container.querySelector('.empty-msg');
+        if (existingMsg) existingMsg.remove();
+
+        let visibleCount = 0;
+        cards.forEach(card => {
+            if (card.getAttribute('data-title').includes(query) || card.getAttribute('data-desc').includes(query)) {
+                card.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        if (visibleCount === 0 && videoDataMatrix.length > 0) {
+            const err = document.createElement('div'); err.className = 'empty-msg';
+            err.innerHTML = `> No video sessions match criteria: [${query}].`;
+            container.appendChild(err);
         }
     }
 </script>
