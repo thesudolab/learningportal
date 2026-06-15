@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'tabs/videos.txt'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -17,33 +18,40 @@ jobs:
 
     - name: Parse and Compile Video Logs
       run: |
-        node -e "
-        const fs = require('fs');
-        const path = require('path');
-        const txtPath = path.join(process.cwd(), 'tabs', 'videos.txt');
+        node -e '
+        const fs = require("fs");
+        const path = require("path");
+        const txtPath = path.join(process.cwd(), "tabs", "videos.txt");
         
         if (fs.existsSync(txtPath)) {
-          const content = fs.readFileSync(txtPath, 'utf8');
-          const videos = content.split('\n').map(l => l.trim()).filter(l => l.length > 0).map(line => {
-            const parts = line.split('||').map(p => p.trim());
+          const content = fs.readFileSync(txtPath, "utf8");
+          const videos = content.split("\n").map(l => l.trim()).filter(l => l.length > 0).map(line => {
+            const parts = line.split("||").map(p => p.trim());
             return { 
-              youtubeId: parts[0] || '', 
-              title: parts[1] || 'Untitled Video Log', 
-              description: parts[2] || 'No description provided.', 
-              date: new Date().toISOString().split('T')[0] 
+              youtubeId: parts[0] || "", 
+              title: parts[1] || "Untitled Video Log", 
+              description: parts[2] || "No description provided.", 
+              date: new Date().toISOString().split("T")[0] 
             };
           });
-          fs.writeFileSync(path.join(process.cwd(), 'videos.json'), JSON.stringify(videos, null, 2));
+          // FIXED: Saves directly into the /tabs/ directory
+          fs.writeFileSync(path.join(process.cwd(), "tabs", "videos.json"), JSON.stringify(videos, null, 2));
+          console.log("Successfully compiled tabs/videos.json");
+        } else {
+          console.error("Error: tabs/videos.txt not found.");
         }
-        "
+        '
 
     - name: Commit and Push Video Changes
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git pull origin main --rebase
-        git add videos.json
+        
+        # FIXED: Stages the correct file from the tabs directory
+        git add tabs/videos.json
+        
         if ! git diff --staged --quiet; then
-          git commit -m "sys(automation): synced changes to videos.json [skip ci]"
+          git commit -m "sys(automation): synced changes to tabs/videos.json [skip ci]"
           git push origin main
         fi
