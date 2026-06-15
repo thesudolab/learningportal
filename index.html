@@ -478,7 +478,7 @@
                 <h2>> Initialize Secure Transmission Channels</h2>
                 <p>Ensure all structural operational parameters are defined before transport confirmation.</p>
                 
-                <form id="contact-form" action="https://formspree.io/f/mzdqogkd" method="POST" class="form-grid">
+                <form id="contact-form" action="https://formspree.io/f/YOUR_FORMSPREE_ID_HERE" method="POST" class="form-grid">
                     <input type="hidden" name="_to" value="balaji.gandhi.m@gmail.com">
                     
                     <div class="form-group">
@@ -525,7 +525,6 @@
         
         document.getElementById(tabId).classList.add('active');
         
-        // Match navigation active state accurately
         const activeNavBtn = document.getElementById(`nav-btn-${tabId}`);
         if(activeNavBtn) {
             activeNavBtn.classList.add('active');
@@ -538,15 +537,15 @@
         if(tabId === 'projects') loadProjects();
     }
 
-    /* Intercept form submissions via AJAX to background dispatch while allowing strict HTML5 validation */
+    /* Intercept form submissions via background AJAX stream to preserve local domain routing integrity */
     document.getElementById('contact-form').addEventListener('submit', async function(event) {
-        event.preventDefault(); // Prevents landing/redirecting to Formspree
+        event.preventDefault(); // Prevents landing or external page redirects completely
         
         const form = event.target;
         const button = document.getElementById('submit-btn');
         const status = document.getElementById('form-status');
         
-        // Safety validation to prevent submissions targeting the template token placeholder
+        // Safety lock check preventing default structural placeholder targets
         if (form.action.includes("YOUR_FORMSPREE_ID_HERE")) {
             status.style.display = 'block';
             status.style.color = '#ef4444';
@@ -560,18 +559,15 @@
         status.style.color = 'var(--text-muted)';
         status.innerText = '> Broadcasting data packets...';
 
-        // Extract and map standard form input parameters cleanly to structured plain key-value objects
-        const formData = new FormData(form);
-        const dataPayload = {};
-        formData.forEach((value, key) => { dataPayload[key] = value; });
+        // Pack elements natively into standard multipart stream
+        const dataPayload = new FormData(form);
 
         try {
             const response = await fetch(form.action, {
                 method: form.method,
-                body: JSON.stringify(dataPayload),
+                body: dataPayload,
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json' 
+                    'Accept': 'application/json' // Crucial: Instructs Formspree server to reply with JSON instead of an external redirect
                 }
             });
 
@@ -580,20 +576,19 @@
                 status.innerText = '> [SUCCESS] Transmission acknowledged. Routing connection...';
                 form.reset();
                 
-                // Graceful routing layout switch to /about tab
+                // Keep inside domain and switch viewing window back to /about home tree view
                 setTimeout(() => {
                     status.style.display = 'none';
                     switchTab('about');
                 }, 1500);
             } else {
                 const errorData = await response.json().catch(() => ({}));
-                const detailedError = errorData.errors ? errorData.errors.map(e => e.message).join(', ') : 'Form ID configuration invalid.';
+                const detailedError = errorData.errors ? errorData.errors.map(e => e.message).join(', ') : 'Server validation rejected transport payload block.';
                 throw new Error(detailedError);
             }
         } catch (error) {
             status.style.color = '#ef4444';
-            // Output explicit structural engineering errors to the user terminal console interface
-            status.innerText = `[ERROR] Secure sync failed: ${error.message}`;
+            status.innerText = `[ERROR] Transport failed: ${error.message}`;
         } finally {
             button.disabled = false;
             button.innerText = '$ dispatch --secure --payload';
