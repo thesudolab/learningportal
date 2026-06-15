@@ -52,8 +52,10 @@ jobs:
           });
           
           pdfArray.sort((a, b) => b.date.localeCompare(a.date));
-          fs.writeFileSync(path.join(process.cwd(), "blog", "pdfs.json"), JSON.stringify(pdfArray, null, 2));
-          console.log("Generated pdfs.json successfully.");
+          
+          // UPDATED: Now writing directly into the pdf/ directory
+          fs.writeFileSync(path.join(pdfDir, "pdfs.json"), JSON.stringify(pdfArray, null, 2));
+          console.log("Generated pdf/pdfs.json successfully.");
         }
         '
 
@@ -62,7 +64,10 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git pull origin main --rebase
-        git add blog/pdfs.json
+        
+        # UPDATED: Tracking the new path
+        git add pdf/pdfs.json
+        
         if ! git diff --staged --quiet; then
           git commit -m "sys(automation): dynamic re-indexing of pdf store [skip ci]"
           git push origin main
