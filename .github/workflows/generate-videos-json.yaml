@@ -1,0 +1,68 @@
+name: Generate Videos Index JSON
+
+on:
+  push:
+    paths:
+      - 'videos.txt' # Triggers only when you modify your video list
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Compile videos.json
+      run: |
+        node -e "
+        const fs = require('fs');
+        const path = require('path');
+
+        const txtPath = path.join(process.cwd(), 'videos.txt');
+        const outputPath = path.join(process.cwd(), 'videos.json');
+
+        if (!fs.existsSync(txtPath)) {
+          console.log('videos.txt source file not found.');
+          fs.writeFileSync(outputPath, '[]');
+          process.exit(0);
+        }
+
+        const content = fs.readFileSync(txtPath, 'utf8');
+        const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+        const videoArray = lines.map(line => {
+          const parts = line.split('||').map(p => p.trim());
+          return {
+            youtubeId: parts[0] || '',
+            title: parts[1] || 'Untitled Video Log',
+            description: parts[2] || 'No description provided.',
+            date: new Date().toISOString().split('T')[0]
+          };
+        });
+
+        fs.writeFileSync(outputPath, JSON.stringify(videoArray, null, 2));
+        console.log('Successfully compiled video data map.');
+        "
+
+    - name: Commit and Push Changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git pull origin main
+        git add videos.json
+        
+        if git diff --staged --quiet; then
+          echo "No changes detected."
+        else
+          git commit -m "sys(automation): dynamically compiled practical videos map [skip ci]"
+          git push origin main
+        fi
