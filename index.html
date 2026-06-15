@@ -303,11 +303,61 @@
             flex-grow: 1;
         }
 
-        #loading, .empty-search-msg {
+        #loading, #pdf-loading, .empty-search-msg, .empty-pdf-msg {
             grid-column: 1 / -1;
             text-align: center;
             padding: 2rem;
             color: var(--text-muted);
+        }
+
+        /* --- PDF LIST INTERFACE STYLING --- */
+        .pdf-list-wrapper {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem 2rem;
+            margin-top: 1rem;
+        }
+        
+        .pdf-list-wrapper h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .terminal-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .terminal-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 0.6rem 0;
+            border-bottom: 1px dashed var(--border);
+            font-size: 0.95rem;
+        }
+
+        .terminal-item:last-child {
+            border-bottom: none;
+        }
+
+        .pdf-timestamp {
+            color: var(--text-muted);
+            margin-right: 1.5rem;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .pdf-hyperlink {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.1s;
+        }
+
+        .pdf-hyperlink:hover {
+            color: var(--accent);
+            text-decoration: underline;
         }
 
         footer {
@@ -363,6 +413,7 @@
         <nav>
             <button class="nav-btn active" onclick="switchTab('about')">/about</button>
             <button class="nav-btn" onclick="switchTab('blog')">/blog</button>
+            <button class="nav-btn" onclick="switchTab('pdf')">/pdf</button>
         </nav>
     </header>
 
@@ -397,6 +448,15 @@
                 <div id="loading">> Initializing directory scan...</div>
             </div>
         </section>
+
+        <section id="pdf" class="section">
+            <div class="pdf-list-wrapper">
+                <h2>> ls -la ./publications/</h2>
+                <ul class="terminal-list" id="pdf-container">
+                    <div id="pdf-loading">> Indexing shared artifact stores...</div>
+                </ul>
+            </div>
+        </section>
     </main>
 
     <footer>
@@ -415,6 +475,8 @@
 
         if(tabId === 'blog') {
             loadBlogs();
+        } else if (tabId === 'pdf') {
+            loadPdfs();
         }
     }
 
@@ -426,7 +488,6 @@
         const container = document.getElementById('blog-container');
         const searchInput = document.getElementById('blog-search');
         
-        // Reset search term when refreshing page directory view
         if(searchInput) searchInput.value = '';
 
         try {
@@ -441,7 +502,6 @@
                 return;
             }
 
-            // High-tech minimalist vector placeholder layout for fallback
             const fallbackSvg = `
             <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' style='background:#0d1117; width:100%; height:100%; display:block;'>
                 <g stroke='rgba(16, 185, 129, 0.08)' stroke-width='1' fill='none'>
@@ -466,7 +526,6 @@
                 card.className = 'blog-card';
                 card.href = `./blog/${post.filename}`;
                 
-                // Store lowercase fields for high-efficiency dynamic filtering comparisons
                 card.setAttribute('data-title', post.title.toLowerCase());
                 card.setAttribute('data-desc', (post.description || '').toLowerCase());
                 
@@ -504,7 +563,6 @@
         const cards = document.querySelectorAll('.blog-card');
         const container = document.getElementById('blog-container');
         
-        // Wipe existing temporary empty feedback messages if present
         const existingMsg = container.querySelector('.empty-search-msg');
         if (existingMsg) existingMsg.remove();
 
@@ -522,12 +580,52 @@
             }
         });
 
-        // Trigger dynamic system warning when search matches nothing
         if (visibleCount === 0 && runtimeBlogRegistry.length > 0) {
             const errorFeedback = document.createElement('div');
             errorFeedback.className = 'empty-search-msg';
             errorFeedback.innerHTML = `> No modules matched criteria: [${query}]. Try scanning another pointer.`;
             container.appendChild(errorFeedback);
+        }
+    }
+
+    // Dynamic Static PDF Parser (Hyperlink List Engine)
+    async function loadPdfs() {
+        const container = document.getElementById('pdf-container');
+        container.innerHTML = '<div id="pdf-loading">> Indexing shared artifact stores...</div>';
+
+        try {
+            // Adjust the path below if you store your automated pdfs.json file elsewhere
+            const response = await fetch(`./blog/pdfs.json?_=${new Date().getTime()}`);
+            if (!response.ok) throw new Error('PDF structural index missing');
+
+            const pdfRegistry = await response.json();
+            container.innerHTML = '';
+
+            if (pdfRegistry.length === 0) {
+                container.innerHTML = '<div class="empty-pdf-msg">total 0 <br> [ Empty Directory ] No advisory documentation loaded.</div>';
+                return;
+            }
+
+            pdfRegistry.forEach(pdf => {
+                const li = document.createElement('li');
+                li.className = 'terminal-item';
+                
+                // Construct hyperlink entry targeting a clean modern blank background tab
+                li.innerHTML = `
+                    <span class="pdf-timestamp">[🕒 ${pdf.date || '0000-00-00'}]</span>
+                    <span style="color: var(--accent); margin-right: 0.5rem; user-select:none;">$ cat</span>
+                    <a href="./blog/${pdf.filename}" target="_blank" class="pdf-hyperlink">${pdf.title}</a>
+                `;
+                container.appendChild(li);
+            });
+
+        } catch (error) {
+            container.innerHTML = `
+                <div style="padding: 1rem; border: 1px dashed #ef4444; color: #b91c1c; font-size: 0.9rem;">
+                    [ERROR] Failed to map filesystem structural array mappings.<br>
+                    Ensure 'blog/pdfs.json' exists and contains array fields resembling: <br>
+                    [{"title": "advisory.pdf", "filename": "advisory.pdf", "date": "2026-06-15"}]
+                </div>`;
         }
     }
 </script>
