@@ -1,8 +1,8 @@
 [
   {
     "link": "https://github.com",
-    "title": "Strix Pentest Manager",
-    "language": "Python / JS",
-    "description": "An automated security assessment framework structured for organizing API endpoints, handling custom payload uploads, and configuring localized LLM backends."
+    "title": "Burp Extension",
+    "language": "Java",
+    "description": "work in progress"
   }
 ]
