@@ -1,0 +1,8 @@
+[
+  {
+    "link": "https://chromewebstore.google.com/detail/contextmonkey/jgpijcomhpjmmcljilffbinihmilcmnf",
+    "title": "ContextMonkey",
+    "version": "v1.1.0",
+    "description": "A browser-based AI context bridge that exports, imports, and reconstructs conversation memory between ChatGPT, Claude, Gemini, and other LLM platforms."
+  }
+]
