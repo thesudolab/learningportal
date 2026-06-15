@@ -12,416 +12,72 @@
             --border: #e2e8f0;
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --accent: #10b981; /* Terminal Green */
-            --accent-blue: #0284c7; /* Console Blue */
+            --accent: #10b981;
+            --accent-blue: #0284c7;
             --font: 'Courier New', Courier, monospace;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg); color: var(--text-main); font-family: var(--font); line-height: 1.6; padding: 2rem 1rem; }
+        .container { max-width: 900px; margin: 0 auto; }
+        header { border-bottom: 2px dashed var(--border); padding-bottom: 2rem; margin-bottom: 2rem; }
+        .logo-area { display: flex; align-items: flex-start; justify-content: space-between; }
+        .logo { font-size: 1.8rem; font-weight: bold; color: var(--text-main); text-decoration: none; margin-top: 0.5rem; }
+        .logo span { color: var(--accent); }
+        .header-status-group { display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; }
+        .status-tag { font-size: 0.8rem; background: var(--surface); border: 1px solid var(--border); padding: 0.2rem 0.6rem; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem; }
+        .pulse { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: blink 1.5s infinite; }
+        @keyframes blink { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: var(--font);
-            line-height: 1.6;
-            padding: 2rem 1rem;
-        }
+        .animated-logo-box { width: 130px; height: auto; }
+        .animated-thread { stroke: #558B2F; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke-dasharray: 800; stroke-dashoffset: 800; animation: drawThread 8s linear infinite; }
+        .logo-subtext { font-family: var(--font); fill: var(--text-main); opacity: 0; animation: fadeInText 1s ease-out 1.5s forwards; }
+        @keyframes drawThread { 0% { stroke-dashoffset: 800; } 50% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -800; } }
+        @keyframes fadeInText { to { opacity: 1; } }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        nav { margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .nav-btn { background: var(--surface); border: 1px solid var(--border); padding: 0.5rem 1rem; cursor: pointer; font-family: var(--font); font-weight: bold; color: var(--text-muted); transition: all 0.2s; }
+        .nav-btn.active { background: var(--text-main); color: var(--bg); border-color: var(--text-main); }
+        .nav-btn:hover:not(.active) { border-color: var(--accent); color: var(--text-main); }
 
-        /* Hacker-themed Header */
-        header {
-            border-bottom: 2px dashed var(--border);
-            padding-bottom: 2rem;
-            margin-bottom: 2rem;
-        }
+        .section { display: none; }
+        .section.active { display: block; }
+        .about-card { background: var(--surface); border: 1px solid var(--border); padding: 2rem; border-left: 4px solid var(--accent-blue); margin-top: 1rem; }
+        .about-card h2 { margin-bottom: 1rem; font-size: 1.4rem; }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+        .service-item { background: #fff; border: 1px solid var(--border); padding: 1rem; }
+        .service-item h3 { font-size: 1rem; color: var(--accent-blue); margin-bottom: 0.5rem; }
 
-        .logo-area {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-        }
+        .search-container { margin-top: 1rem; margin-bottom: 1.5rem; width: 100%; display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 4px; }
+        .search-container:focus-within { border-color: var(--accent); }
+        .search-prefix { color: var(--accent); font-weight: bold; margin-right: 0.5rem; user-select: none; }
+        .search-input { width: 100%; background: transparent; border: none; outline: none; font-family: var(--font); font-size: 0.95rem; color: var(--text-main); }
 
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--text-main);
-            text-decoration: none;
-            margin-top: 0.5rem;
-        }
-
-        .logo span {
-            color: var(--accent);
-        }
-
-        /* Right Header Widget Group */
-        .header-status-group {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.75rem;
-        }
-
-        .status-tag {
-            font-size: 0.8rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 0.2rem 0.6rem;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .pulse {
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink {
-            0% { opacity: 0.2; }
-            50% { opacity: 1; }
-            100% { opacity: 0.2; }
-        }
-
-        /* --- LOGO ANIMATION STYLES (INFINITE LOOP) --- */
-        .animated-logo-box {
-            width: 130px; 
-            height: auto;
-        }
-
-        .animated-thread {
-            stroke: #558B2F; 
-            stroke-width: 4;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            fill: none;
-            stroke-dasharray: 800;
-            stroke-dashoffset: 800;
-            /* Infinite linear tracing configuration */
-            animation: drawThread 8s linear infinite; 
-        }
-
-        .logo-subtext {
-            font-family: var(--font);
-            fill: var(--text-main);
-            opacity: 0;
-            animation: fadeInText 1s ease-out 1.5s forwards; 
-        }
-
-        @keyframes drawThread {
-            0% {
-                stroke-dashoffset: 800;
-            }
-            50% {
-                stroke-dashoffset: 0;
-            }
-            100% {
-                stroke-dashoffset: -800;
-            }
-        }
-
-        @keyframes fadeInText {
-            to { opacity: 1; }
-        }
-
-        /* Navigation Terminal Tabs */
-        nav {
-            margin-top: 1.5rem;
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .nav-btn {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            font-family: var(--font);
-            font-weight: bold;
-            color: var(--text-muted);
-            transition: all 0.2s;
-        }
-
-        .nav-btn.active {
-            background: var(--text-main);
-            color: var(--bg);
-            border-color: var(--text-main);
-        }
-
-        .nav-btn:hover:not(.active) {
-            border-color: var(--accent);
-            color: var(--text-main);
-        }
-
-        /* Section Visibility */
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        /* About Section Design */
-        .about-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 2rem;
-            border-left: 4px solid var(--accent-blue);
-            margin-top: 1rem;
-        }
-
-        .about-card h2 {
-            margin-bottom: 1rem;
-            font-size: 1.4rem;
-        }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .service-item {
-            background: #fff;
-            border: 1px solid var(--border);
-            padding: 1rem;
-        }
-
-        .service-item h3 {
-            font-size: 1rem;
-            color: var(--accent-blue);
-            margin-bottom: 0.5rem;
-        }
-
-        /* Search Box Utility Element */
-        .search-container {
-            margin-top: 1rem;
-            margin-bottom: 1.5rem;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-        }
-
-        .search-container:focus-within {
-            border-color: var(--accent);
-        }
-
-        .search-prefix {
-            color: var(--accent);
-            font-weight: bold;
-            margin-right: 0.5rem;
-            user-select: none;
-        }
-
-        .search-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            font-family: var(--font);
-            font-size: 0.95rem;
-            color: var(--text-main);
-        }
-
-        .search-input::placeholder {
-            color: var(--text-muted);
-            opacity: 0.7;
-        }
-
-        /* Media Container Grids (Blogs & Videos) */
-        .media-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .media-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            overflow: hidden;
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.2s, border-color 0.2s;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .media-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent);
-        }
-
-        .media-card.hidden {
-            display: none !important;
-        }
-
-        .media-thumb {
-            width: 100%;
-            height: 160px;
-            background: #0d1117;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-muted);
-            font-weight: bold;
-            position: relative;
-            cursor: pointer;
-        }
-
-        /* Video Embed Aspect Container Box */
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
-            overflow: hidden;
-            width: 100%;
-            background: #000;
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-
-        .media-content {
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .media-date {
-            font-size: 0.75rem;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-        }
-
-        .media-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            line-height: 1.3;
-        }
-
-        .media-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            flex-grow: 1;
-        }
-
-        /* Play Button Trigger overlay for videos */
-        .play-overlay-btn {
-            position: absolute;
-            background: rgba(15, 23, 42, 0.85);
-            border: 2px solid var(--accent);
-            color: var(--accent);
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-family: var(--font);
-            pointer-events: none;
-            transition: all 0.2s;
-        }
-
-        .media-card:hover .play-overlay-btn {
-            background: var(--accent);
-            color: #0d1117;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-        }
-
-        #loading, #pdf-loading, #video-loading, .empty-msg {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-muted);
-        }
+        .media-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .media-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; text-decoration: none; color: inherit; transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column; }
+        .media-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+        .media-card.hidden { display: none !important; }
+        .media-thumb { width: 100%; height: 160px; background: #0d1117; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); color: var(--text-muted); font-weight: bold; position: relative; cursor: pointer; }
         
-        .terminal-item.hidden {
-            display: none !important;
-        }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 100%; background: #000; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .media-content { padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .media-date { font-size: 0.75rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .media-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 0.5rem; line-height: 1.3; }
+        .media-desc { font-size: 0.85rem; color: var(--text-muted); flex-grow: 1; }
+        .play-overlay-btn { position: absolute; background: rgba(15, 23, 42, 0.85); border: 2px solid var(--accent); color: var(--accent); padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.85rem; font-family: var(--font); pointer-events: none; transition: all 0.2s; }
+        .media-card:hover .play-overlay-btn { background: var(--accent); color: #0d1117; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
 
-        /* --- PDF LIST INTERFACE STYLING --- */
-        .pdf-list-wrapper {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--accent);
-            padding: 1.5rem 2rem;
-            margin-top: 1rem;
-        }
-        
-        .pdf-list-wrapper h2 {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .terminal-list {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .terminal-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 0.6rem 0;
-            border-bottom: 1px dashed var(--border);
-            font-size: 0.95rem;
-        }
-
-        .terminal-item:last-child {
-            border-bottom: none;
-        }
-
-        .pdf-timestamp {
-            color: var(--text-muted);
-            margin-right: 1.5rem;
-            white-space: nowrap;
-            user-select: none;
-        }
-
-        .pdf-hyperlink {
-            color: var(--accent-blue);
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.1s;
-        }
-
-        .pdf-hyperlink:hover {
-            color: var(--accent);
-            text-decoration: underline;
-        }
-
-        footer {
-            margin-top: 4rem;
-            border-top: 1px dashed var(--border);
-            padding-top: 1.5rem;
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
+        #loading, #pdf-loading, #video-loading, .empty-msg { grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-muted); }
+        .pdf-list-wrapper { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 1.5rem 2rem; margin-top: 1rem; }
+        .pdf-list-wrapper h2 { font-size: 1.3rem; margin-bottom: 1.5rem; }
+        .terminal-list { list-style: none; padding-left: 0; }
+        .terminal-item { display: flex; align-items: flex-start; padding: 0.6rem 0; border-bottom: 1px dashed var(--border); font-size: 0.95rem; }
+        .terminal-item.hidden { display: none !important; }
+        .pdf-timestamp { color: var(--text-muted); margin-right: 1.5rem; white-space: nowrap; user-select: none; }
+        .pdf-hyperlink { color: var(--accent-blue); text-decoration: none; font-weight: bold; transition: color 0.1s; }
+        .pdf-hyperlink:hover { color: var(--accent); text-decoration: underline; }
+        footer { margin-top: 4rem; border-top: 1px dashed var(--border); padding-top: 1.5rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -430,40 +86,16 @@
     <header>
         <div class="logo-area">
             <a href="#" class="logo">$ sudo ./<span>TheSudoLab</span></a>
-            
             <div class="header-status-group">
-                <div class="status-tag">
-                    <div class="pulse"></div> SecOps Online
-                </div>
-                
+                <div class="status-tag"><div class="pulse"></div> SecOps Online</div>
                 <div class="animated-logo-box">
                     <svg viewBox="150 140 550 400" xmlns="http://www.w3.org/2000/svg">
-                        <path class="animated-thread" d="
-                            M 250,250 
-                            C 220,200 170,220 180,260 
-                            C 190,300 240,240 250,280 
-                            C 260,320 200,350 180,310 
-                            C 160,270 210,230 230,210 
-                            C 260,180 320,220 310,270 
-                            C 300,320 240,310 230,340 
-                            C 210,380 290,380 310,330 
-                            C 320,300 300,270 330,270
-                            C 360,270 390,360 450,340 
-                            C 510,320 520,220 590,220
-                            C 660,220 680,290 660,340
-                            C 630,400 550,380 540,300
-                            C 530,240 610,240 630,280
-                            C 650,320 600,340 580,310
-                            C 560,280 580,260 600,270
-                            C 610,275 610,290 600,290
-                        " />
-                        
+                        <path class="animated-thread" d="M 250,250 C 220,200 170,220 180,260 C 190,300 240,240 250,280 C 260,320 200,350 180,310 C 160,270 210,230 230,210 C 260,180 320,220 310,270 C 300,320 240,310 230,340 C 210,380 290,380 310,330 C 320,300 300,270 330,270 C 360,270 390,360 450,340 C 510,320 520,220 590,220 C 660,220 680,290 660,340 C 630,400 550,380 540,300 C 530,240 610,240 630,280 C 650,320 600,340 580,310 C 560,280 580,260 600,270 C 610,275 610,290 600,290" />
                         <text class="logo-subtext" x="425" y="470" font-size="52" text-anchor="middle" font-weight="bold">TheSudoLab</text>
                     </svg>
                 </div>
             </div>
         </div>
-        
         <nav>
             <button class="nav-btn active" onclick="switchTab('about')">/about</button>
             <button class="nav-btn" onclick="switchTab('blog')">/blog</button>
@@ -477,9 +109,6 @@
             <div class="about-card">
                 <h2>> Who Are We?</h2>
                 <p><strong>TheSudoLab</strong> is a specialized security research collective offering adversary-simulation penetration testing, deep-dive vulnerability assessments, and strategic technology consulting.</p>
-                <br>
-                <p>We approach security from a builder-breaker perspective, auditing complex infrastructure, web APIs, and systems to harden modern enterprises against emergent threats.</p>
-                
                 <div class="services-grid">
                     <div class="service-item">
                         <h3>01 // Penetration Testing</h3>
@@ -498,7 +127,6 @@
                 <span class="search-prefix">grep -i</span>
                 <input type="text" id="blog-search" class="search-input" placeholder="'keyword' directory..." oninput="filterBlogs()">
             </div>
-
             <div class="media-grid" id="blog-container">
                 <div id="loading">> Initializing directory scan...</div>
             </div>
@@ -509,7 +137,6 @@
                 <span class="search-prefix">grep -i</span>
                 <input type="text" id="pdf-search" class="search-input" placeholder="'document-name' directory..." oninput="filterPdfs()">
             </div>
-
             <div class="pdf-list-wrapper">
                 <h2>> ls -la ./publications/</h2>
                 <ul class="terminal-list" id="pdf-container">
@@ -523,268 +150,135 @@
                 <span class="search-prefix">grep -i</span>
                 <input type="text" id="video-search" class="search-input" placeholder="'video-title' lab logs..." oninput="filterVideos()">
             </div>
-
             <div class="media-grid" id="video-container">
                 <div id="video-loading">> Compiling digital learning logs...</div>
             </div>
         </section>
     </main>
 
-    <footer>
-        &copy; 2026 TheSudoLab. All rights reserved. [Execution time: 0.004s]
-    </footer>
+    <footer>&copy; 2026 TheSudoLab. All rights reserved. [Execution time: 0.004s]</footer>
 </div>
 
 <script>
-    // Tab switching engine
     function switchTab(tabId) {
         document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-        
         document.getElementById(tabId).classList.add('active');
         event.currentTarget.classList.add('active');
 
-        if(tabId === 'blog') {
-            loadBlogs();
-        } else if (tabId === 'pdf') {
-            loadPdfs();
-        } else if (tabId === 'videos') {
-            loadVideos();
-        }
+        if(tabId === 'blog') loadBlogs();
+        if(tabId === 'pdf') loadPdfs();
+        if(tabId === 'videos') loadVideos();
     }
 
-    // Global memory registries to preserve datasets for real-time dynamic filtering
     let runtimeBlogRegistry = [];
     let runtimePdfRegistry = [];
-    
-    // --- MANAGE YOUR YOUTUBE VIDEOS DICTIONARY HERE ---
-    const videoDataMatrix = [
-        {
-            title: "Advanced Buffer Overflow Exploitation Lab",
-            description: "Walking through stack smashing protection bypass operations inside an isolated x86 simulation framework.",
-            date: "2026-05-12",
-            youtubeId: "dQw4w9WgXcQ" 
-        },
-        {
-            title: "Cracking Active Directory Baselines",
-            description: "Deep dive demonstration mapping out silver ticket configurations and configuration audit frameworks.",
-            date: "2026-04-30",
-            youtubeId: "dQw4w9WgXcQ"
-        }
-    ];
+    let runtimeVideoRegistry = [];
 
-    // Dynamic Static Blog Parser
     async function loadBlogs() {
         const container = document.getElementById('blog-container');
-        const searchInput = document.getElementById('blog-search');
-        if(searchInput) searchInput.value = '';
-
         try {
             const response = await fetch(`./blog/blogs.json?_=${new Date().getTime()}`);
-            if (!response.ok) throw new Error('Directory index missing');
-            
             runtimeBlogRegistry = await response.json();
             container.innerHTML = '';
-            
-            if(runtimeBlogRegistry.length === 0) {
-                container.innerHTML = '<div class="empty-msg">[ Empty Directory ] No articles compiled yet.</div>';
-                return;
-            }
-
-            const fallbackSvg = `
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' style='background:#0d1117; width:100%; height:100%; display:block;'>
-                <g stroke='rgba(16, 185, 129, 0.08)' stroke-width='1' fill='none'>
-                    <path d='M0,40 H400 M0,80 H400 M0,120 H400 M0,160 H400' />
-                    <path d='M50,0 V200 M100,0 V200 M150,0 V200 M200,0 V200 M250,0 V200 M300,0 V200 M350,0 V200' />
-                </g>
-                <circle cx='200' cy='100' r='18' fill='#0d1117' stroke='#10b981' stroke-width='2' />
-                <circle cx='200' cy='100' r='4' fill='#10b981' />
-            </svg>`;
-
+            if(runtimeBlogRegistry.length === 0) { container.innerHTML = '<div class="empty-msg">[ Empty Directory ]</div>'; return; }
             runtimeBlogRegistry.forEach(post => {
                 const card = document.createElement('a');
                 card.className = 'media-card';
                 card.href = `./blog/${post.filename}`;
                 card.setAttribute('data-title', post.title.toLowerCase());
-                card.setAttribute('data-desc', (post.description || '').toLowerCase());
-                
-                const thumbnailStyle = post.image ? `background-image:url(${post.image}); background-size:cover; background-position:center;` : `background: #0d1117;`;
-                
+                card.innerHTML = `<div class="media-thumb"></div><div class="media-content"><span class="media-date">[🕒 ${post.date}]</span><div class="media-title">${post.title}</div></div>`;
+                container.appendChild(card);
+            });
+        } catch (e) { container.innerHTML = '<div class="empty-msg">[ERROR] Directory scan failed.</div>'; }
+    }
+
+    function filterBlogs() {
+        const query = document.getElementById('blog-search').value.toLowerCase().trim();
+        document.querySelectorAll('#blog-container .media-card').forEach(card => {
+            card.getAttribute('data-title').includes(query) ? card.classList.remove('hidden') : card.classList.add('hidden');
+        });
+    }
+
+    async function loadPdfs() {
+        const container = document.getElementById('pdf-container');
+        try {
+            const response = await fetch(`./pdf/pdfs.json?_=${new Date().getTime()}`);
+            runtimePdfRegistry = await response.json();
+            container.innerHTML = '';
+            if(runtimePdfRegistry.length === 0) { container.innerHTML = '<div class="empty-msg">total 0</div>'; return; }
+            runtimePdfRegistry.forEach(pdf => {
+                const li = document.createElement('li');
+                li.className = 'terminal-item';
+                li.setAttribute('data-title', pdf.title.toLowerCase());
+                li.innerHTML = `<span class="pdf-timestamp">[🕒 ${pdf.date}]</span><span style="color:var(--accent); margin-right:0.5rem;">$ cat</span><a href="./pdf/${pdf.filename}" target="_blank" class="pdf-hyperlink">${pdf.title}</a>`;
+                container.appendChild(li);
+            });
+        } catch (e) { container.innerHTML = '<div class="empty-msg">[ERROR] Index parsing crash.</div>'; }
+    }
+
+    function filterPdfs() {
+        const query = document.getElementById('pdf-search').value.toLowerCase().trim();
+        document.querySelectorAll('#pdf-container .terminal-item').forEach(item => {
+            item.getAttribute('data-title').includes(query) ? item.classList.remove('hidden') : item.classList.add('hidden');
+        });
+    }
+
+    // --- FULLY AUTOMATED DYNAMIC VIDEO ENGINE ---
+    async function loadVideos() {
+        const container = document.getElementById('video-container');
+        container.innerHTML = '<div id="video-loading">> Compiling digital learning logs...</div>';
+        try {
+            const response = await fetch(`./videos.json?_=${new Date().getTime()}`);
+            runtimeVideoRegistry = await response.json();
+            container.innerHTML = '';
+
+            if (runtimeVideoRegistry.length === 0) {
+                container.innerHTML = '<div class="empty-msg">> No dynamic video logs tracked on asset index trees.</div>';
+                return;
+            }
+
+            runtimeVideoRegistry.forEach((video, index) => {
+                const card = document.createElement('div');
+                card.className = 'media-card';
+                card.setAttribute('data-title', video.title.toLowerCase());
+                card.setAttribute('data-desc', video.description.toLowerCase());
+                const thumbUrl = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
+
                 card.innerHTML = `
-                    <div class="media-thumb" style="${thumbnailStyle}">${post.image ? '' : fallbackSvg}</div>
+                    <div class="media-thumb" id="thumb-container-${index}" style="background-image: url('${thumbUrl}'); background-size: cover; background-position: center;" onclick="activateVideoPlayer(${index}, '${video.youtubeId}')">
+                        <div class="play-overlay-btn">$ run ./stream_logs</div>
+                    </div>
                     <div class="media-content">
-                        <span class="media-date">[🕒 ${post.date}]</span>
-                        <div class="media-title">${post.title}</div>
-                        <p class="media-desc">${post.description || 'No description available.'}</p>
+                        <span class="media-date">[🕒 ${video.date}]</span>
+                        <div class="media-title">${video.title}</div>
+                        <p class="media-desc">${video.description}</p>
                     </div>
                 `;
                 container.appendChild(card);
             });
         } catch (error) {
-            container.innerHTML = `<div class="empty-msg" style="color: #b91c1c;">[ERROR] Failed to scan blog tree directory index.</div>`;
+            container.innerHTML = '<div class="empty-msg">[ERROR] Failed to map local videos.json array structure.</div>';
         }
-    }
-
-    function filterBlogs() {
-        const query = document.getElementById('blog-search').value.toLowerCase().trim();
-        const cards = document.querySelectorAll('#blog-container .media-card');
-        const container = document.getElementById('blog-container');
-        
-        const existingMsg = container.querySelector('.empty-msg');
-        if (existingMsg) existingMsg.remove();
-
-        let visibleCount = 0;
-        cards.forEach(card => {
-            if (card.getAttribute('data-title').includes(query) || card.getAttribute('data-desc').includes(query)) {
-                card.classList.remove('hidden');
-                visibleCount++;
-            } else {
-                card.classList.add('hidden');
-            }
-        });
-
-        if (visibleCount === 0 && runtimeBlogRegistry.length > 0) {
-            const err = document.createElement('div'); err.className = 'empty-msg';
-            err.innerHTML = `> No modules matched criteria: [${query}].`;
-            container.appendChild(err);
-        }
-    }
-
-    // Dynamic Static PDF Parser — Connected directly to absolute automated path mapping
-    async function loadPdfs() {
-        const container = document.getElementById('pdf-container');
-        const searchInput = document.getElementById('pdf-search');
-        if(searchInput) searchInput.value = '';
-        container.innerHTML = '<div id="pdf-loading">> Indexing shared artifact stores...</div>';
-
-        try {
-            const response = await fetch(`./pdf/pdfs.json?_=${new Date().getTime()}`);
-            if (!response.ok) throw new Error('PDF index missing');
-
-            runtimePdfRegistry = await response.json();
-            container.innerHTML = '';
-
-            if (runtimePdfRegistry.length === 0) {
-                container.innerHTML = '<div class="empty-msg">total 0 <br> [ Empty Directory ] No documentation loaded.</div>';
-                return;
-            }
-
-            runtimePdfRegistry.forEach(pdf => {
-                const li = document.createElement('li');
-                li.className = 'terminal-item';
-                li.setAttribute('data-title', pdf.title.toLowerCase());
-                li.innerHTML = `
-                    <span class="pdf-timestamp">[🕒 ${pdf.date || '2026-06-15'}]</span>
-                    <span style="color: var(--accent); margin-right: 0.5rem; user-select:none;">$ cat</span>
-                    <a href="./pdf/${pdf.filename}" target="_blank" class="pdf-hyperlink">${pdf.title}</a>
-                `;
-                container.appendChild(li);
-            });
-        } catch (error) {
-            container.innerHTML = `
-                <div class="empty-msg" style="color: #b91c1c; text-align: left; padding: 1rem; border: 1px dashed #ef4444;">
-                    [ERROR] Failed to map filesystem structural array mappings.<br>
-                    Could not successfully locate './pdf/pdfs.json'. Check back in a moment or clear cache.
-                </div>`;
-        }
-    }
-
-    function filterPdfs() {
-        const query = document.getElementById('pdf-search').value.toLowerCase().trim();
-        const items = document.querySelectorAll('#pdf-container .terminal-item');
-        const container = document.getElementById('pdf-container');
-        
-        const existingMsg = container.querySelector('.empty-msg');
-        if (existingMsg) existingMsg.remove();
-
-        let visibleCount = 0;
-        items.forEach(item => {
-            if (item.getAttribute('data-title').includes(query)) {
-                item.classList.remove('hidden');
-                visibleCount++;
-            } else {
-                item.classList.add('hidden');
-            }
-        });
-
-        if (visibleCount === 0 && runtimePdfRegistry.length > 0) {
-            const err = document.createElement('div'); err.className = 'empty-msg';
-            err.innerHTML = `> No documents matched criteria: [${query}].`;
-            container.appendChild(err);
-        }
-    }
-
-    // --- PRACTICAL VIDEOS GENERATION ENGINE ---
-    function loadVideos() {
-        const container = document.getElementById('video-container');
-        const searchInput = document.getElementById('video-search');
-        if(searchInput) searchInput.value = '';
-        container.innerHTML = '';
-
-        if (videoDataMatrix.length === 0) {
-            container.innerHTML = '<div class="empty-msg">> No terminal video streams mapped to node asset indices.</div>';
-            return;
-        }
-
-        videoDataMatrix.forEach((video, index) => {
-            const card = document.createElement('div');
-            card.className = 'media-card';
-            card.setAttribute('data-title', video.title.toLowerCase());
-            card.setAttribute('data-desc', video.description.toLowerCase());
-
-            const thumbUrl = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
-
-            card.innerHTML = `
-                <div class="media-thumb" id="thumb-container-${index}" style="background-image: url('${thumbUrl}'); background-size: cover; background-position: center;" onclick="activateVideoPlayer(${index}, '${video.youtubeId}')">
-                    <div class="play-overlay-btn">$ run ./stream_logs</div>
-                </div>
-                <div class="media-content">
-                    <span class="media-date">[🕒 ${video.date}]</span>
-                    <div class="media-title">${video.title}</div>
-                    <p class="media-desc">${video.description}</p>
-                </div>
-            `;
-            container.appendChild(card);
-        });
     }
 
     function activateVideoPlayer(index, videoId) {
         const targetBox = document.getElementById(`thumb-container-${index}`);
         targetBox.removeAttribute('onclick'); 
-        
         targetBox.className = 'video-wrapper';
         targetBox.style.backgroundImage = 'none';
-        targetBox.innerHTML = `
-            <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-            </iframe>
-        `;
+        targetBox.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
     }
 
     function filterVideos() {
         const query = document.getElementById('video-search').value.toLowerCase().trim();
-        const cards = document.querySelectorAll('#video-container .media-card');
-        const container = document.getElementById('video-container');
-
-        const existingMsg = container.querySelector('.empty-msg');
-        if (existingMsg) existingMsg.remove();
-
-        let visibleCount = 0;
-        cards.forEach(card => {
+        document.querySelectorAll('#video-container .media-card').forEach(card => {
             if (card.getAttribute('data-title').includes(query) || card.getAttribute('data-desc').includes(query)) {
                 card.classList.remove('hidden');
-                visibleCount++;
             } else {
                 card.classList.add('hidden');
             }
         });
-
-        if (visibleCount === 0 && videoDataMatrix.length > 0) {
-            const err = document.createElement('div'); err.className = 'empty-msg';
-            err.innerHTML = `> No video sessions match criteria: [${query}].`;
-            container.appendChild(err);
-        }
     }
 </script>
 </body>
