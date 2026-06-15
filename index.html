@@ -546,17 +546,33 @@
         const button = document.getElementById('submit-btn');
         const status = document.getElementById('form-status');
         
+        // Safety validation to prevent submissions targeting the template token placeholder
+        if (form.action.includes("YOUR_FORMSPREE_ID_HERE")) {
+            status.style.display = 'block';
+            status.style.color = '#ef4444';
+            status.innerText = '[ERROR] Sync failed: Replace YOUR_FORMSPREE_ID_HERE with your target Formspree endpoint token.';
+            return;
+        }
+
         button.disabled = true;
         button.innerText = '$ negotiating_handshake...';
         status.style.display = 'block';
         status.style.color = 'var(--text-muted)';
         status.innerText = '> Broadcasting data packets...';
 
+        // Extract and map standard form input parameters cleanly to structured plain key-value objects
+        const formData = new FormData(form);
+        const dataPayload = {};
+        formData.forEach((value, key) => { dataPayload[key] = value; });
+
         try {
             const response = await fetch(form.action, {
                 method: form.method,
-                body: new FormData(form),
-                headers: { 'Accept': 'application/json' }
+                body: JSON.stringify(dataPayload),
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json' 
+                }
             });
 
             if (response.ok) {
@@ -564,17 +580,19 @@
                 status.innerText = '> [SUCCESS] Transmission acknowledged. Routing connection...';
                 form.reset();
                 
-                // Graceful artificial delayed response fallback before executing routing layout switch
+                // Graceful routing layout switch to /about tab
                 setTimeout(() => {
                     status.style.display = 'none';
                     switchTab('about');
                 }, 1500);
             } else {
-                const errorData = await response.json();
-                throw new Error(errorData.errors ? errorData.errors.map(e => e.message).join(', ') : 'Network operational execution crash.');
+                const errorData = await response.json().catch(() => ({}));
+                const detailedError = errorData.errors ? errorData.errors.map(e => e.message).join(', ') : 'Form ID configuration invalid.';
+                throw new Error(detailedError);
             }
         } catch (error) {
             status.style.color = '#ef4444';
+            // Output explicit structural engineering errors to the user terminal console interface
             status.innerText = `[ERROR] Secure sync failed: ${error.message}`;
         } finally {
             button.disabled = false;
