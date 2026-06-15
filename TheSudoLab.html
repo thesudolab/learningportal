@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<!-- saved from url=(0044)https://thesudolab.github.io/learningportal/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheSudoLab | Cyber Security &amp; Consulting</title>
+    <script src="./TheSudoLab _ Cyber Security &amp; Consulting_files/lucide.min.js.download"></script>
+    <style>
+        /* ==========================================================================
+           COLOR SCHEME CONFIGURATION: LIGHT MATRIX TERMINAL
+           Preserves original signature hacker green while setting background to white.
+           ========================================================================== */
+        :root {
+            --bg: #ffffff;             /* Main background forced to white */
+            --surface: #f8fafc;        /* Main terminal container box background */
+            --surface-card: #ffffff;   /* Inner interactive cards */
+            --border: #cbd5e1;         /* Defined boundaries for high visibility */
+            --text-main: #0f172a;      /* Deep slate dark text for readability */
+            --text-muted: #64748b;     /* Subtext color */
+            --accent: #10b981;         /* Original signature hacker green kept intact */
+            --accent-blue: #0284c7;    /* Adjusted blue highlight for white contrast backgrounds */
+            --font: 'Courier New', Courier, monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            background-color: var(--bg); 
+            color: var(--text-main); 
+            font-family: var(--font); 
+            line-height: 1.6; 
+            padding: 1rem; 
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        @media (min-width: 768px) {
+            body { padding: 3rem 2rem; }
+        }
+
+        /* Outer layout console wrapper balancing widescreen viewports symmetrically */
+        .container { 
+            max-width: 1200px; 
+            width: 100%;
+            margin: 0 auto;
+            background: var(--surface);
+            border: 2px solid var(--text-main);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1);
+        }
+
+        @media (min-width: 768px) {
+            .container { padding: 2.5rem; }
+        }
+
+        header { 
+            border-bottom: 2px dashed var(--border); 
+            padding-bottom: 2rem; 
+            margin-bottom: 2rem; 
+        }
+
+        .logo-area { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1.5rem;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .logo-area {
+                flex-direction: row; 
+                align-items: center;
+                text-align: left;
+            }
+        }
+
+        .logo { 
+            font-size: 1.6rem; 
+            font-weight: bold; 
+            color: var(--text-main); 
+            text-decoration: none; 
+            white-space: nowrap;
+        }
+
+        @media (min-width: 768px) {
+            .logo { font-size: 2.2rem; }
+        }
+
+        .logo span { color: var(--accent); text-shadow: 0 0 4px rgba(16, 185, 129, 0.2); }
+
+        .header-status-group { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 1rem;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .header-status-group {
+                align-items: flex-end; 
+                width: auto;
+            }
+        }
+
+        .status-tag { 
+            font-size: 0.8rem; 
+            background: var(--text-main); 
+            border: 1px solid var(--text-main); 
+            padding: 0.3rem 0.8rem; 
+            border-radius: 4px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 0.5rem; 
+            color: var(--accent);
+        }
+
+        .pulse { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: blink 1.5s infinite; box-shadow: 0 0 8px var(--accent); }
+        @keyframes blink { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
+
+        .animated-logo-box { 
+            width: 140px;
+            height: auto; 
+        }
+
+        .animated-thread { 
+            stroke: var(--accent); 
+            stroke-width: 5; 
+            stroke-linecap: round; 
+            stroke-linejoin: round; 
+            fill: none; 
+            stroke-dasharray: 800; 
+            stroke-dashoffset: 800; 
+            animation: drawThread 6s linear infinite; 
+        }
+
+        .logo-subtext { font-family: var(--font); fill: var(--text-main); opacity: 0; animation: fadeInText 1s ease-out 1s forwards; }
+        @keyframes drawThread { 0% { stroke-dashoffset: 800; } 50% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -800; } }
+        @keyframes fadeInText { to { opacity: 1; } }
+
+        nav { 
+            margin-top: 2rem; 
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 0.5rem; 
+            width: 100%;
+        }
+
+        @media (min-width: 480px) {
+            nav { grid-template-columns: repeat(3, 1fr); } 
+        }
+
+        @media (min-width: 768px) {
+            nav { grid-template-columns: repeat(7, 1fr); } 
+        }
+
+        .nav-btn { 
+            background: var(--surface-card); 
+            border: 1px solid var(--border); 
+            padding: 0.75rem 0.5rem; 
+            cursor: pointer; 
+            font-family: var(--font); 
+            font-weight: bold; 
+            color: var(--text-muted); 
+            transition: all 0.2s ease-in-out; 
+            font-size: 0.9rem;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        .nav-btn.active { 
+            background: var(--text-main); 
+            color: #ffffff; 
+            border-color: var(--text-main); 
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+        }
+        
+        .nav-btn:hover:not(.active) { 
+            border-color: var(--accent); 
+            color: var(--text-main); 
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .section { display: none; width: 100%; }
+        .section.active { display: block; animation: fadeInSection 0.4s ease; }
+        @keyframes fadeInSection { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .about-card { 
+            background: var(--surface-card); 
+            border: 1px solid var(--border); 
+            padding: 1.5rem; 
+            border-left: 4px solid var(--accent-blue); 
+            margin-top: 1rem; 
+            border-radius: 4px;
+        }
+
+        @media (min-width: 768px) { .about-card { padding: 2.5rem; } }
+        .about-card h2 { margin-bottom: 1.25rem; font-size: 1.4rem; color: var(--accent-blue); }
+        .about-card p { color: var(--text-main); font-size: 1rem; max-width: 1000px; }
+
+        .services-grid { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 1.5rem; 
+            margin-top: 2rem; 
+        }
+
+        @media (min-width: 768px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
+        
+        .service-item { 
+            background: var(--surface); 
+            border: 1px solid var(--border); 
+            padding: 1.5rem; 
+            border-radius: 4px;
+        }
+        .service-item h3 { font-size: 1.1rem; color: var(--accent); margin-bottom: 0.75rem; }
+
+        .search-container { 
+            margin-top: 1rem; 
+            margin-bottom: 2rem; 
+            width: 100%; 
+            display: flex; 
+            align-items: center; 
+            background: var(--surface-card); 
+            border: 1px solid var(--border); 
+            padding: 0.75rem 1rem; 
+            border-radius: 4px; 
+        }
+        .search-container:focus-within { border-color: var(--text-main); box-shadow: 0 0 10px rgba(15, 23, 42, 0.05); }
+        
+        .search-prefix { 
+            color: var(--accent); 
+            font-weight: bold; 
+            margin-right: 0.75rem; 
+            user-select: none; 
+            white-space: nowrap; /* Keeps 'grep -i' string aligned uniformly across mobile viewports */
+            display: inline-block;
+        }
+        
+        .search-input { width: 100%; background: transparent; border: none; outline: none; font-family: var(--font); font-size: 1rem; color: var(--text-main); }
+
+        /* ==========================================================================
+           CONTACT FORM THEMING & STATUS BADGES
+           ========================================================================== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        @media (min-width: 640px) {
+            .form-grid { grid-template-columns: repeat(2, 1fr); }
+            .form-full-width { grid-column: span 2; }
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+        .form-group label span {
+            color: #ef4444;
+        }
+        .form-control {
+            font-family: var(--font);
+            font-size: 1rem;
+            padding: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus {
+            border-color: var(--text-main);
+            background: var(--surface-card);
+        }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+        .submit-btn {
+            background: var(--text-main);
+            color: #ffffff;
+            border: 2px solid var(--text-main);
+            padding: 0.85rem 2rem;
+            font-family: var(--font);
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .submit-btn:hover {
+            background: var(--surface-card);
+            color: var(--text-main);
+            border-color: var(--text-main);
+        }
+        .submit-btn:disabled {
+            background: var(--border);
+            border-color: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+        .form-status {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .media-grid { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 1.5rem; 
+        }
+
+        @media (min-width: 640px) { .media-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .media-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .media-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; text-decoration: none; color: inherit; transition: all 0.2s ease; display: flex; flex-direction: column; }
+        .media-card:hover { transform: translateY(-4px); border-color: var(--text-main); box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08); }
+        .media-card.hidden { display: none !important; }
+        .media-thumb { width: 100%; height: 180px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); color: var(--text-muted); font-weight: bold; position: relative; cursor: pointer; }
+        
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 100%; background: #000; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .media-content { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .media-date { font-size: 0.8rem; color: var(--accent); margin-bottom: 0.5rem; font-weight: bold; }
+        .media-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 0.5rem; line-height: 1.4; color: var(--text-main); }
+        .media-desc { font-size: 0.9rem; color: var(--text-muted); flex-grow: 1; line-height: 1.5; }
+        
+        .terminal-action-btn {
+            margin-top: 1.25rem;
+            display: block;
+            background: var(--surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            text-align: center;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-radius: 4px;
+        }
+        .media-card:hover .terminal-action-btn {
+            background: var(--text-main);
+            color: #ffffff;
+            border-color: var(--text-main);
+        }
+
+        .play-overlay-btn { position: absolute; background: rgba(255, 255, 255, 0.95); border: 1px solid var(--text-main); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.85rem; font-family: var(--font); pointer-events: none; transition: all 0.2s; font-weight: bold; }
+        .media-card:hover .play-overlay-btn { background: var(--text-main); color: #ffffff; }
+
+        #loading, #pdf-loading, #video-loading, #plugin-loading, #project-loading, .empty-msg { grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted); font-size: 1rem; }
+        
+        .pdf-list-wrapper { background: var(--surface-card); border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 1.5rem; margin-top: 1rem; border-radius: 4px; }
+        @media (min-width: 768px) { .pdf-list-wrapper { padding: 2rem; } }
+        .pdf-list-wrapper h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--text-main); }
+        
+        .terminal-list { list-style: none; padding-left: 0; }
+        .terminal-item { display: flex; flex-direction: column; align-items: flex-start; padding: 1rem 0; border-bottom: 1px dashed var(--border); font-size: 0.95rem; gap: 0.5rem; }
+        @media (min-width: 640px) { .terminal-item { flex-direction: row; align-items: center; gap: 0; } }
+        .terminal-item.hidden { display: none !important; }
+        .pdf-timestamp { color: var(--text-muted); margin-right: 1.5rem; white-space: nowrap; user-select: none; font-weight: bold; }
+        .pdf-hyperlink { color: var(--accent-blue); text-decoration: none; font-weight: bold; transition: color 0.1s; word-break: break-all; }
+        .pdf-hyperlink:hover { color: var(--accent); text-decoration: underline; }
+        
+        footer { margin-top: 4rem; border-top: 1px dashed var(--border); padding-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="logo-area">
+            <a href="https://thesudolab.github.io/learningportal/#" class="logo">$ sudo ./<span>TheSudoLab</span></a>
+            <div class="header-status-group">
+                <div class="status-tag"><div class="pulse"></div> SecOps Online</div>
+                <div class="animated-logo-box">
+                    <svg viewBox="150 170 550 330" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                        <path class="animated-thread" d="M 250,250 C 220,200 170,220 180,260 C 190,300 240,240 250,280 C 260,320 200,350 180,310 C 160,270 210,230 230,210 C 260,180 320,220 310,270 C 300,320 240,310 230,340 C 210,380 290,380 310,330 C 320,300 300,270 330,270 C 360,270 390,360 450,340 C 510,320 520,220 590,220 C 660,220 680,290 660,340 C 630,400 550,380 540,300 C 530,240 610,240 630,280 C 650,320 600,340 580,310 C 560,280 580,260 600,270 C 610,275 610,290 600,290"></path>
+                        <text class="logo-subtext" x="425" y="450" font-size="52" text-anchor="middle" font-weight="bold">TheSudoLab</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <nav>
+            <button id="nav-btn-about" class="nav-btn active" onclick="switchTab(&#39;about&#39;)">/about</button>
+            <button id="nav-btn-blog" class="nav-btn" onclick="switchTab(&#39;blog&#39;)">/blog</button>
+            <button id="nav-btn-pdf" class="nav-btn" onclick="switchTab(&#39;pdf&#39;)">/pdf</button>
+            <button id="nav-btn-videos" class="nav-btn" onclick="switchTab(&#39;videos&#39;)">/videos</button>
+            <button id="nav-btn-plugins" class="nav-btn" onclick="switchTab(&#39;plugins&#39;)">/plugins</button>
+            <button id="nav-btn-projects" class="nav-btn" onclick="switchTab(&#39;projects&#39;)">/projects</button>
+            <button id="nav-btn-contact" class="nav-btn" onclick="switchTab(&#39;contact&#39;)">/contact</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="about" class="section active">
+            <div class="about-card">
+                <h2>&gt; Who Are We?</h2>
+                <p><strong>TheSudoLab</strong> is a specialized security research collective offering adversary-simulation penetration testing, deep-dive vulnerability assessments, and strategic technology consulting.</p>
+                <div class="services-grid">
+                    <div class="service-item">
+                        <h3>01 // Penetration Testing</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Comprehensive infrastructure, mobile application, and API vulnerability assessments tracking severe threat vectors.</p>
+                    </div>
+                    <div class="service-item">
+                        <h3>02 // Consulting Services</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Architecting secure baselines, access control paradigms, and threat modeling configurations for modern scale.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="blog" class="section">
+            <div class="search-container">
+                <span class="search-prefix">grep -i</span>
+                <input type="text" id="blog-search" class="search-input" placeholder="&#39;keyword&#39; directory..." oninput="filterBlogs()">
+            </div>
+            <div class="media-grid" id="blog-container"></div>
+        </section>
+
+        <section id="pdf" class="section">
+            <div class="search-container">
+                <span class="search-prefix">grep -i</span>
+                <input type="text" id="pdf-search" class="search-input" placeholder="&#39;document-name&#39; directory..." oninput="filterPdfs()">
+            </div>
+            <div class="pdf-list-wrapper">
+                <h2>&gt; ls -la ./publications/</h2>
+                <ul class="terminal-list" id="pdf-container"></ul>
+            </div>
+        </section>
+
+        <section id="videos" class="section">
+            <div class="search-container">
+                <span class="search-prefix">grep -i</span>
+                <input type="text" id="video-search" class="search-input" placeholder="&#39;video-title&#39; lab logs..." oninput="filterVideos()">
+            </div>
+            <div class="media-grid" id="video-container"></div>
+        </section>
+
+        <section id="plugins" class="section">
+            <div class="search-container">
+                <span class="search-prefix">grep -i</span>
+                <input type="text" id="plugin-search" class="search-input" placeholder="&#39;plugin-name&#39; registry..." oninput="filterPlugins()">
+            </div>
+            <div class="media-grid" id="plugin-container"></div>
+        </section>
+
+        <section id="projects" class="section">
+            <div class="search-container">
+                <span class="search-prefix">grep -i</span>
+                <input type="text" id="project-search" class="search-input" placeholder="&#39;project-name&#39; tree..." oninput="filterProjects()">
+            </div>
+            <div class="media-grid" id="project-container"></div>
+        </section>
+
+        <section id="contact" class="section">
+            <div class="about-card" style="border-left-color: var(--accent);">
+                <h2>&gt; Initialize Secure Transmission Channels</h2>
+                <p>Ensure all structural operational parameters are defined before transport confirmation.</p>
+                
+                <form id="contact-form" action="https://formspree.io/f/mzdqogkd" method="POST" class="form-grid">
+                    <div class="form-group">
+                        <label for="first-name">First Name <span>*</span></label>
+                        <input type="text" id="first-name" name="name" class="form-control" placeholder="John" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="last-name">Last Name <span>*</span></label>
+                        <input type="text" id="last-name" name="subject" class="form-control" placeholder="Doe" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address <span>*</span></label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="name@domain.com" required="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number <span>*</span></label>
+                        <input type="text" id="phone" name="telephone" class="form-control" placeholder="+91 XXXXX XXXXX" pattern="[0-9+ ]*" title="Only numbers, spaces, and the plus (+) symbol are allowed." required="">
+                    </div>
+                    
+                    <div class="form-group form-full-width">
+                        <label for="message">Message Block <span>*</span></label>
+                        <textarea id="message" name="message" class="form-control" placeholder="Establish secure context packet details here..." required=""></textarea>
+                    </div>
+                    
+                    <div class="form-full-width">
+                        <button type="submit" id="submit-btn" class="submit-btn">$ dispatch --secure --payload</button>
+                        <div id="form-status" class="form-status"></div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>© 2026 TheSudoLab. All rights reserved. [Execution time: 0.004s]</footer>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        
+        const activeNavBtn = document.getElementById(`nav-btn-${tabId}`);
+        if(activeNavBtn) {
+            activeNavBtn.classList.add('active');
+        }
+
+        if(tabId === 'blog') renderBlogs();
+        if(tabId === 'pdf') renderPdfs();
+        if(tabId === 'videos') renderVideos();
+        if(tabId === 'plugins') renderPlugins();
+        if(tabId === 'projects') renderProjects();
+    }
+
+    /* Intercept form submissions via background AJAX stream to preserve local domain routing integrity */
+    document.getElementById('contact-form').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevents landing or external page redirects completely
+        
+        const form = event.target;
+        const button = document.getElementById('submit-btn');
+        const status = document.getElementById('form-status');
+
+        button.disabled = true;
+        button.innerText = '$ negotiating_handshake...';
+        status.style.display = 'block';
+        status.style.color = 'var(--text-muted)';
+        status.innerText = '> Broadcasting data packets...';
+
+        // Pack elements natively into standard multipart stream
+        const dataPayload = new FormData(form);
+
+        try {
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: dataPayload,
+                headers: { 
+                    'Accept': 'application/json' // Crucial: Instructs Formspree server to reply with JSON instead of an external redirect
+                }
+            });
+
+            if (response.ok) {
+                status.style.color = 'var(--accent)';
+                status.innerText = '> [SUCCESS] Transmission acknowledged. Routing connection...';
+                form.reset();
+                
+                // Keep inside domain and switch viewing window back to /about home tree view
+                setTimeout(() => {
+                    status.style.display = 'none';
+                    switchTab('about');
+                }, 1500);
+            } else {
+                const errorData = await response.json().catch(() => ({}));
+                const detailedError = errorData.errors ? errorData.errors.map(e => e.message).join(', ') : 'Server validation rejected transport payload block.';
+                throw new Error(detailedError);
+            }
+        } catch (error) {
+            status.style.color = '#ef4444';
+            status.innerText = `[ERROR] Transport failed: ${error.message}`;
+        } finally {
+            button.disabled = false;
+            button.innerText = '$ dispatch --secure --payload';
+        }
+    });
+
+
+    // =========================================================================
+    // INLINE JSON DATA — replaces external file fetches so all tabs render
+    // without needing a server or any separate JSON files.
+    // To update content, edit the arrays below directly.
+    // =========================================================================
+
+    const INLINE_BLOGS = [
+        { "filename": "intro-to-linux-privesc.html", "title": "Introduction to Linux Privilege Escalation", "date": "2026-05-20" },
+        { "filename": "web-recon-techniques.html",   "title": "Web Reconnaissance Techniques for Bug Bounty", "date": "2026-04-15" },
+        { "filename": "active-directory-101.html",   "title": "Active Directory Attacks 101", "date": "2026-03-10" },
+        { "filename": "burp-suite-tips.html",        "title": "Burp Suite Pro Tips & Tricks", "date": "2026-02-22" },
+        { "filename": "ctf-writeup-picoctf.html",    "title": "CTF Writeup: PicoCTF 2026 Highlights", "date": "2026-01-30" },
+        { "filename": "osint-for-pentesters.html",   "title": "OSINT Techniques for Penetration Testers", "date": "2025-12-18" }
+    ];
+
+    const INLINE_PDFS = [
+        { "filename": "Linux_Commands_Beginner_Guide.pdf", "title": "Linux Commands Beginner Guide",           "date": "2026-06-15" },
+        { "filename": "Web_App_Pentest_Checklist.pdf",     "title": "Web Application Penetration Test Checklist", "date": "2026-05-01" },
+        { "filename": "Network_Scanning_with_Nmap.pdf",    "title": "Network Scanning with Nmap",              "date": "2026-03-28" },
+        { "filename": "OWASP_Top10_Summary.pdf",           "title": "OWASP Top 10 Summary Sheet",              "date": "2026-02-14" }
+    ];
+
+    const INLINE_VIDEOS = [
+        {
+            "youtubeId": "3Kq1MIfTWCE",
+            "title": "Linux Privilege Escalation — Full Walkthrough",
+            "description": "Step-by-step enumeration and exploitation of common Linux privilege escalation paths found in real-world assessments.",
+            "date": "2026-05-18"
+        },
+        {
+            "youtubeId": "WnN6dbos5u8",
+            "title": "Active Directory Penetration Testing",
+            "description": "Attacking and auditing Active Directory environments using BloodHound, Impacket, and CrackMapExec.",
+            "date": "2026-04-10"
+        },
+        {
+            "youtubeId": "s6Ovr1K0WY0",
+            "title": "Web Application Hacking with Burp Suite",
+            "description": "Practical demo covering SQLi, XSS, IDOR, and SSRF discovery using Burp Suite's professional scanner and manual techniques.",
+            "date": "2026-03-05"
+        },
+        {
+            "youtubeId": "Mn9pAStFoxU",
+            "title": "OSINT Recon Masterclass",
+            "description": "Gathering intelligence on targets using Shodan, Google Dorks, Maltego, and social media analysis tools.",
+            "date": "2026-01-22"
+        }
+    ];
+
+    const INLINE_PLUGINS = [
+        {
+            "title": "SudoProxy Toggle",
+            "version": "1.2.0",
+            "description": "One-click proxy switcher for Burp Suite and OWASP ZAP. Instantly routes browser traffic through your local intercept proxy without touching system settings.",
+            "link": "https://chrome.google.com/webstore"
+        },
+        {
+            "title": "HeaderSpy",
+            "version": "2.0.1",
+            "description": "Inspect, modify, and replay HTTP request and response headers directly from the browser toolbar. Essential for API testing and security research.",
+            "link": "https://chrome.google.com/webstore"
+        },
+        {
+            "title": "CookieScope",
+            "version": "1.0.5",
+            "description": "Visualize cookie attributes (Secure, HttpOnly, SameSite) for every domain on the current page and export them for reporting.",
+            "link": "https://chrome.google.com/webstore"
+        }
+    ];
+
+    const INLINE_PROJECTS = [
+        {
+            "title": "AutoRecon-NG",
+            "language": "Python",
+            "description": "Automated multi-phase network reconnaissance tool that chains Nmap, Gobuster, and Nikto scans and outputs a structured markdown report.",
+            "link": "https://github.com/TheSudoLab"
+        },
+        {
+            "title": "PhishKit Detector",
+            "language": "Python / YARA",
+            "description": "Static analysis engine that unpacks and fingerprints phishing kits using YARA rules, extracting credential-harvesting scripts and C2 endpoints.",
+            "link": "https://github.com/TheSudoLab"
+        },
+        {
+            "title": "ADExplorer",
+            "language": "PowerShell",
+            "description": "Lightweight Active Directory enumeration script for red team engagements — maps users, groups, GPOs, and ACL misconfigurations in seconds.",
+            "link": "https://github.com/TheSudoLab"
+        },
+        {
+            "title": "SecureDrop CLI",
+            "language": "Go",
+            "description": "Command-line client for encrypted file sharing between red team operators during engagements. End-to-end encrypted with zero server-side logging.",
+            "link": "https://github.com/TheSudoLab"
+        }
+    ];
+
+    // =========================================================================
+    // RENDER FUNCTIONS — read from inline data above, no fetch() needed
+    // =========================================================================
+
+    function renderBlogs() {
+        const container = document.getElementById('blog-container');
+        container.innerHTML = '';
+        if (INLINE_BLOGS.length === 0) { container.innerHTML = '<div class="empty-msg">[ Empty Directory ]</div>'; return; }
+        INLINE_BLOGS.forEach(post => {
+            const card = document.createElement('a');
+            card.className = 'media-card';
+            card.href = `./blog/${post.filename}`;
+            card.setAttribute('data-title', post.title.toLowerCase());
+            card.innerHTML = `
+                <div class="media-thumb" style="display:flex;align-items:center;justify-content:center;font-size:2rem;">📄</div>
+                <div class="media-content">
+                    <span class="media-date">[🕒 ${post.date}]</span>
+                    <div class="media-title">${post.title}</div>
+                </div>`;
+            container.appendChild(card);
+        });
+    }
+
+    function filterBlogs() {
+        const query = document.getElementById('blog-search').value.toLowerCase().trim();
+        document.querySelectorAll('#blog-container .media-card').forEach(card => {
+            card.getAttribute('data-title').includes(query) ? card.classList.remove('hidden') : card.classList.add('hidden');
+        });
+    }
+
+    function renderPdfs() {
+        const container = document.getElementById('pdf-container');
+        container.innerHTML = '';
+        if (INLINE_PDFS.length === 0) { container.innerHTML = '<div class="empty-msg">total 0</div>'; return; }
+        INLINE_PDFS.forEach(pdf => {
+            const li = document.createElement('li');
+            li.className = 'terminal-item';
+            li.setAttribute('data-title', pdf.title.toLowerCase());
+            li.innerHTML = `
+                <div style="display:flex; align-items:center;">
+                    <span class="pdf-timestamp">[🕒 ${pdf.date}]</span>
+                    <span style="color:var(--accent); margin-right:0.5rem;">$ cat</span>
+                </div>
+                <a href="./pdf/${pdf.filename}" target="_blank" class="pdf-hyperlink">${pdf.title}</a>`;
+            container.appendChild(li);
+        });
+    }
+
+    function filterPdfs() {
+        const query = document.getElementById('pdf-search').value.toLowerCase().trim();
+        document.querySelectorAll('#pdf-container .terminal-item').forEach(item => {
+            item.getAttribute('data-title').includes(query) ? item.classList.remove('hidden') : item.classList.add('hidden');
+        });
+    }
+
+    function renderVideos() {
+        const container = document.getElementById('video-container');
+        container.innerHTML = '';
+        if (INLINE_VIDEOS.length === 0) { container.innerHTML = '<div class="empty-msg">> No dynamic video logs tracked.</div>'; return; }
+        INLINE_VIDEOS.forEach((video, index) => {
+            const card = document.createElement('div');
+            card.className = 'media-card';
+            card.setAttribute('data-title', video.title.toLowerCase());
+            card.setAttribute('data-desc', video.description.toLowerCase());
+            const thumbUrl = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
+            card.innerHTML = `
+                <div class="media-thumb" id="thumb-container-${index}"
+                     style="background-image: url('${thumbUrl}'); background-size: cover; background-position: center;"
+                     onclick="activateVideoPlayer(${index}, '${video.youtubeId}')">
+                    <div class="play-overlay-btn">$ run ./stream_logs</div>
+                </div>
+                <div class="media-content">
+                    <span class="media-date">[🕒 ${video.date}]</span>
+                    <div class="media-title">${video.title}</div>
+                    <p class="media-desc">${video.description}</p>
+                </div>`;
+            container.appendChild(card);
+        });
+    }
+
+    function activateVideoPlayer(index, videoId) {
+        const targetBox = document.getElementById(`thumb-container-${index}`);
+        targetBox.removeAttribute('onclick');
+        targetBox.className = 'video-wrapper';
+        targetBox.style.backgroundImage = 'none';
+        targetBox.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    }
+
+    function filterVideos() {
+        const query = document.getElementById('video-search').value.toLowerCase().trim();
+        document.querySelectorAll('#video-container .media-card').forEach(card => {
+            (card.getAttribute('data-title').includes(query) || card.getAttribute('data-desc').includes(query))
+                ? card.classList.remove('hidden') : card.classList.add('hidden');
+        });
+    }
+
+    function renderPlugins() {
+        const container = document.getElementById('plugin-container');
+        container.innerHTML = '';
+        if (INLINE_PLUGINS.length === 0) { container.innerHTML = '<div class="empty-msg">> No published plugins on record.</div>'; return; }
+        INLINE_PLUGINS.forEach(plugin => {
+            const card = document.createElement('div');
+            card.className = 'media-card';
+            card.setAttribute('data-title', plugin.title.toLowerCase());
+            card.setAttribute('data-desc', plugin.description.toLowerCase());
+            card.innerHTML = `
+                <div class="media-content">
+                    <span class="media-date">[ Build: ${plugin.version} ]</span>
+                    <div class="media-title">${plugin.title}</div>
+                    <p class="media-desc">${plugin.description}</p>
+                    <a href="${plugin.link}" target="_blank" class="terminal-action-btn">> View inside Chrome Web Store</a>
+                </div>`;
+            container.appendChild(card);
+        });
+    }
+
+    function filterPlugins() {
+        const query = document.getElementById('plugin-search').value.toLowerCase().trim();
+        document.querySelectorAll('#plugin-container .media-card').forEach(card => {
+            (card.getAttribute('data-title').includes(query) || card.getAttribute('data-desc').includes(query))
+                ? card.classList.remove('hidden') : card.classList.add('hidden');
+        });
+    }
+
+    function renderProjects() {
+        const container = document.getElementById('project-container');
+        container.innerHTML = '';
+        if (INLINE_PROJECTS.length === 0) { container.innerHTML = '<div class="empty-msg">> No mapped operational projects.</div>'; return; }
+        INLINE_PROJECTS.forEach(project => {
+            const card = document.createElement('div');
+            card.className = 'media-card';
+            card.setAttribute('data-title', project.title.toLowerCase());
+            card.setAttribute('data-desc', project.description.toLowerCase());
+            card.innerHTML = `
+                <div class="media-content">
+                    <span class="media-date">[ Core Engine: ${project.language} ]</span>
+                    <div class="media-title">${project.title}</div>
+                    <p class="media-desc">${project.description}</p>
+                    <a href="${project.link}" target="_blank" class="terminal-action-btn">> Clone Repository Source</a>
+                </div>`;
+            container.appendChild(card);
+        });
+    }
+
+    function filterProjects() {
+        const query = document.getElementById('project-search').value.toLowerCase().trim();
+        document.querySelectorAll('#project-container .media-card').forEach(card => {
+            (card.getAttribute('data-title').includes(query) || card.getAttribute('data-desc').includes(query))
+                ? card.classList.remove('hidden') : card.classList.add('hidden');
+        });
+    }
+</script>
+
+
+</body></html>
