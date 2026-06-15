@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'tabs/plugins.txt'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -17,33 +18,40 @@ jobs:
 
     - name: Parse and Compile Extensions Registry
       run: |
-        node -e "
-        const fs = require('fs');
-        const path = require('path');
-        const txtPath = path.join(process.cwd(), 'tabs', 'plugins.txt');
+        node -e '
+        const fs = require("fs");
+        const path = require("path");
+        const txtPath = path.join(process.cwd(), "tabs", "plugins.txt");
         
         if (fs.existsSync(txtPath)) {
-          const content = fs.readFileSync(txtPath, 'utf8');
-          const plugins = content.split('\n').map(l => l.trim()).filter(l => l.length > 0).map(line => {
-            const parts = line.split('||').map(p => p.trim());
+          const content = fs.readFileSync(txtPath, "utf8");
+          const plugins = content.split("\n").map(l => l.trim()).filter(l => l.length > 0).map(line => {
+            const parts = line.split("||").map(p => p.trim());
             return { 
-              link: parts[0] || '#', 
-              title: parts[1] || 'Untitled Plugin Module', 
-              version: parts[2] || 'v1.0.0', 
-              description: parts[3] || 'No description provided.' 
+              link: parts[0] || "#", 
+              title: parts[1] || "Untitled Plugin Module", 
+              version: parts[2] || "v1.0.0", 
+              description: parts[3] || "No description provided." 
             };
           });
-          fs.writeFileSync(path.join(process.cwd(), 'plugins.json'), JSON.stringify(plugins, null, 2));
+          // FIXED: Now saves into the tabs directory explicitly
+          fs.writeFileSync(path.join(process.cwd(), "tabs", "plugins.json"), JSON.stringify(plugins, null, 2));
+          console.log("Successfully compiled tabs/plugins.json");
+        } else {
+          console.error("Error: tabs/plugins.txt not found.");
         }
-        "
+        '
 
     - name: Commit and Push Extension Changes
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git pull origin main --rebase
-        git add plugins.json
+        
+        # FIXED: Tracking the correct file path location
+        git add tabs/plugins.json
+        
         if ! git diff --staged --quiet; then
-          git commit -m "sys(automation): synced changes to plugins.json [skip ci]"
+          git commit -m "sys(automation): synced changes to tabs/plugins.json [skip ci]"
           git push origin main
         fi
