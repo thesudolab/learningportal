@@ -232,7 +232,16 @@
             border-radius: 4px; 
         }
         .search-container:focus-within { border-color: var(--text-main); box-shadow: 0 0 10px rgba(15, 23, 42, 0.05); }
-        .search-prefix { color: var(--accent); font-weight: bold; margin-right: 0.75rem; user-select: none; }
+        
+        .search-prefix { 
+            color: var(--accent); 
+            font-weight: bold; 
+            margin-right: 0.75rem; 
+            user-select: none; 
+            white-space: nowrap; /* Fixes 'grep -i' layout wrap on standard viewports */
+            display: inline-block;
+        }
+        
         .search-input { width: 100%; background: transparent; border: none; outline: none; font-family: var(--font); font-size: 1rem; color: var(--text-main); }
 
         /* ==========================================================================
@@ -479,7 +488,6 @@
                 <p>Ensure all structural operational parameters are defined before transport confirmation.</p>
                 
                 <form id="contact-form" action="https://formspree.io/f/mzdqogkd" method="POST" class="form-grid">
-                    
                     <div class="form-group">
                         <label for="first-name">First Name <span>*</span></label>
                         <input type="text" id="first-name" name="first_name" class="form-control" placeholder="John" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required>
@@ -543,14 +551,6 @@
         const form = event.target;
         const button = document.getElementById('submit-btn');
         const status = document.getElementById('form-status');
-        
-        // Safety lock check preventing default structural placeholder targets
-        if (form.action.includes("YOUR_FORMSPREE_ID_HERE")) {
-            status.style.display = 'block';
-            status.style.color = '#ef4444';
-            status.innerText = '[ERROR] Sync failed: Replace YOUR_FORMSPREE_ID_HERE with your target Formspree endpoint token.';
-            return;
-        }
 
         button.disabled = true;
         button.innerText = '$ negotiating_handshake...';
@@ -594,17 +594,31 @@
         }
     });
 
-    /* Helper function that maps lookups across standard root directory AND subfolder assets safely */
+    /* Robust data fetcher routing both your root workspace and your visible tabs folder safely */
     async function multiPathFetch(primaryUrl, fallbackUrl) {
-        let response;
-        try {
-            response = await fetch(`${primaryUrl}?_=${new Date().getTime()}`);
-            if (response.ok) return await response.json();
-        } catch(e) {}
+        const cacheBuster = `?_=${new Date().getTime()}`;
         
-        response = await fetch(`${fallbackUrl}?_=${new Date().getTime()}`);
-        if (!response.ok) throw new Error('Data fetch matrix sequence failure.');
-        return await response.json();
+        const cleanPrimary = primaryUrl.startsWith('./') ? primaryUrl : `./${primaryUrl}`;
+        const cleanFallback = fallbackUrl.startsWith('./') ? fallbackUrl : `./${fallbackUrl}`;
+
+        // Path Attempt 1: Root Workspace Node (e.g., ./videos.json)
+        try {
+            const response = await fetch(cleanPrimary + cacheBuster);
+            if (response.ok) return await response.json();
+        } catch (e) {
+            console.warn(`Primary route [${cleanPrimary}] not found. Swapping to fallback channel...`);
+        }
+        
+        // Path Attempt 2: Standard Tabs Folder Node (e.g., ./tabs/videos.json)
+        try {
+            const response = await fetch(cleanFallback + cacheBuster);
+            if (response.ok) return await response.json();
+        } catch (e) {
+            console.error(`Fallback route [${cleanFallback}] also failed to resolve.`);
+        }
+        
+        // Out of endpoints: Drop execution to trigger interface warning message
+        throw new Error('Data fetch matrix sequence failure.');
     }
 
     let runtimeBlogRegistry = [];
@@ -641,7 +655,7 @@
     async function loadPdfs() {
         const container = document.getElementById('pdf-container');
         try {
-            const response = await fetch(`./pdf/pdfs.json?_=${new Date().getTime()}`);
+            const response = await fetch(`./blog/pdfs.json?_=${new Date().getTime()}`);
             runtimePdfRegistry = await response.json();
             container.innerHTML = '';
             if(runtimePdfRegistry.length === 0) { container.innerHTML = '<div class="empty-msg">total 0</div>'; return; }
@@ -666,7 +680,7 @@
         const container = document.getElementById('video-container');
         container.innerHTML = '<div id="video-loading">> Compiling digital learning logs...</div>';
         try {
-            runtimeVideoRegistry = await multiPathFetch('./videos.json', './tabs/videos.json');
+            runtimeVideoRegistry = await multiPathFetch('videos.json', 'tabs/videos.json');
             container.innerHTML = '';
             if (runtimeVideoRegistry.length === 0) { container.innerHTML = '<div class="empty-msg">> No dynamic video logs tracked.</div>'; return; }
 
@@ -711,7 +725,7 @@
         const container = document.getElementById('plugin-container');
         container.innerHTML = '<div id="plugin-loading">> Fetching Web Store modules...</div>';
         try {
-            runtimePluginRegistry = await multiPathFetch('./plugins.json', './tabs/plugins.json');
+            runtimePluginRegistry = await multiPathFetch('plugins.json', 'tabs/plugins.json');
             container.innerHTML = '';
             if(runtimePluginRegistry.length === 0) { container.innerHTML = '<div class="empty-msg">> No published plugins on record.</div>'; return; }
 
@@ -744,7 +758,7 @@
         const container = document.getElementById('project-container');
         container.innerHTML = '<div id="project-loading">> Parsing repository trees...</div>';
         try {
-            runtimeProjectRegistry = await multiPathFetch('./projects.json', './tabs/projects.json');
+            runtimeProjectRegistry = await multiPathFetch('projects.json', 'tabs/projects.json');
             container.innerHTML = '';
             if(runtimeProjectRegistry.length === 0) { container.innerHTML = '<div class="empty-msg">> No mapped operational projects.</div>'; return; }
 
