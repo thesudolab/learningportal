@@ -400,6 +400,8 @@
                 </div>
             </div>
         </div>
+
+        
         <nav>
             <button id="nav-btn-about" class="nav-btn active" onclick="switchTab(&#39;about&#39;)">/about</button>
             <button id="nav-btn-blog" class="nav-btn" onclick="switchTab(&#39;blog&#39;)">/blog</button>
@@ -781,28 +783,4 @@
         to { transform: translateX(-100%); }
     }
 </style>
-//just a news scroll
-<script>
-    async function initTicker() {
-        const content = document.getElementById('ticker-content');
-        const rssUrl = "https://www.cisa.gov/cybersecurity-advisories/all.xml";
-        const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
 
-        try {
-            const response = await fetch(api);
-            const data = await response.json();
-            
-            if (data.status === 'ok') {
-                const latest = data.items.slice(0, 5);
-                content.innerText = latest.map(item => `[!] ALERT: ${item.title}`).join(' | ');
-            } else {
-                content.innerText = "> [WARNING] Threat feed offline.";
-            }
-        } catch (e) {
-            content.innerText = "> [ERROR] Connection to intelligence center failed.";
-        }
-    }
-    
-    // Execute on page load
-    initTicker();
-</script>
