@@ -31,8 +31,8 @@ jobs:
         const { execSync } = require('child_process');
 
         const pdfDir = path.join(process.cwd(), 'pdf');
-        // Fallback target to your blog directory where the frontend code expects it
-        const outputFile = path.join(process.cwd(), 'blog', 'pdfs.json');
+        // Fallback target to your pdf directory where the frontend code expects it
+        const outputFile = path.join(process.cwd(), 'pdf', 'pdfs.json');
 
         if (!fs.existsSync(pdfDir)) {
           console.log('PDF folder does not exist.');
@@ -73,7 +73,7 @@ jobs:
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git add blog/pdfs.json
+        git add pdf/pdfs.json
         
         # Only commit if changes actually exist to avoid loop deployment crashes
         if git diff --staged --quiet; then
