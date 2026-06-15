@@ -1,38 +1,13 @@
-name: Blog Artifact Synchronization Engine
-
-on:
-  push:
-    paths:
-      - 'blog/**.html'
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-jobs:
-  sync-blogs:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-
-    - name: Compile Blog Registry Tree
+- name: Compile Blog Registry Tree
       run: |
-        node -e '
+        node - <<EOF
         const fs = require("fs");
         const path = require("path");
         const { execSync } = require("child_process");
 
         function getGitDate(filePath, fallbackDate) {
           try {
-            const gitDate = execSync(`git log -1 --format=%as -- "${filePath}"`).toString().trim();
+            const gitDate = execSync('git log -1 --format=%as -- "' + filePath + '"').toString().trim();
             return gitDate || fallbackDate;
           } catch (e) {
             return fallbackDate;
@@ -47,8 +22,8 @@ jobs:
             const htmlContent = fs.readFileSync(filePath, "utf8");
             
             const titleMatch = htmlContent.match(/<title>([\s\S]*?)<\/title>/i);
-            const descMatch = htmlContent.match(/<meta\s+name=["\']description["\']\s+content=["\']([\s\S]*?)["\']/i) || 
-                              htmlContent.match(/<meta\s+content=["\']([\s\S]*?)["\']\s+name=["\']description["\']/i);
+            const descMatch = htmlContent.match(/<meta\s+name=["']description["']\s+content=["']([\s\S]*?)["']/i) || 
+                              htmlContent.match(/<meta\s+content=["']([\s\S]*?)["']\s+name=["']description["']/i);
 
             const title = titleMatch ? titleMatch[1].trim() : file.replace(".html", "");
             const description = descMatch ? descMatch[1].trim() : "Security research module documentation.";
@@ -64,15 +39,4 @@ jobs:
           fs.writeFileSync(path.join(blogDir, "blogs.json"), JSON.stringify(blogArray, null, 2));
           console.log("Generated blog/blogs.json successfully.");
         }
-        '
-
-    - name: Commit and Push Blog Map
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git pull origin main --rebase
-        git add blog/blogs.json
-        if ! git diff --staged --quiet; then
-          git commit -m "sys(automation): dynamic re-indexing of blog store [skip ci]"
-          git push origin main
-        fi
+        EOF
