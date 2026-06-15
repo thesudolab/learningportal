@@ -2,21 +2,21 @@ name: Consolidated Site Asset Indexer
 
 on:
   push:
-    paths:
-      - 'blog/**/*.html'
-      - 'pdf/**'
-      - 'tabs/videos.txt'
-      - 'tabs/plugins.txt'
-      - 'tabs/projects.txt'
+    branches:
+      - main
 
   schedule:
-    # Runs every day at 00:00 UTC
+    # Every day at 00:00 UTC
     - cron: '0 0 * * *'
 
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: asset-indexer
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -28,20 +28,34 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
 
-      # Your existing Node.js indexing script goes here
-      # (the script that generates:)
-      # tabs/videos.json
-      # tabs/plugins.json
-      # tabs/projects.json
-      # blog/blogs.json
-      # blog/pdfs.json
+      - name: Install Dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f package.json ]; then
+            npm install
+          else
+            echo "No package.json found. Skipping install."
+          fi
 
-      - name: Commit and Push Changes
+      - name: Generate Asset Indexes
+        run: |
+          echo "Generating indexes..."
+
+          # Replace with your actual indexing script
+          node scripts/generate-indexes.js
+
+      - name: Verify Generated Files
+        run: |
+          ls -lah tabs || true
+          ls -lah blog || true
+
+      - name: Commit and Push Updates
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -53,9 +67,10 @@ jobs:
             blog/blogs.json \
             blog/pdfs.json
 
-          if git diff --staged --quiet; then
+          if git diff --cached --quiet; then
             echo "No changes detected."
-          else
-            git commit -m "sys(automation): regenerate asset indexes [skip ci]"
-            git push
+            exit 0
           fi
+
+          git commit -m "sys(automation): regenerate asset indexes [skip ci]"
+          git push
