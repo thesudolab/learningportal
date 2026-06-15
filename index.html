@@ -516,321 +516,252 @@
 </div>
 
 <script>
+    // ── Tab switcher ──────────────────────────────────────────────────────────
     function switchTab(tabId) {
         document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-        
         document.getElementById(tabId).classList.add('active');
-        
-        const activeNavBtn = document.getElementById(`nav-btn-${tabId}`);
-        if(activeNavBtn) {
-            activeNavBtn.classList.add('active');
-        }
+        const btn = document.getElementById(`nav-btn-${tabId}`);
+        if (btn) btn.classList.add('active');
 
-        if(tabId === 'blog') renderBlogs();
-        if(tabId === 'pdf') renderPdfs();
-        if(tabId === 'videos') renderVideos();
-        if(tabId === 'plugins') renderPlugins();
-        if(tabId === 'projects') renderProjects();
+        if (tabId === 'blog')     loadBlogs();
+        if (tabId === 'pdf')      loadPdfs();
+        if (tabId === 'videos')   loadVideos();
+        if (tabId === 'plugins')  loadPlugins();
+        if (tabId === 'projects') loadProjects();
     }
 
-    /* Intercept form submissions via background AJAX stream to preserve local domain routing integrity */
+    // ── Contact form ──────────────────────────────────────────────────────────
     document.getElementById('contact-form').addEventListener('submit', async function(event) {
-        event.preventDefault(); // Prevents landing or external page redirects completely
-        
-        const form = event.target;
+        event.preventDefault();
+        const form   = event.target;
         const button = document.getElementById('submit-btn');
         const status = document.getElementById('form-status');
 
-        button.disabled = true;
+        button.disabled  = true;
         button.innerText = '$ negotiating_handshake...';
         status.style.display = 'block';
-        status.style.color = 'var(--text-muted)';
-        status.innerText = '> Broadcasting data packets...';
-
-        // Pack elements natively into standard multipart stream
-        const dataPayload = new FormData(form);
+        status.style.color   = 'var(--text-muted)';
+        status.innerText     = '> Broadcasting data packets...';
 
         try {
             const response = await fetch(form.action, {
                 method: form.method,
-                body: dataPayload,
-                headers: { 
-                    'Accept': 'application/json' // Crucial: Instructs Formspree server to reply with JSON instead of an external redirect
-                }
+                body: new FormData(form),
+                headers: { 'Accept': 'application/json' }
             });
-
             if (response.ok) {
                 status.style.color = 'var(--accent)';
-                status.innerText = '> [SUCCESS] Transmission acknowledged. Routing connection...';
+                status.innerText   = '> [SUCCESS] Transmission acknowledged. Routing connection...';
                 form.reset();
-                
-                // Keep inside domain and switch viewing window back to /about home tree view
-                setTimeout(() => {
-                    status.style.display = 'none';
-                    switchTab('about');
-                }, 1500);
+                setTimeout(() => { status.style.display = 'none'; switchTab('about'); }, 1500);
             } else {
-                const errorData = await response.json().catch(() => ({}));
-                const detailedError = errorData.errors ? errorData.errors.map(e => e.message).join(', ') : 'Server validation rejected transport payload block.';
-                throw new Error(detailedError);
+                const err = await response.json().catch(() => ({}));
+                throw new Error(err.errors ? err.errors.map(e => e.message).join(', ') : 'Server validation rejected transport payload block.');
             }
         } catch (error) {
             status.style.color = '#ef4444';
-            status.innerText = `[ERROR] Transport failed: ${error.message}`;
+            status.innerText   = `[ERROR] Transport failed: ${error.message}`;
         } finally {
-            button.disabled = false;
+            button.disabled  = false;
             button.innerText = '$ dispatch --secure --payload';
         }
     });
 
+    // ── Shared JSON fetcher ───────────────────────────────────────────────────
+    // Fetches a single, exact path. Throws if the response is not OK.
+    async function fetchJSON(path) {
+        const res = await fetch(`${path}?_=${Date.now()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status} – ${path}`);
+        return res.json();
+    }
 
-    // =========================================================================
-    // INLINE JSON DATA — replaces external file fetches so all tabs render
-    // without needing a server or any separate JSON files.
-    // To update content, edit the arrays below directly.
-    // =========================================================================
-
-    const INLINE_BLOGS = [
-        { "filename": "intro-to-linux-privesc.html", "title": "Introduction to Linux Privilege Escalation", "date": "2026-05-20" },
-        { "filename": "web-recon-techniques.html",   "title": "Web Reconnaissance Techniques for Bug Bounty", "date": "2026-04-15" },
-        { "filename": "active-directory-101.html",   "title": "Active Directory Attacks 101", "date": "2026-03-10" },
-        { "filename": "burp-suite-tips.html",        "title": "Burp Suite Pro Tips & Tricks", "date": "2026-02-22" },
-        { "filename": "ctf-writeup-picoctf.html",    "title": "CTF Writeup: PicoCTF 2026 Highlights", "date": "2026-01-30" },
-        { "filename": "osint-for-pentesters.html",   "title": "OSINT Techniques for Penetration Testers", "date": "2025-12-18" }
-    ];
-
-    const INLINE_PDFS = [
-        { "filename": "Linux_Commands_Beginner_Guide.pdf", "title": "Linux Commands Beginner Guide",           "date": "2026-06-15" },
-        { "filename": "Web_App_Pentest_Checklist.pdf",     "title": "Web Application Penetration Test Checklist", "date": "2026-05-01" },
-        { "filename": "Network_Scanning_with_Nmap.pdf",    "title": "Network Scanning with Nmap",              "date": "2026-03-28" },
-        { "filename": "OWASP_Top10_Summary.pdf",           "title": "OWASP Top 10 Summary Sheet",              "date": "2026-02-14" }
-    ];
-
-    const INLINE_VIDEOS = [
-        {
-            "youtubeId": "3Kq1MIfTWCE",
-            "title": "Linux Privilege Escalation — Full Walkthrough",
-            "description": "Step-by-step enumeration and exploitation of common Linux privilege escalation paths found in real-world assessments.",
-            "date": "2026-05-18"
-        },
-        {
-            "youtubeId": "WnN6dbos5u8",
-            "title": "Active Directory Penetration Testing",
-            "description": "Attacking and auditing Active Directory environments using BloodHound, Impacket, and CrackMapExec.",
-            "date": "2026-04-10"
-        },
-        {
-            "youtubeId": "s6Ovr1K0WY0",
-            "title": "Web Application Hacking with Burp Suite",
-            "description": "Practical demo covering SQLi, XSS, IDOR, and SSRF discovery using Burp Suite's professional scanner and manual techniques.",
-            "date": "2026-03-05"
-        },
-        {
-            "youtubeId": "Mn9pAStFoxU",
-            "title": "OSINT Recon Masterclass",
-            "description": "Gathering intelligence on targets using Shodan, Google Dorks, Maltego, and social media analysis tools.",
-            "date": "2026-01-22"
-        }
-    ];
-
-    const INLINE_PLUGINS = [
-        {
-            "title": "SudoProxy Toggle",
-            "version": "1.2.0",
-            "description": "One-click proxy switcher for Burp Suite and OWASP ZAP. Instantly routes browser traffic through your local intercept proxy without touching system settings.",
-            "link": "https://chrome.google.com/webstore"
-        },
-        {
-            "title": "HeaderSpy",
-            "version": "2.0.1",
-            "description": "Inspect, modify, and replay HTTP request and response headers directly from the browser toolbar. Essential for API testing and security research.",
-            "link": "https://chrome.google.com/webstore"
-        },
-        {
-            "title": "CookieScope",
-            "version": "1.0.5",
-            "description": "Visualize cookie attributes (Secure, HttpOnly, SameSite) for every domain on the current page and export them for reporting.",
-            "link": "https://chrome.google.com/webstore"
-        }
-    ];
-
-    const INLINE_PROJECTS = [
-        {
-            "title": "AutoRecon-NG",
-            "language": "Python",
-            "description": "Automated multi-phase network reconnaissance tool that chains Nmap, Gobuster, and Nikto scans and outputs a structured markdown report.",
-            "link": "https://github.com/TheSudoLab"
-        },
-        {
-            "title": "PhishKit Detector",
-            "language": "Python / YARA",
-            "description": "Static analysis engine that unpacks and fingerprints phishing kits using YARA rules, extracting credential-harvesting scripts and C2 endpoints.",
-            "link": "https://github.com/TheSudoLab"
-        },
-        {
-            "title": "ADExplorer",
-            "language": "PowerShell",
-            "description": "Lightweight Active Directory enumeration script for red team engagements — maps users, groups, GPOs, and ACL misconfigurations in seconds.",
-            "link": "https://github.com/TheSudoLab"
-        },
-        {
-            "title": "SecureDrop CLI",
-            "language": "Go",
-            "description": "Command-line client for encrypted file sharing between red team operators during engagements. End-to-end encrypted with zero server-side logging.",
-            "link": "https://github.com/TheSudoLab"
-        }
-    ];
-
-    // =========================================================================
-    // RENDER FUNCTIONS — read from inline data above, no fetch() needed
-    // =========================================================================
-
-    function renderBlogs() {
+    // ── /blog  →  blog/blogs.json ─────────────────────────────────────────────
+    async function loadBlogs() {
         const container = document.getElementById('blog-container');
-        container.innerHTML = '';
-        if (INLINE_BLOGS.length === 0) { container.innerHTML = '<div class="empty-msg">[ Empty Directory ]</div>'; return; }
-        INLINE_BLOGS.forEach(post => {
-            const card = document.createElement('a');
-            card.className = 'media-card';
-            card.href = `./blog/${post.filename}`;
-            card.setAttribute('data-title', post.title.toLowerCase());
-            card.innerHTML = `
-                <div class="media-thumb" style="display:flex;align-items:center;justify-content:center;font-size:2rem;">📄</div>
-                <div class="media-content">
-                    <span class="media-date">[🕒 ${post.date}]</span>
-                    <div class="media-title">${post.title}</div>
-                </div>`;
-            container.appendChild(card);
-        });
+        container.innerHTML = '<div class="empty-msg">> Scanning blog directory...</div>';
+        try {
+            const posts = await fetchJSON('./blog/blogs.json');
+            container.innerHTML = '';
+            if (!posts.length) { container.innerHTML = '<div class="empty-msg">[ Empty Directory ]</div>'; return; }
+            posts.forEach(post => {
+                const card = document.createElement('a');
+                card.className = 'media-card';
+                card.href = `./blog/${post.filename}`;
+                card.setAttribute('data-title', post.title.toLowerCase());
+                card.innerHTML = `
+                    <div class="media-thumb"></div>
+                    <div class="media-content">
+                        <span class="media-date">[🕒 ${post.date}]</span>
+                        <div class="media-title">${post.title}</div>
+                    </div>`;
+                container.appendChild(card);
+            });
+        } catch (e) {
+            container.innerHTML = '<div class="empty-msg">[ERROR] Directory scan failed.</div>';
+            console.error(e);
+        }
     }
 
     function filterBlogs() {
-        const query = document.getElementById('blog-search').value.toLowerCase().trim();
+        const q = document.getElementById('blog-search').value.toLowerCase().trim();
         document.querySelectorAll('#blog-container .media-card').forEach(card => {
-            card.getAttribute('data-title').includes(query) ? card.classList.remove('hidden') : card.classList.add('hidden');
+            card.classList.toggle('hidden', !card.getAttribute('data-title').includes(q));
         });
     }
 
-    function renderPdfs() {
+    // ── /pdf  →  pdf/pdfs.json ────────────────────────────────────────────────
+    async function loadPdfs() {
         const container = document.getElementById('pdf-container');
-        container.innerHTML = '';
-        if (INLINE_PDFS.length === 0) { container.innerHTML = '<div class="empty-msg">total 0</div>'; return; }
-        INLINE_PDFS.forEach(pdf => {
-            const li = document.createElement('li');
-            li.className = 'terminal-item';
-            li.setAttribute('data-title', pdf.title.toLowerCase());
-            li.innerHTML = `
-                <div style="display:flex; align-items:center;">
-                    <span class="pdf-timestamp">[🕒 ${pdf.date}]</span>
-                    <span style="color:var(--accent); margin-right:0.5rem;">$ cat</span>
-                </div>
-                <a href="./pdf/${pdf.filename}" target="_blank" class="pdf-hyperlink">${pdf.title}</a>`;
-            container.appendChild(li);
-        });
+        container.innerHTML = '<div class="empty-msg">> Indexing publications...</div>';
+        try {
+            const pdfs = await fetchJSON('./pdf/pdfs.json');
+            container.innerHTML = '';
+            if (!pdfs.length) { container.innerHTML = '<div class="empty-msg">total 0</div>'; return; }
+            pdfs.forEach(pdf => {
+                const li = document.createElement('li');
+                li.className = 'terminal-item';
+                li.setAttribute('data-title', pdf.title.toLowerCase());
+                li.innerHTML = `
+                    <div style="display:flex;align-items:center;">
+                        <span class="pdf-timestamp">[🕒 ${pdf.date}]</span>
+                        <span style="color:var(--accent);margin-right:0.5rem;">$ cat</span>
+                    </div>
+                    <a href="./pdf/${pdf.filename}" target="_blank" class="pdf-hyperlink">${pdf.title}</a>`;
+                container.appendChild(li);
+            });
+        } catch (e) {
+            container.innerHTML = '<div class="empty-msg">[ERROR] Index parsing crash.</div>';
+            console.error(e);
+        }
     }
 
     function filterPdfs() {
-        const query = document.getElementById('pdf-search').value.toLowerCase().trim();
+        const q = document.getElementById('pdf-search').value.toLowerCase().trim();
         document.querySelectorAll('#pdf-container .terminal-item').forEach(item => {
-            item.getAttribute('data-title').includes(query) ? item.classList.remove('hidden') : item.classList.add('hidden');
+            item.classList.toggle('hidden', !item.getAttribute('data-title').includes(q));
         });
     }
 
-    function renderVideos() {
+    // ── /videos  →  tabs/videos.json ─────────────────────────────────────────
+    async function loadVideos() {
         const container = document.getElementById('video-container');
-        container.innerHTML = '';
-        if (INLINE_VIDEOS.length === 0) { container.innerHTML = '<div class="empty-msg">> No dynamic video logs tracked.</div>'; return; }
-        INLINE_VIDEOS.forEach((video, index) => {
-            const card = document.createElement('div');
-            card.className = 'media-card';
-            card.setAttribute('data-title', video.title.toLowerCase());
-            card.setAttribute('data-desc', video.description.toLowerCase());
-            const thumbUrl = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
-            card.innerHTML = `
-                <div class="media-thumb" id="thumb-container-${index}"
-                     style="background-image: url('${thumbUrl}'); background-size: cover; background-position: center;"
-                     onclick="activateVideoPlayer(${index}, '${video.youtubeId}')">
-                    <div class="play-overlay-btn">$ run ./stream_logs</div>
-                </div>
-                <div class="media-content">
-                    <span class="media-date">[🕒 ${video.date}]</span>
-                    <div class="media-title">${video.title}</div>
-                    <p class="media-desc">${video.description}</p>
-                </div>`;
-            container.appendChild(card);
-        });
+        container.innerHTML = '<div class="empty-msg">> Compiling digital learning logs...</div>';
+        try {
+            const videos = await fetchJSON('./tabs/videos.json');
+            container.innerHTML = '';
+            if (!videos.length) { container.innerHTML = '<div class="empty-msg">> No dynamic video logs tracked.</div>'; return; }
+            videos.forEach((video, index) => {
+                const card = document.createElement('div');
+                card.className = 'media-card';
+                card.setAttribute('data-title', video.title.toLowerCase());
+                card.setAttribute('data-desc', video.description.toLowerCase());
+                card.innerHTML = `
+                    <div class="media-thumb" id="thumb-container-${index}"
+                         style="background-image:url('https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg');background-size:cover;background-position:center;"
+                         onclick="activateVideoPlayer(${index}, '${video.youtubeId}')">
+                        <div class="play-overlay-btn">$ run ./stream_logs</div>
+                    </div>
+                    <div class="media-content">
+                        <span class="media-date">[🕒 ${video.date}]</span>
+                        <div class="media-title">${video.title}</div>
+                        <p class="media-desc">${video.description}</p>
+                    </div>`;
+                container.appendChild(card);
+            });
+        } catch (e) {
+            container.innerHTML = '<div class="empty-msg">[ERROR] Failed to load tabs/videos.json.</div>';
+            console.error(e);
+        }
     }
 
     function activateVideoPlayer(index, videoId) {
-        const targetBox = document.getElementById(`thumb-container-${index}`);
-        targetBox.removeAttribute('onclick');
-        targetBox.className = 'video-wrapper';
-        targetBox.style.backgroundImage = 'none';
-        targetBox.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        const box = document.getElementById(`thumb-container-${index}`);
+        box.removeAttribute('onclick');
+        box.className = 'video-wrapper';
+        box.style.backgroundImage = 'none';
+        box.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>`;
     }
 
     function filterVideos() {
-        const query = document.getElementById('video-search').value.toLowerCase().trim();
+        const q = document.getElementById('video-search').value.toLowerCase().trim();
         document.querySelectorAll('#video-container .media-card').forEach(card => {
-            (card.getAttribute('data-title').includes(query) || card.getAttribute('data-desc').includes(query))
-                ? card.classList.remove('hidden') : card.classList.add('hidden');
+            card.classList.toggle('hidden',
+                !card.getAttribute('data-title').includes(q) && !card.getAttribute('data-desc').includes(q));
         });
     }
 
-    function renderPlugins() {
+    // ── /plugins  →  tabs/plugins.json ───────────────────────────────────────
+    async function loadPlugins() {
         const container = document.getElementById('plugin-container');
-        container.innerHTML = '';
-        if (INLINE_PLUGINS.length === 0) { container.innerHTML = '<div class="empty-msg">> No published plugins on record.</div>'; return; }
-        INLINE_PLUGINS.forEach(plugin => {
-            const card = document.createElement('div');
-            card.className = 'media-card';
-            card.setAttribute('data-title', plugin.title.toLowerCase());
-            card.setAttribute('data-desc', plugin.description.toLowerCase());
-            card.innerHTML = `
-                <div class="media-content">
-                    <span class="media-date">[ Build: ${plugin.version} ]</span>
-                    <div class="media-title">${plugin.title}</div>
-                    <p class="media-desc">${plugin.description}</p>
-                    <a href="${plugin.link}" target="_blank" class="terminal-action-btn">> View inside Chrome Web Store</a>
-                </div>`;
-            container.appendChild(card);
-        });
+        container.innerHTML = '<div class="empty-msg">> Fetching Web Store modules...</div>';
+        try {
+            const plugins = await fetchJSON('./tabs/plugins.json');
+            container.innerHTML = '';
+            if (!plugins.length) { container.innerHTML = '<div class="empty-msg">> No published plugins on record.</div>'; return; }
+            plugins.forEach(plugin => {
+                const card = document.createElement('div');
+                card.className = 'media-card';
+                card.setAttribute('data-title', plugin.title.toLowerCase());
+                card.setAttribute('data-desc', plugin.description.toLowerCase());
+                card.innerHTML = `
+                    <div class="media-content">
+                        <span class="media-date">[ Build: ${plugin.version} ]</span>
+                        <div class="media-title">${plugin.title}</div>
+                        <p class="media-desc">${plugin.description}</p>
+                        <a href="${plugin.link}" target="_blank" class="terminal-action-btn">> View inside Chrome Web Store</a>
+                    </div>`;
+                container.appendChild(card);
+            });
+        } catch (e) {
+            container.innerHTML = '<div class="empty-msg">[ERROR] Failed to load tabs/plugins.json.</div>';
+            console.error(e);
+        }
     }
 
     function filterPlugins() {
-        const query = document.getElementById('plugin-search').value.toLowerCase().trim();
+        const q = document.getElementById('plugin-search').value.toLowerCase().trim();
         document.querySelectorAll('#plugin-container .media-card').forEach(card => {
-            (card.getAttribute('data-title').includes(query) || card.getAttribute('data-desc').includes(query))
-                ? card.classList.remove('hidden') : card.classList.add('hidden');
+            card.classList.toggle('hidden',
+                !card.getAttribute('data-title').includes(q) && !card.getAttribute('data-desc').includes(q));
         });
     }
 
-    function renderProjects() {
+    // ── /projects  →  tabs/projects.json ─────────────────────────────────────
+    async function loadProjects() {
         const container = document.getElementById('project-container');
-        container.innerHTML = '';
-        if (INLINE_PROJECTS.length === 0) { container.innerHTML = '<div class="empty-msg">> No mapped operational projects.</div>'; return; }
-        INLINE_PROJECTS.forEach(project => {
-            const card = document.createElement('div');
-            card.className = 'media-card';
-            card.setAttribute('data-title', project.title.toLowerCase());
-            card.setAttribute('data-desc', project.description.toLowerCase());
-            card.innerHTML = `
-                <div class="media-content">
-                    <span class="media-date">[ Core Engine: ${project.language} ]</span>
-                    <div class="media-title">${project.title}</div>
-                    <p class="media-desc">${project.description}</p>
-                    <a href="${project.link}" target="_blank" class="terminal-action-btn">> Clone Repository Source</a>
-                </div>`;
-            container.appendChild(card);
-        });
+        container.innerHTML = '<div class="empty-msg">> Parsing repository trees...</div>';
+        try {
+            const projects = await fetchJSON('./tabs/projects.json');
+            container.innerHTML = '';
+            if (!projects.length) { container.innerHTML = '<div class="empty-msg">> No mapped operational projects.</div>'; return; }
+            projects.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'media-card';
+                card.setAttribute('data-title', project.title.toLowerCase());
+                card.setAttribute('data-desc', project.description.toLowerCase());
+                card.innerHTML = `
+                    <div class="media-content">
+                        <span class="media-date">[ Core Engine: ${project.language} ]</span>
+                        <div class="media-title">${project.title}</div>
+                        <p class="media-desc">${project.description}</p>
+                        <a href="${project.link}" target="_blank" class="terminal-action-btn">> Clone Repository Source</a>
+                    </div>`;
+                container.appendChild(card);
+            });
+        } catch (e) {
+            container.innerHTML = '<div class="empty-msg">[ERROR] Failed to load tabs/projects.json.</div>';
+            console.error(e);
+        }
     }
 
     function filterProjects() {
-        const query = document.getElementById('project-search').value.toLowerCase().trim();
+        const q = document.getElementById('project-search').value.toLowerCase().trim();
         document.querySelectorAll('#project-container .media-card').forEach(card => {
-            (card.getAttribute('data-title').includes(query) || card.getAttribute('data-desc').includes(query))
-                ? card.classList.remove('hidden') : card.classList.add('hidden');
+            card.classList.toggle('hidden',
+                !card.getAttribute('data-title').includes(q) && !card.getAttribute('data-desc').includes(q));
         });
     }
 </script>
