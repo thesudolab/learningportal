@@ -1,13 +1,13 @@
-name: Consolidated Site Asset Indexer
+name: Complete Consolidated Assets Generator
 
 on:
   push:
-    branches:
-      - main
-  schedule:
-    # Runs every day at 00:00 UTC
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    paths:
+      - 'tabs/videos.txt'
+      - 'tabs/plugins.txt'
+      - 'tabs/projects.txt'
+      - 'pdf/**'
+      - 'blog/**.html'
 
 permissions:
   contents: write
@@ -17,74 +17,159 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Essential to pull historical Git commit dates for precision tracking
 
-      # We use Node.js to run an inline script to index your folders
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
 
-      - name: Generate Asset JSONs
-        run: |
-          node -e "
-          const fs = require('fs');
-          const path = require('path');
+    - name: Execute Complete Asset Registry Build Sequence
+      run: |
+        node -e "
+        const fs = require('fs');
+        const path = require('path');
+        const { execSync } = require('child_process');
 
-          // 1. Helper to read line-by-line .txt files to array
-          function parseTxtFile(filePath) {
-            if (!fs.existsSync(filePath)) return [];
-            return fs.readFileSync(filePath, 'utf-8')
-              .split('\n')
-              .map(line => line.trim())
-              .filter(line => line.length > 0);
+        // Helper function targeting the text arrays explicitly inside the /tabs folder
+        function parseTxt(filename, mapper) {
+          const txtPath = path.join(process.cwd(), 'tabs', filename);
+          if (!fs.existsSync(txtPath)) {
+            console.log('⚠️ Source text array missing at: ' + txtPath + '. Skipping node compile step.');
+            return [];
           }
+          const content = fs.readFileSync(txtPath, 'utf8');
+          return content.split('\n').map(l => l.trim()).filter(l => l.length > 0).map(mapper);
+        }
 
-          // 2. Helper to get all files in a directory (filtered by extension)
-          function getFolderFiles(dirPath, extFilter = '') {
-            if (!fs.existsSync(dirPath)) return [];
-            return fs.readdirSync(dirPath)
-              .filter(file => fs.statSync(path.join(dirPath, file)).isFile() && file.endsWith(extFilter));
-          }
+        // ==========================================================================
+        // 1. VIDEOS COMPILATION
+        // ==========================================================================
+        const videos = parseTxt('videos.txt', line => {
+          const parts = line.split('||').map(p => p.trim());
+          return { 
+            youtubeId: parts[0] || '', 
+            title: parts[1] || 'Untitled Video Log', 
+            description: parts[2] || 'No description provided.', 
+            date: new Date().toISOString().split('T')[0] 
+          };
+        });
+        fs.writeFileSync(path.join(process.cwd(), 'videos.json'), JSON.stringify(videos, null, 2));
+        console.log('✅ Synchronized ' + videos.length + ' video logs into root/videos.json.');
 
-          // --- Process Tabs Folder ---
-          console.log('Indexing tabs...');
-          const videos = parseTxtFile('tabs/videos.txt');
-          const plugins = parseTxtFile('tabs/plugins.txt');
-          const projects = parseTxtFile('tabs/projects.txt');
+        // ==========================================================================
+        // 2. PLUGINS COMPILATION
+        // ==========================================================================
+        const plugins = parseTxt('plugins.txt', line => {
+          const parts = line.split('||').map(p => p.trim());
+          return { 
+            link: parts[0] || '#', 
+            title: parts[1] || 'Untitled Plugin Module', 
+            version: parts[2] || 'v1.0.0', 
+            description: parts[3] || 'No description provided.' 
+          };
+        });
+        fs.writeFileSync(path.join(process.cwd(), 'plugins.json'), JSON.stringify(plugins, null, 2));
+        console.log('✅ Synchronized ' + plugins.length + ' chrome extension logs into root/plugins.json.');
 
-          fs.writeFileSync('tabs/videos.json', JSON.stringify(videos, null, 2));
-          fs.writeFileSync('tabs/plugins.json', JSON.stringify(plugins, null, 2));
-          fs.writeFileSync('tabs/projects.json', JSON.stringify(projects, null, 2));
+        // ==========================================================================
+        // 3. REPOSITORY PROJECTS COMPILATION
+        // ==========================================================================
+        const projects = parseTxt('projects.txt', line => {
+          const parts = line.split('||').map(p => p.trim());
+          return { 
+            link: parts[0] || '#', 
+            title: parts[1] || 'Untitled Tooling Project', 
+            language: parts[2] || 'Source', 
+            description: parts[3] || 'No core documentation available.' 
+          };
+        });
+        fs.writeFileSync(path.join(process.cwd(), 'projects.json'), JSON.stringify(projects, null, 2));
+        console.log('✅ Synchronized ' + projects.length + ' repository maps into root/projects.json.');
 
-          // --- Process Blog Folder ---
-          console.log('Indexing blog...');
-          const blogs = getFolderFiles('blog', '.html');
-          fs.writeFileSync('blog/blogs.json', JSON.stringify(blogs, null, 2));
+        // ==========================================================================
+        // 4. SHARED PDF ARTIFACT STORE INDEX GENERATION
+        // ==========================================================================
+        const pdfDir = path.join(process.cwd(), 'pdf');
+        const pdfOutputFile = path.join(process.cwd(), 'blog', 'pdfs.json');
 
-          // --- Process PDF Folder ---
-          console.log('Indexing PDFs...');
-          const pdfs = getFolderFiles('pdf');
-          fs.writeFileSync('blog/pdfs.json', JSON.stringify(pdfs, null, 2));
+        if (fs.existsSync(pdfDir)) {
+          const files = fs.readdirSync(pdfDir).filter(file => file.endsWith('.pdf'));
+          const pdfArray = files.map(file => {
+            const filePath = path.join(pdfDir, file);
+            let dateStr = new Date().toISOString().split('T')[0];
+            try {
+              const gitDate = execSync(\`git log -1 --format=%as -- \"\${filePath}\"\`).toString().trim();
+              if (gitDate) dateStr = gitDate;
+            } catch (e) {
+              const stat = fs.statSync(filePath);
+              dateStr = stat.birthtime.toISOString().split('T')[0];
+            }
+            return { title: file, filename: file, date: dateStr };
+          });
+          pdfArray.sort((a, b) => b.date.localeCompare(a.date));
+          fs.writeFileSync(pdfOutputFile, JSON.stringify(pdfArray, null, 2));
+          console.log('✅ Synchronized ' + pdfArray.length + ' publications into blog/pdfs.json.');
+        }
 
-          console.log('Indexing complete!');
-          "
+        // ==========================================================================
+        // 5. BLOG DIRECTORY SCAN & TREE GENERATION
+        // ==========================================================================
+        const blogDir = path.join(process.cwd(), 'blog');
+        const blogOutputFile = path.join(process.cwd(), 'blog', 'blogs.json');
 
-      # Commit the newly generated JSON files back into the repo
-      - name: Commit and Push Changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        if (fs.existsSync(blogDir)) {
+          const files = fs.readdirSync(blogDir).filter(file => file.endsWith('.html') && file !== 'index.html');
+          const blogArray = files.map(file => {
+            const filePath = path.join(blogDir, file);
+            const htmlContent = fs.readFileSync(filePath, 'utf8');
 
-          # Add files safely even if some don't exist yet
-          git add tabs/*.json blog/*.json || true
+            // Extraction patterns for structural metadata elements matching the old bash scripts
+            const titleMatch = htmlContent.match(/<title>([\s\S]*?)<\/title>/i);
+            const descMatch = htmlContent.match(/<meta\s+name=\"description\"\s+content=\"([\s\S]*?)\"/i) || 
+                              htmlContent.match(/<meta\s+content=\"([\s\S]*?)\"\s+name=\"description\"/i);
 
-          if git diff --staged --quiet; then
-            echo "No changes detected."
-          else
-            git commit -m "sys(automation): regenerate asset indexes [skip ci]"
-            git push
-          fi
+            const title = titleMatch ? titleMatch[1].trim() : file.replace('.html', '');
+            const description = descMatch ? descMatch[1].trim() : 'Security research module documentation.';
+            
+            let dateStr = new Date().toISOString().split('T')[0];
+            try {
+              const gitDate = execSync(\`git log -1 --format=%as -- \"\${filePath}\"\`).toString().trim();
+              if (gitDate) dateStr = gitDate;
+            } catch (e) {
+              const stat = fs.statSync(filePath);
+              dateStr = stat.mtime.toISOString().split('T')[0];
+            }
+
+            return { title, filename: file, date: dateStr, description, image: '' };
+          });
+
+          // Sort descending so the latest analysis files populate first
+          blogArray.sort((a, b) => b.date.localeCompare(a.date));
+          fs.writeFileSync(blogOutputFile, JSON.stringify(blogArray, null, 2));
+          console.log('✅ Synchronized ' + blogArray.length + ' active blog posts into blog/blogs.json.');
+        } else {
+          console.log('⚠️ /blog directory missing; skipped execution block.');
+        }
+        "
+
+    - name: Secure Automated Git Synchronization Chain
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        
+        # Safely pull to rebase on any active remote repository modifications
+        git pull origin main --rebase
+        
+        # Explicit target tracking mapping staging matrix parameters
+        git add videos.json plugins.json projects.json blog/pdfs.json blog/blogs.json
+        
+        if git diff --staged --quiet; then
+          echo "No structural directory data modifications detected. Terminating cycle."
+        else
+          git commit -m "sys(automation): global consolidated generation of all video, plugin, project, pdf, and blog maps [skip ci]"
+          git push origin main
+        fi
