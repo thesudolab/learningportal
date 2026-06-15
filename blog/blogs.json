@@ -1,41 +1,7 @@
 [
-  {
-    "title": "NTLM & Kerberos — Auth for Beginners",
-    "filename": "NTLM_Kerberos.html",
-    "date": "2026-06-15",
-    "description": "Security research module documentation.",
-    "image": ""
-  }
-,
-  {
-    "title": "How AI Models are Trained | Interactive Step-by-Step Guide – CybersecurityWaala",
-    "filename": "how-ai-models-are-trained.html",
-    "date": "2026-06-15",
-    "description": "Learn how AI models are trained in 8 interactive steps — tokenization, word embeddings, transformer attention, loss functions, backpropagation & more. A beginner-friendly visual explainer by CybersecurityWaala covering how LLMs like ChatGPT actually learn from data.",
-    "image": ""
-  }
-,
-  {
-    "title": "MCP Flow Visualizer",
-    "filename": "mcp-flow.html",
-    "date": "2026-06-15",
-    "description": "Security research module documentation.",
-    "image": ""
-  }
-,
-  {
-    "title": "RAG Pipeline & Vector DB — Interactive Guide",
-    "filename": "rag.html",
-    "date": "2026-06-15",
-    "description": "Security research module documentation.",
-    "image": ""
-  }
-,
-  {
-    "title": "AI Basics — TheSudoLab Learning Portal",
-    "filename": "LLM_Basics.html",
-    "date": "2026-06-15",
-    "description": "Security research module documentation.",
-    "image": ""
-  }
+  "LLM_Basics.html",
+  "NTLM_Kerberos.html",
+  "how-ai-models-are-trained.html",
+  "mcp-flow.html",
+  "rag.html"
 ]
