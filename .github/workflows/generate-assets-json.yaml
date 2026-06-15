@@ -1,0 +1,219 @@
+name: Consolidated Site Asset Indexer
+
+on:
+  push:
+    paths:
+      - 'blog/**.html'
+      - 'pdf/**'
+      - 'videos.txt'
+      - 'plugins.txt'
+      - 'projects.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Fetches full git logs so we can extract historical file creation timestamps
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Compile Registries and Directory Mapping Trees
+      run: |
+        node -e "
+        const fs = require('fs');
+        const path = require('path');
+        const { execSync } = require('child_process');
+
+        // Core Helper: Gracefully parses custom structured text records into sanitised arrays
+        function parseTxt(filename, mapper) {
+          const txtPath = path.join(process.cwd(), filename);
+          if (!fs.existsSync(txtPath)) return [];
+          const content = fs.readFileSync(txtPath, 'utf8');
+          return content.split('\n').map(l => l.trim()).filter(l => l.length > 0).map(mapper);
+        }
+
+
+        /* ==========================================================================
+           SECTION 1: PRACTICAL LAB VIDEOS INDEXING
+           Source: /videos.txt
+           Output: /videos.json
+           
+           TXT Layout Sample to Edit:
+           [YouTube_ID] || [Video Log Title] || [Brief Lab Summary Meta Data]
+           
+           Example Line:
+           dQw4w9WgXcQ || Exploiting Buffer Overflows || Deep dive into stack smash tactics.
+           ========================================================================== */
+        console.log('Indexing practical lab logs...');
+        const videos = parseTxt('videos.txt', line => {
+          const parts = line.split('||').map(p => p.trim());
+          return { 
+            youtubeId: parts[0] || '', 
+            title: parts[1] || 'Untitled Video Log', 
+            description: parts[2] || 'No description provided.', 
+            date: new Date().toISOString().split('T')[0] 
+          };
+        });
+        fs.writeFileSync(path.join(process.cwd(), 'videos.json'), JSON.stringify(videos, null, 2));
+
+
+        /* ==========================================================================
+           SECTION 2: CHROME PLUGINS INDEXING
+           Source: /plugins.txt
+           Output: /plugins.json
+           
+           TXT Layout Sample to Edit:
+           [Store_Link] || [Plugin Title] || [Version] || [Plugin Capability Description]
+           
+           Example Line:
+           https://chromewebstore.google.com || DOM Scanner || v1.0.2 || Automates client side DOM flaw analysis.
+           ========================================================================== */
+        console.log('Indexing web store plug-in modules...');
+        const plugins = parseTxt('plugins.txt', line => {
+          const parts = line.split('||').map(p => p.trim());
+          return { 
+            link: parts[0] || '#', 
+            title: parts[1] || 'Untitled Plugin', 
+            version: parts[2] || 'v1.0.0', 
+            description: parts[3] || 'No information populated.' 
+          };
+        });
+        fs.writeFileSync(path.join(process.cwd(), 'plugins.json'), JSON.stringify(plugins, null, 2));
+
+
+        /* ==========================================================================
+           SECTION 3: OPEN SOURCE PROJECTS INDEXING
+           Source: /projects.txt
+           Output: /projects.json
+           
+           TXT Layout Sample to Edit:
+           [Repo_Link] || [Project Title] || [Language/Stack] || [Project Description]
+           
+           Example Line:
+           https://github.com || Strix Framework || Python / JS || Orchestration engine for localized LLMs.
+           ========================================================================== */
+        console.log('Indexing open-source software project trees...');
+        const projects = parseTxt('projects.txt', line => {
+          const parts = line.split('||').map(p => p.trim());
+          return { 
+            link: parts[0] || '#', 
+            title: parts[1] || 'Untitled Project', 
+            language: parts[2] || 'Source', 
+            description: parts[3] || 'No description populated.' 
+          };
+        });
+        fs.writeFileSync(path.join(process.cwd(), 'projects.json'), JSON.stringify(projects, null, 2));
+
+
+        /* ==========================================================================
+           SECTION 4: PDF PUBLICATIONS AUTOMATIC SCANNER
+           Source Folder: /pdf/
+           Output File:   /blog/pdfs.json
+           
+           Layout Target Rules:
+           - Automatically discovers any file matching *.pdf dropped inside the /pdf/ folder.
+           - Pulls its creation/upload timestamp directly from Git commit telemetry logs.
+           ========================================================================== */
+        console.log('Scanning structural publication storage maps...');
+        const pdfDir = path.join(process.cwd(), 'pdf');
+        const pdfOutputFile = path.join(process.cwd(), 'blog', 'pdfs.json');
+
+        if (fs.existsSync(pdfDir)) {
+          const files = fs.readdirSync(pdfDir).filter(file => file.endsWith('.pdf'));
+          const pdfArray = files.map(file => {
+            const filePath = path.join(pdfDir, file);
+            let dateStr = '2026-06-15'; // Pipeline workflow default date context
+            try {
+              const gitDate = execSync(\`git log -1 --format=%as -- \"\${filePath}\"\`).toString().trim();
+              if (gitDate) dateStr = gitDate;
+            } catch (e) {
+              const stat = fs.statSync(filePath);
+              dateStr = stat.birthtime.toISOString().split('T')[0];
+            }
+            return { title: file, filename: file, date: dateStr };
+          });
+          pdfArray.sort((a, b) => b.date.localeCompare(a.date));
+          fs.writeFileSync(pdfOutputFile, JSON.stringify(pdfArray, null, 2));
+        } else {
+          fs.writeFileSync(pdfOutputFile, '[]');
+        }
+
+
+        /* ==========================================================================
+           SECTION 5: BLOG MANIFEST GENERATOR
+           Source Folder: /blog/*.html (Ignores index.html)
+           Output File:   /blog/blogs.json
+           
+           HTML Format Sample to Edit inside Blog Entries:
+           The script parses metadata parameters from inside the article's raw code blocks:
+           <title>Your Article Title Here</title>
+           <meta name='description' content='Your clean snippet text here.'>
+           ========================================================================== */
+        console.log('Parsing operational blog repository directory elements...');
+        const blogDir = path.join(process.cwd(), 'blog');
+        const blogOutputFile = path.join(blogDir, 'blogs.json');
+
+        if (fs.existsSync(blogDir)) {
+          const files = fs.readdirSync(blogDir).filter(file => file.endsWith('.html') && file !== 'index.html');
+          
+          // Generate an array map structured by file creation or system read statistics
+          const blogArray = files.map(file => {
+            const filePath = path.join(blogDir, file);
+            const content = fs.readFileSync(filePath, 'utf8');
+            
+            // Regex extractions targeting Title & Description elements cleanly
+            const titleMatch = content.match(/<title>([\s\S]*?)<\/title>/i);
+            const descMatch = content.match(/<meta[^>]*name=[\"']description[\"'][^>]*content=[\"']([\s\S]*?)[\"']/i);
+            
+            const title = titleMatch ? titleMatch[1].trim() : file.replace('.html', '');
+            const desc = descMatch ? descMatch[1].trim() : 'Security research module documentation.';
+            
+            let dateStr = '2026-06-15';
+            try {
+              const gitDate = execSync(\`git log -1 --format=%as -- \"\${filePath}\"\`).toString().trim();
+              if (gitDate) dateStr = gitDate;
+            } catch (e) {
+              const stat = fs.statSync(filePath);
+              dateStr = stat.mtime.toISOString().split('T')[0];
+            }
+
+            return { title, filename: file, date: dateStr, description: desc, image: '' };
+          });
+
+          // Sort descending so freshest updates live at the top of our frontend grids
+          blogArray.sort((a, b) => b.date.localeCompare(a.date));
+          fs.writeFileSync(blogOutputFile, JSON.stringify(blogArray, null, 2));
+        } else {
+          fs.writeFileSync(blogOutputFile, '[]');
+        }
+
+        console.log('Successfully updated total platform indexing architecture maps.');
+        "
+
+    - name: Commit and Push Platform Adjustments
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        
+        # Pull updates safely to avoid workspace conflicts
+        git pull origin main
+        
+        # Track all generated JSON registries
+        git add videos.json plugins.json projects.json blog/pdfs.json blog/blogs.json
+        
+        if git diff --staged --quiet; then
+          echo "No structural database shifts detected. Skipping deploy process."
+        else
+          git commit -m "sys(automation): global data-matrix re-indexing pipeline [skip ci]"
+          git push origin main
+        fi
