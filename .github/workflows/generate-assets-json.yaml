@@ -4,19 +4,13 @@ on:
   push:
     branches:
       - main
-
   schedule:
-    # Every day at 00:00 UTC
+    # Runs every day at 00:00 UTC
     - cron: '0 0 * * *'
-
   workflow_dispatch:
 
 permissions:
   contents: write
-
-concurrency:
-  group: asset-indexer
-  cancel-in-progress: true
 
 jobs:
   build:
@@ -28,49 +22,69 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      # We use Node.js to run an inline script to index your folders
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
 
-      - name: Install Dependencies
+      - name: Generate Asset JSONs
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          elif [ -f package.json ]; then
-            npm install
-          else
-            echo "No package.json found. Skipping install."
-          fi
+          node -e "
+          const fs = require('fs');
+          const path = require('path');
 
-      - name: Generate Asset Indexes
-        run: |
-          echo "Generating indexes..."
+          // 1. Helper to read line-by-line .txt files to array
+          function parseTxtFile(filePath) {
+            if (!fs.existsSync(filePath)) return [];
+            return fs.readFileSync(filePath, 'utf-8')
+              .split('\n')
+              .map(line => line.trim())
+              .filter(line => line.length > 0);
+          }
 
-          # Replace with your actual indexing script
-          node scripts/generate-indexes.js
+          // 2. Helper to get all files in a directory (filtered by extension)
+          function getFolderFiles(dirPath, extFilter = '') {
+            if (!fs.existsSync(dirPath)) return [];
+            return fs.readdirSync(dirPath)
+              .filter(file => fs.statSync(path.join(dirPath, file)).isFile() && file.endsWith(extFilter));
+          }
 
-      - name: Verify Generated Files
-        run: |
-          ls -lah tabs || true
-          ls -lah blog || true
+          // --- Process Tabs Folder ---
+          console.log('Indexing tabs...');
+          const videos = parseTxtFile('tabs/videos.txt');
+          const plugins = parseTxtFile('tabs/plugins.txt');
+          const projects = parseTxtFile('tabs/projects.txt');
 
-      - name: Commit and Push Updates
+          fs.writeFileSync('tabs/videos.json', JSON.stringify(videos, null, 2));
+          fs.writeFileSync('tabs/plugins.json', JSON.stringify(plugins, null, 2));
+          fs.writeFileSync('tabs/projects.json', JSON.stringify(projects, null, 2));
+
+          // --- Process Blog Folder ---
+          console.log('Indexing blog...');
+          const blogs = getFolderFiles('blog', '.html');
+          fs.writeFileSync('blog/blogs.json', JSON.stringify(blogs, null, 2));
+
+          // --- Process PDF Folder ---
+          console.log('Indexing PDFs...');
+          const pdfs = getFolderFiles('pdf');
+          fs.writeFileSync('blog/pdfs.json', JSON.stringify(pdfs, null, 2));
+
+          console.log('Indexing complete!');
+          "
+
+      # Commit the newly generated JSON files back into the repo
+      - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add \
-            tabs/videos.json \
-            tabs/plugins.json \
-            tabs/projects.json \
-            blog/blogs.json \
-            blog/pdfs.json
+          # Add files safely even if some don't exist yet
+          git add tabs/*.json blog/*.json || true
 
-          if git diff --cached --quiet; then
+          if git diff --staged --quiet; then
             echo "No changes detected."
-            exit 0
+          else
+            git commit -m "sys(automation): regenerate asset indexes [skip ci]"
+            git push
           fi
-
-          git commit -m "sys(automation): regenerate asset indexes [skip ci]"
-          git push
