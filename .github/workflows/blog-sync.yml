@@ -70,7 +70,8 @@ jobs:
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git pull origin main --rebase
+        # Pulling with --rebase --autostash keeps your local changes safe
+        git pull origin main --rebase --autostash
         git add blog/blogs.json
         if ! git diff --staged --quiet; then
           git commit -m "sys: automated blog index update [skip ci]"
