@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Linux Filesystem | TheSudoLab</title>
+    <style>
+        :root {
+            --primary: #2d3436;
+            --accent: #00b894;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --text: #2d3436;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: var(--card);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        h1 { color: var(--primary); border-bottom: 3px solid var(--accent); display: inline-block; }
+
+        .interactive-tree {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            padding: 20px;
+            background: #f1f2f6;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .node {
+            padding: 10px 15px;
+            background: white;
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .node:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,184,148,0.3);
+        }
+
+        .directory-list dt {
+            font-weight: bold;
+            color: var(--accent);
+            margin-top: 15px;
+        }
+
+        blockquote {
+            border-left: 5px solid var(--accent);
+            padding-left: 15px;
+            font-style: italic;
+            background: #f9f9f9;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>The Linux Filesystem</h1>
+    <p>Unlike Windows, which uses physical drive letters (like <em>C:</em>), Linux utilizes a <strong>logical, hierarchical tree structure</strong> starting from a single point known as the <strong>root (/)</strong>.</p>
+
+    <div class="interactive-tree">
+        <div class="node">/boot</div>
+        <div class="node">/home</div>
+        <div class="node">/proc</div>
+        <div class="node">/dev</div>
+        <div class="node">/sbin</div>
+        <div class="node">/usr</div>
+        <div class="node">/etc</div>
+        <div class="node">/mnt</div>
+    </div>
+
+    <h3>Key Directories</h3>
+    <dl class="directory-list">
+        <dt>/root</dt>
+        <dd>The home directory for the superuser (root).</dd>
+        <dt>/etc</dt>
+        <dd>Contains system-wide configuration files.</dd>
+        <dt>/home</dt>
+        <dd>Individual user directories reside here.</dd>
+        <dt>/bin</dt>
+        <dd>Essential user binaries (executable programs).</dd>
+        <dt>/lib</dt>
+        <dd>Shared libraries required for binaries.</dd>
+    </dl>
+
+    <blockquote>
+        <strong>Pro-tip:</strong> Always log in as a regular user for routine tasks. Only use root privileges when strictly necessary to keep your system secure.
+    </blockquote>
+</div>
+
+</body>
+</html>
