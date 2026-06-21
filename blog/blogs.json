@@ -2,31 +2,31 @@
   {
     "title": "AI Basics — TheSudoLab Learning Portal",
     "slug": "llm-basics",
-    "file": "LLM_Basics.html"
+    "filename": "LLM_Basics.html"
   },
   {
     "title": "How AI Models are Trained | Interactive Step-by-Step Guide – CybersecurityWaala",
     "slug": "how-ai-models-are-trained",
-    "file": "how-ai-models-are-trained.html"
+    "filename": "how-ai-models-are-trained.html"
   },
   {
     "title": "MCP Flow Visualizer",
     "slug": "mcp-flow",
-    "file": "mcp-flow.html"
+    "filename": "mcp-flow.html"
   },
   {
     "title": "NTLM & Kerberos — Auth for Beginners",
     "slug": "ntlm-kerberos",
-    "file": "NTLM_Kerberos.html"
+    "filename": "NTLM_Kerberos.html"
   },
   {
     "title": "RAG Pipeline & Vector DB — Interactive Guide",
     "slug": "rag",
-    "file": "rag.html"
+    "filename": "rag.html"
   },
   {
     "title": "The Linux Filesystem | TheSudoLab",
     "slug": "linux-file-system",
-    "file": "Linux_File_System.html"
+    "filename": "Linux_File_System.html"
   }
 ]
