@@ -2,6 +2,8 @@ name: PDF Artifact Synchronization Engine
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'pdf/**'
   workflow_dispatch:
@@ -53,7 +55,6 @@ jobs:
           
           pdfArray.sort((a, b) => b.date.localeCompare(a.date));
           
-          // UPDATED: Now writing directly into the pdf/ directory
           fs.writeFileSync(path.join(pdfDir, "pdfs.json"), JSON.stringify(pdfArray, null, 2));
           console.log("Generated pdf/pdfs.json successfully.");
         }
@@ -63,12 +64,20 @@ jobs:
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git pull origin main --rebase
         
-        # UPDATED: Tracking the new path
+        # 1. Track the updated path
         git add pdf/pdfs.json
         
+        # 2. Check for changes first
         if ! git diff --staged --quiet; then
+          # 3. Commit locally so rebase has a target reference
           git commit -m "sys(automation): dynamic re-indexing of pdf store [skip ci]"
-          git push origin main
+          
+          # 4. Safely pull any concurrent changes
+          git pull origin main --rebase --autostash
+          
+          # 5. Route the push explicitly from HEAD to main (Fixes exit code 128)
+          git push origin HEAD:main
+        else
+          echo "No modifications found in pdf/pdfs.json. Skipping push."
         fi
