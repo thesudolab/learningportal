@@ -94,7 +94,7 @@ jobs:
                       entries.append({
                           "title": title,
                           "slug": slug,
-                          "file": rel_path,
+                          "filename": rel_path,
                       })
 
               entries.sort(key=lambda e: e["title"].lower())
