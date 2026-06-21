@@ -1,9 +1,122 @@
-# _config.yml
-collections:
-  blog:
-    output: true
-    permalink: /blog/:path
+name: Update blogs.json
 
-# This ensures Jekyll doesn't ignore your custom files
-include:
-  - blog
+# Runs automatically whenever an .html file inside blog/ (or any
+# subfolder of it) is pushed to main. Since blogs.json is a .json
+# file, this filter does NOT match it -> no infinite trigger loop
+# when the workflow commits the updated file back.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'blog/**.html'
+
+permissions:
+  contents: write
+
+jobs:
+  update-blogs-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Generate blogs.json
+        run: |
+          python3 << 'EOF'
+          import json
+          import os
+          import re
+          from html.parser import HTMLParser
+
+          BLOG_DIR = "blog"
+          OUTPUT_FILE = os.path.join(BLOG_DIR, "blogs.json")
+          # Files inside blog/ that are NOT blog posts and should be skipped
+          EXCLUDE_FILES = {"index.html", "blogs.json"}
+
+          class TitleParser(HTMLParser):
+              """Pulls the text content of the first <title> tag, regardless
+              of attributes, casing, or line breaks inside the tag."""
+              def __init__(self):
+                  super().__init__()
+                  self.in_title = False
+                  self.title = ""
+
+              def handle_starttag(self, tag, attrs):
+                  if tag.lower() == "title":
+                      self.in_title = True
+
+              def handle_endtag(self, tag):
+                  if tag.lower() == "title":
+                      self.in_title = False
+
+              def handle_data(self, data):
+                  if self.in_title:
+                      self.title += data
+
+          def extract_title(filepath, fallback):
+              try:
+                  with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+                      content = f.read()
+                  parser = TitleParser()
+                  parser.feed(content)
+                  title = parser.title.strip()
+                  return title if title else fallback
+              except Exception:
+                  return fallback
+
+          def slugify(name):
+              name = name.lower()
+              name = re.sub(r"[^a-z0-9]+", "-", name)
+              return name.strip("-")
+
+          def main():
+              entries = []
+              for root, _, files in os.walk(BLOG_DIR):
+                  for fname in sorted(files):
+                      if not fname.lower().endswith(".html"):
+                          continue
+                      if fname in EXCLUDE_FILES:
+                          continue
+
+                      filepath = os.path.join(root, fname)
+                      rel_path = os.path.relpath(filepath, BLOG_DIR).replace(os.sep, "/")
+                      stem = os.path.splitext(fname)[0]
+                      fallback_title = stem.replace("-", " ").replace("_", " ").title()
+                      title = extract_title(filepath, fallback_title)
+                      slug = slugify(stem)
+
+                      entries.append({
+                          "title": title,
+                          "slug": slug,
+                          "file": rel_path,
+                      })
+
+              entries.sort(key=lambda e: e["title"].lower())
+
+              with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+                  json.dump(entries, f, indent=2, ensure_ascii=False)
+                  f.write("\n")
+
+              print(f"Wrote {len(entries)} entries to {OUTPUT_FILE}")
+
+          if __name__ == "__main__":
+              main()
+          EOF
+
+      - name: Commit and push blogs.json if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add blog/blogs.json
+          if git diff --cached --quiet; then
+            echo "No changes to blogs.json"
+          else
+            git commit -m "chore: auto-update blogs.json [skip ci]"
+            git push
+          fi
