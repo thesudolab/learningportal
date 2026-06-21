@@ -2,6 +2,8 @@ name: Blog Artifact Synchronization Engine
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'blog/**.html'
   workflow_dispatch:
@@ -70,10 +72,19 @@ jobs:
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        # Pulling with --rebase --autostash keeps your local changes safe
-        git pull origin main --rebase --autostash
+        
+        # Stage changes
         git add blog/blogs.json
+        
+        # Check if blogs.json actually changed before doing anything else
         if ! git diff --staged --quiet; then
           git commit -m "sys: automated blog index update [skip ci]"
-          git push
+          
+          # Pull down remote changes safely using rebase
+          git pull origin main --rebase --autostash
+          
+          # Force push to main to handle detached HEAD environment securely
+          git push origin HEAD:main
+        else
+          echo "No adjustments to blog/blogs.json detected. Skipping sync pipeline."
         fi
