@@ -1,57 +1,40 @@
-name: Browser Extensions Sync
-
-on:
-  push:
-    paths:
-      - 'tabs/plugins.txt'
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-jobs:
-  sync-plugins:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-
-    - name: Parse and Compile Extensions Registry
+- name: Parse and Compile Tooling Registry
       run: |
         node -e '
         const fs = require("fs");
         const path = require("path");
-        const txtPath = path.join(process.cwd(), "tabs", "plugins.txt");
+        const txtPath = path.join(process.cwd(), "tabs", "projects.txt");
         
         if (fs.existsSync(txtPath)) {
           const content = fs.readFileSync(txtPath, "utf8");
-          const plugins = content.split("\n").map(l => l.trim()).filter(l => l.length > 0).map(line => {
+          const projects = content.split("\n").filter(l => l.trim().length > 0).map(line => {
             const parts = line.split("||").map(p => p.trim());
             return { 
-              link: parts[0] || "#", 
-              title: parts[1] || "Untitled Plugin Module", 
-              version: parts[2] || "v1.0.0", 
-              description: parts[3] || "No description provided." 
+              link: parts[0], 
+              title: parts[1], 
+              language: parts[2], 
+              description: parts[3] 
             };
           });
-          // FIXED: Now saves into the tabs directory explicitly
-          fs.writeFileSync(path.join(process.cwd(), "tabs", "plugins.json"), JSON.stringify(plugins, null, 2));
-          console.log("Successfully compiled tabs/plugins.json");
-        } else {
-          console.error("Error: tabs/plugins.txt not found.");
+          
+          // CHANGE: Outputting to /project/projects.json instead of /tabs/
+          const dir = path.join(process.cwd(), "project");
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+          fs.writeFileSync(path.join(dir, "projects.json"), JSON.stringify(projects, null, 2));
+          console.log("Successfully compiled project/projects.json");
         }
         '
 
-    - name: Commit and Push Extension Changes
+    - name: Commit and Push Project Changes
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git pull origin main --rebase
         
-        # FIXED: Tracking the correct file path location
-        git add tabs/plugins.json
+        # CHANGE: Tracking the new path
+        git add project/projects.json
         
         if ! git diff --staged --quiet; then
-          git commit -m "sys(automation): synced changes to tabs/plugins.json [skip ci]"
+          git commit -m "sys(automation): synced projects.json [skip ci]"
           git push origin main
         fi
