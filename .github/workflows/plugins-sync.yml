@@ -1,40 +1,33 @@
-- name: Parse and Compile Tooling Registry
+- name: Plugins
       run: |
         node -e '
         const fs = require("fs");
         const path = require("path");
-        const txtPath = path.join(process.cwd(), "tabs", "projects.txt");
+        const txtPath = path.join(process.cwd(), "tabs", "plugins.txt");
         
         if (fs.existsSync(txtPath)) {
           const content = fs.readFileSync(txtPath, "utf8");
-          const projects = content.split("\n").filter(l => l.trim().length > 0).map(line => {
-            const parts = line.split("||").map(p => p.trim());
-            return { 
-              link: parts[0], 
-              title: parts[1], 
-              language: parts[2], 
-              description: parts[3] 
-            };
-          });
-          
-          // CHANGE: Outputting to /project/projects.json instead of /tabs/
-          const dir = path.join(process.cwd(), "project");
+          const plugins = content.split("\n")
+            .filter(l => l.includes("||"))
+            .map(line => {
+              const [link, title, language, description] = line.split("||").map(p => p.trim());
+              return { link, title, language, description };
+            });
+            
+          const dir = path.join(process.cwd(), "project"); // Storing in /project as requested
           if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-          fs.writeFileSync(path.join(dir, "projects.json"), JSON.stringify(projects, null, 2));
-          console.log("Successfully compiled project/projects.json");
+          fs.writeFileSync(path.join(dir, "plugins.json"), JSON.stringify(plugins, null, 2));
+          console.log("Successfully compiled project/plugins.json");
         }
         '
 
-    - name: Commit and Push Project Changes
+    - name: Commit and Push Plugin Changes
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git pull origin main --rebase
-        
-        # CHANGE: Tracking the new path
-        git add project/projects.json
-        
+        git add tabs/plugins.json
         if ! git diff --staged --quiet; then
-          git commit -m "sys(automation): synced projects.json [skip ci]"
+          git commit -m "sys(automation): synced plugins.json [skip ci]"
           git push origin main
         fi
