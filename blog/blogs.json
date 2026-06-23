@@ -33,5 +33,10 @@
     "title": "The Linux Filesystem | TheSudoLab",
     "slug": "linux-file-system",
     "filename": "Linux_File_System.html"
+  },
+  {
+    "title": "Web App Penetration Testing Roadmap",
+    "slug": "pentest-roadmap",
+    "filename": "pentest_roadmap.html"
   }
 ]
