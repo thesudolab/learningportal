@@ -545,6 +545,59 @@
             pointer-events: none;
         }
 
+        .blog-thumb {
+            background: linear-gradient(135deg, #0d0d18 0%, #12121a 50%, #0a0f14 100%);
+            cursor: default;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .blog-thumb-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            z-index: 1;
+            position: relative;
+        }
+
+        .blog-thumb-icon {
+            font-size: 2rem;
+            line-height: 1;
+            filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.4));
+        }
+
+        .blog-thumb-label {
+            font-family: var(--font);
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            text-align: center;
+            max-width: 80%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+        }
+
+        .blog-thumb-tag {
+            font-family: var(--font);
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 0.05em;
+        }
+
+        .media-card:hover .blog-thumb-label {
+            color: var(--accent-blue);
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .media-card:hover .blog-thumb-tag {
+            color: var(--accent);
+        }
+
         .video-wrapper {
             position: relative;
             padding-bottom: 56.25%;
@@ -938,10 +991,20 @@
                 card.className = 'media-card';
                 card.href = `./blog/${post.filename}`;
                 card.setAttribute('data-title', post.title.toLowerCase());
+                const postDate = post.date || post.published || post.time || post.created || '';
+                const dateDisplay = postDate ? `[🕒 ${postDate}]` : '[🕒 TheSudoLab]';
+                const titleWords = post.title ? post.title.trim().split(/\s+/) : [];
+                const thumbLabel = titleWords.slice(0, 3).join(' ') || 'BLOG POST';
                 card.innerHTML = `
-                    <div class="media-thumb"></div>
+                    <div class="media-thumb blog-thumb">
+                        <div class="blog-thumb-inner">
+                            <div class="blog-thumb-icon">&#x1F4C4;</div>
+                            <div class="blog-thumb-label">${thumbLabel}</div>
+                            <div class="blog-thumb-tag">> read article</div>
+                        </div>
+                    </div>
                     <div class="media-content">
-                        <span class="media-date">[🕒 ${post.date}]</span>
+                        <span class="media-date">${dateDisplay}</span>
                         <div class="media-title">${post.title}</div>
                     </div>`;
                 container.appendChild(card);
