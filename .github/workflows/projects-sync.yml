@@ -13,5 +13,5 @@
           });
           
         fs.mkdirSync("project", { recursive: true });
-        fs.writeFileSync("project/projects.json", JSON.stringify(projects, null, 2));
+        fs.writeFileSync("tabs/projects.json", JSON.stringify(projects, null, 2));
         '
