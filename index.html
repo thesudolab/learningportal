@@ -217,56 +217,137 @@
 
         nav {
             margin-top: 2rem;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
+            display: flex;
+            flex-wrap: wrap;
             width: 100%;
+            gap: 0.5rem;
+            position: relative;
         }
 
-        @media (min-width: 480px) { nav { grid-template-columns: repeat(3, 1fr); } }
-        @media (min-width: 768px) { nav { grid-template-columns: repeat(7, 1fr); } }
-
         .nav-btn {
+            flex: 1 1 auto;
+            min-width: 90px;
             background: var(--surface-card);
             border: 1px solid var(--border);
-            padding: 0.75rem 0.5rem;
+            padding: 0.7rem 0.6rem;
             cursor: pointer;
             font-family: var(--font);
             font-weight: bold;
-            color: var(--text-muted);
-            transition: all 0.3s ease-in-out;
-            font-size: 0.9rem;
+            color: var(--text-dim);
+            font-size: 0.82rem;
             text-align: center;
-            border-radius: 4px;
             position: relative;
             overflow: hidden;
+            letter-spacing: 0.04em;
+            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+            transition: color 0.2s ease, border-color 0.2s ease;
         }
 
-        .nav-btn::before {
-            content: '';
+        .nav-btn .nav-label {
+            position: relative;
+            z-index: 2;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-btn .nav-scan {
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent);
-            transition: left 0.5s ease;
+            top: 0; left: -100%; width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,255,136,0.12), transparent);
+            transition: none;
+            z-index: 1;
         }
 
-        .nav-btn:hover::before { left: 100%; }
+        .nav-btn .nav-top-line {
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+            box-shadow: 0 0 8px rgba(0,255,136,0.6);
+            z-index: 3;
+        }
+
+        .nav-btn .nav-corner {
+            position: absolute;
+            width: 6px; height: 6px;
+            border-color: var(--accent);
+            border-style: solid;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 3;
+        }
+
+        .nav-btn .nav-corner.tl { top: 2px; left: 4px; border-width: 1px 0 0 1px; }
+        .nav-btn .nav-corner.br { bottom: 2px; right: 4px; border-width: 0 1px 1px 0; }
+
+        .nav-btn:hover .nav-corner,
+        .nav-btn.active .nav-corner { opacity: 1; }
+
+        .nav-btn:hover .nav-top-line,
+        .nav-btn.active .nav-top-line { transform: scaleX(1); }
 
         .nav-btn.active {
-            background: linear-gradient(135deg, var(--accent-dim) 0%, var(--accent) 100%);
-            color: var(--bg);
-            border-color: var(--accent);
-            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3), inset 0 0 10px rgba(0, 255, 136, 0.1);
+            border-color: rgba(0,255,136,0.4);
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0,255,136,0.5);
+            background: rgba(0,255,136,0.06);
         }
 
         .nav-btn:hover:not(.active) {
-            border-color: var(--accent-dim);
+            border-color: rgba(0,255,136,0.25);
+            color: var(--text-main);
+        }
+
+        .nav-btn:hover .nav-label {
+            transform: translateY(-1px);
+        }
+
+        @keyframes navScan {
+            0%   { left: -60%; }
+            100% { left: 110%; }
+        }
+
+        .nav-btn:hover .nav-scan {
+            animation: navScan 0.6s ease forwards;
+        }
+
+        .nav-btn.active .nav-scan {
+            animation: navScan 1.8s ease infinite;
+        }
+
+        @keyframes navGlitch {
+            0%   { clip-path: inset(0 0 100% 0); opacity: 0; transform: translate(0,0); }
+            10%  { clip-path: inset(30% 0 40% 0); opacity: 1; transform: translate(-2px, 0); }
+            20%  { clip-path: inset(10% 0 70% 0); opacity: 1; transform: translate(2px, 0); }
+            30%  { clip-path: inset(60% 0 10% 0); opacity: 1; transform: translate(-1px, 0); }
+            40%  { clip-path: inset(0 0 0 0);     opacity: 1; transform: translate(0, 0); }
+            100% { clip-path: inset(0 0 0 0);     opacity: 1; transform: translate(0, 0); }
+        }
+
+        .nav-btn .nav-glitch {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font);
+            font-size: 0.82rem;
+            font-weight: bold;
             color: var(--accent);
-            background: rgba(0, 255, 136, 0.05);
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
+            letter-spacing: 0.04em;
+            pointer-events: none;
+            z-index: 4;
+            opacity: 0;
+        }
+
+        .nav-btn:hover .nav-glitch {
+            animation: navGlitch 0.4s steps(1) forwards;
+        }
+
+        @media (max-width: 600px) {
+            .nav-btn { min-width: 70px; font-size: 0.74rem; padding: 0.65rem 0.4rem; }
         }
 
         .section { display: none; width: 100%; }
@@ -772,7 +853,6 @@
         @media (max-width: 767px) {
             .container { padding: 1rem; }
             .logo-area { gap: 1rem; }
-            .nav-btn { padding: 0.6rem 0.4rem; font-size: 0.8rem; }
             .about-card { padding: 1.25rem; }
             .media-thumb { height: 140px; }
             .media-content { padding: 1rem; }
@@ -800,13 +880,14 @@
         </div>
 
         <nav>
-            <button id="nav-btn-about" class="nav-btn active" onclick="switchTab('about')">/about</button>
-            <button id="nav-btn-blog" class="nav-btn" onclick="switchTab('blog')">/blog</button>
-            <button id="nav-btn-pdf" class="nav-btn" onclick="switchTab('pdf')">/pdf</button>
-            <button id="nav-btn-videos" class="nav-btn" onclick="switchTab('videos')">/videos</button>
-            <button id="nav-btn-plugins" class="nav-btn" onclick="switchTab('plugins')">/plugins</button>
-            <button id="nav-btn-projects" class="nav-btn" onclick="switchTab('projects')">/projects</button>
-            <button id="nav-btn-contact" class="nav-btn" onclick="switchTab('contact')">/contact</button>
+            <button id="nav-btn-about"    class="nav-btn active" onclick="switchTab('about')">   <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/about</span>   <span class="nav-label">/about</span></button>
+            <button id="nav-btn-blog"     class="nav-btn"        onclick="switchTab('blog')">    <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/blog</span>    <span class="nav-label">/blog</span></button>
+            <button id="nav-btn-pdf"      class="nav-btn"        onclick="switchTab('pdf')">     <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/pdf</span>     <span class="nav-label">/pdf</span></button>
+            <button id="nav-btn-videos"   class="nav-btn"        onclick="switchTab('videos')">  <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/videos</span>  <span class="nav-label">/videos</span></button>
+            <button id="nav-btn-plugins"  class="nav-btn"        onclick="switchTab('plugins')"> <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/plugins</span> <span class="nav-label">/plugins</span></button>
+            <button id="nav-btn-projects" class="nav-btn"        onclick="switchTab('projects')"><span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/projects</span><span class="nav-label">/projects</span></button>
+            <button id="nav-btn-media"    class="nav-btn"        onclick="switchTab('media')">   <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/media</span>   <span class="nav-label">/media</span></button>
+            <button id="nav-btn-contact"  class="nav-btn"        onclick="switchTab('contact')"> <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/contact</span> <span class="nav-label">/contact</span></button>
         </nav>
     </header>
 
@@ -877,6 +958,14 @@
                 <input type="text" id="project-search" class="search-input" placeholder="'project-name' tree..." oninput="filterProjects()">
             </div>
             <div class="media-grid" id="project-container"></div>
+        </section>
+
+        <section id="media" class="section">
+            <div class="about-card">
+                <h2>&gt; Social Media Feed</h2>
+                <a class="twitter-timeline" href="https://x.com/gb414ji?ref_src=twsrc%5Etfw">Posts by gb414ji</a>
+                <script async src="https://platform.x.com/widgets.js" charset="utf-8"></script>
+            </div>
         </section>
 
         <section id="contact" class="section">
