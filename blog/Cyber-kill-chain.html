@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cyber Kill Chain · MITRE ATT&CK · TheSudoLab</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#0B0F19',
+                            surface: '#151C2C',
+                            card: '#1E2640',
+                            accent: '#D4AF37',
+                            accentHover: '#F3E5AB',
+                            crimson: '#E63946',
+                            textMain: '#F8FAFC',
+                            textMuted: '#94A3B8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+        body {
+            background-color: #0B0F19;
+            font-family: 'Inter', sans-serif;
+            color: #F8FAFC;
+        }
+
+        .custom-glow {
+            box-shadow: 0 4px 30px rgba(212, 169, 55, 0.05);
+        }
+
+        .radar-pulse {
+            position: relative;
+        }
+        .radar-pulse::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border: 1px solid #D4AF37;
+            border-radius: 4px;
+            opacity: 0;
+            animation: pulseScan 2.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+        }
+        @keyframes pulseScan {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1.25);
+                opacity: 0;
+            }
+        }
+
+        .kill-chain-timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        .kill-chain-timeline::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: linear-gradient(to bottom, #D4AF37, #94A3B8, #D4AF37);
+            opacity: 0.3;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -6px;
+            top: 6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #D4AF37;
+            border: 2px solid #0B0F19;
+            box-shadow: 0 0 0 3px rgba(212, 169, 55, 0.25);
+        }
+
+        .attack-matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .tactic-badge {
+            background: #1E2640;
+            border: 1px solid #2a3457;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #94A3B8;
+            transition: all 0.2s;
+        }
+        .tactic-badge:hover {
+            border-color: #D4AF37;
+            color: #F8FAFC;
+            background: #252f4a;
+        }
+        .tactic-badge .tactic-code {
+            color: #D4AF37;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.02em;
+        }
+
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #D4AF37, #94A3B8, #D4AF37, transparent);
+            opacity: 0.25;
+            margin: 2.5rem 0;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 30px rgba(212, 169, 55, 0.08);
+        }
+
+        @media (max-width: 640px) {
+            .attack-matrix-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== HEADER / NAV ====== -->
+    <header class="border-b border-[#1E2640] bg-brand-bg/80 backdrop-blur-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+            <div class="flex items-center gap-3">
+                <div class="radar-pulse w-7 h-7 bg-brand-accent/10 rounded flex items-center justify-center text-brand-accent font-mono text-sm font-bold tracking-wider">
+                    <span class="relative z-10">#</span>
+                </div>
+                <span class="text-brand-accent font-mono text-sm tracking-widest hidden sm:block">TheSudoLab</span>
+                <span class="text-brand-textMuted text-xs font-mono hidden md:block">·</span>
+                <span class="text-brand-textMuted text-xs font-mono hidden md:block">kill-chain · att&ck</span>
+            </div>
+            <nav class="flex items-center gap-6 text-sm font-medium">
+                <a href="#" class="text-brand-accent border-b-2 border-brand-accent pb-1">Blog</a>
+                <a href="#" class="text-brand-textMuted hover:text-brand-textMain transition-colors pb-1 border-b-2 border-transparent hover:border-brand-accent/30">Research</a>
+                <a href="#" class="text-brand-textMuted hover:text-brand-textMain transition-colors pb-1 border-b-2 border-transparent hover:border-brand-accent/30">Publications</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ====== MAIN CONTENT ====== -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+
+        <!-- Hero -->
+        <div class="mb-12">
+            <div class="flex items-center gap-3 text-xs font-mono text-brand-textMuted mb-3">
+                <span class="bg-brand-card px-3 py-1 rounded-full border border-[#2a3457]">#threat-intel</span>
+                <span class="bg-brand-card px-3 py-1 rounded-full border border-[#2a3457]">#cyber-framework</span>
+                <span class="bg-brand-card px-3 py-1 rounded-full border border-[#2a3457]">#purple-team</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-bold tracking-tight glow-text">
+                From <span class="text-brand-accent">Kill Chain</span> to <span class="text-brand-accent">ATT&amp;CK</span>
+                <br class="hidden sm:block" />
+                <span class="text-brand-textMuted text-2xl md:text-4xl font-light">A Deep Dive into Threat Frameworks</span>
+            </h1>
+            <p class="text-brand-textMuted text-base md:text-lg mt-4 max-w-2xl leading-relaxed">
+                Mapping the Lockheed Martin <span class="text-brand-textMain font-mono">Cyber Kill Chain®</span> to
+                <span class="text-brand-textMain font-mono">MITRE ATT&amp;CK®</span> — a tactical and technical reference
+                for defenders, from initial reconnaissance to final objectives.
+            </p>
+            <div class="flex flex-wrap items-center gap-4 mt-6 text-sm text-brand-textMuted">
+                <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-accent/60"></span> 7 Kill Chain phases</span>
+                <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-accent/60"></span> 14 ATT&amp;CK tactics</span>
+                <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-accent/60"></span> Hundreds of mapped techniques</span>
+            </div>
+        </div>
+
+        <hr class="section-divider" />
+
+        <!-- ====== 1. CYBER KILL CHAIN ====== -->
+        <section class="mb-16">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">⚡</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-brand-textMain">Cyber Kill Chain<sup class="text-xs text-brand-textMuted font-mono">®</sup></h2>
+                <span class="ml-auto text-xs font-mono text-brand-textMuted bg-brand-card px-3 py-1 rounded-full border border-[#2a3457]">Lockheed Martin</span>
+            </div>
+            <p class="text-brand-textMuted leading-relaxed mb-8 max-w-3xl">
+                <span class="text-brand-textMain font-medium">Intelligence Driven Defense<sup>®</sup></span> — the model
+                that decomposes an attack into seven discrete, observable, and actionable phases. Each phase offers a window
+                for detection and disruption.
+            </p>
+
+            <!-- 7 Steps Timeline -->
+            <div class="kill-chain-timeline space-y-8 relative pl-4 md:pl-8">
+
+                <!-- 1. Reconnaissance -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <div class="bg-brand-card/50 border border-[#2a3457] rounded-xl p-5 md:p-6 custom-glow hover:border-brand-accent/40 transition-colors">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                                <span class="text-brand-accent font-mono text-xs tracking-wider bg-brand-bg px-2 py-0.5 rounded border border-brand-accent/20">01</span>
+                                <h3 class="text-lg font-semibold text-brand-textMain mt-1">Reconnaissance</h3>
+                            </div>
+                            <span class="text-xs font-mono text-brand-textMuted bg-brand-bg px-3 py-1 rounded-full border border-[#2a3457]">TA0043</span>
+                        </div>
+                        <p class="text-brand-textMuted text-sm mt-2 leading-relaxed">The adversary gathers information about the target organisation, personnel, network architecture, email formats, and more. Includes OSINT, social engineering, network scanning, and passive enumeration.</p>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1589</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1595</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1592</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Weaponization -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <div class="bg-brand-card/50 border border-[#2a3457] rounded-xl p-5 md:p-6 custom-glow hover:border-brand-accent/40 transition-colors">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                                <span class="text-brand-accent font-mono text-xs tracking-wider bg-brand-bg px-2 py-0.5 rounded border border-brand-accent/20">02</span>
+                                <h3 class="text-lg font-semibold text-brand-textMain mt-1">Weaponization</h3>
+                            </div>
+                            <span class="text-xs font-mono text-brand-textMuted bg-brand-bg px-3 py-1 rounded-full border border-[#2a3457]">TA0002</span>
+                        </div>
+                        <p class="text-brand-textMuted text-sm mt-2 leading-relaxed">The intelligence gathered is turned into deliverable payloads – exploit-laden documents, macro-enabled Office files, custom trojans, or any malicious code tailored to the target environment.</p>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1204</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1059</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1027</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Delivery -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <div class="bg-brand-card/50 border border-[#2a3457] rounded-xl p-5 md:p-6 custom-glow hover:border-brand-accent/40 transition-colors">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                                <span class="text-brand-accent font-mono text-xs tracking-wider bg-brand-bg px-2 py-0.5 rounded border border-brand-accent/20">03</span>
+                                <h3 class="text-lg font-semibold text-brand-textMain mt-1">Delivery</h3>
+                            </div>
+                            <span class="text-xs font-mono text-brand-textMuted bg-brand-bg px-3 py-1 rounded-full border border-[#2a3457]">TA0001</span>
+                        </div>
+                        <p class="text-brand-textMuted text-sm mt-2 leading-relaxed">The weaponised payload is transmitted to the target. Common vectors include phishing emails, malicious websites, USB devices, or supply‑chain compromise.</p>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1566</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1189</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1072</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Exploitation -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <div class="bg-brand-card/50 border border-[#2a3457] rounded-xl p-5 md:p-6 custom-glow hover:border-brand-accent/40 transition-colors">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                                <span class="text-brand-accent font-mono text-xs tracking-wider bg-brand-bg px-2 py-0.5 rounded border border-brand-accent/20">04</span>
+                                <h3 class="text-lg font-semibold text-brand-textMain mt-1">Exploitation</h3>
+                            </div>
+                            <span class="text-xs font-mono text-brand-textMuted bg-brand-bg px-3 py-1 rounded-full border border-[#2a3457]">TA0002</span>
+                        </div>
+                        <p class="text-brand-textMuted text-sm mt-2 leading-relaxed">The vulnerability is triggered and code is executed on the target system. Typical techniques include buffer overflows, script execution, DLL hijacking, or user‑assisted actions.</p>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1203</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1059</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1068</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Installation -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <div class="bg-brand-card/50 border border-[#2a3457] rounded-xl p-5 md:p-6 custom-glow hover:border-brand-accent/40 transition-colors">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                                <span class="text-brand-accent font-mono text-xs tracking-wider bg-brand-bg px-2 py-0.5 rounded border border-brand-accent/20">05</span>
+                                <h3 class="text-lg font-semibold text-brand-textMain mt-1">Installation</h3>
+                            </div>
+                            <span class="text-xs font-mono text-brand-textMuted bg-brand-bg px-3 py-1 rounded-full border border-[#2a3457]">TA0003 · TA0004</span>
+                        </div>
+                        <p class="text-brand-textMuted text-sm mt-2 leading-relaxed">Persistence is established on the compromised host – writing to startup folders, creating scheduled tasks, injecting into system processes, or installing services.</p>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1547</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1053</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1505</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Command & Control -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <div class="bg-brand-card/50 border border-[#2a3457] rounded-xl p-5 md:p-6 custom-glow hover:border-brand-accent/40 transition-colors">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                                <span class="text-brand-accent font-mono text-xs tracking-wider bg-brand-bg px-2 py-0.5 rounded border border-brand-accent/20">06</span>
+                                <h3 class="text-lg font-semibold text-brand-textMain mt-1">Command &amp; Control</h3>
+                            </div>
+                            <span class="text-xs font-mono text-brand-textMuted bg-brand-bg px-3 py-1 rounded-full border border-[#2a3457]">TA0011</span>
+                        </div>
+                        <p class="text-brand-textMuted text-sm mt-2 leading-relaxed">A C2 channel is established to receive instructions and exfiltrate data. Common protocols: HTTP/S, DNS, ICMP, and tunnelling over Tor or custom encryption.</p>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1071</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1090</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1572</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Actions on Objectives -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <div class="bg-brand-card/50 border border-[#2a3457] rounded-xl p-5 md:p-6 custom-glow hover:border-brand-accent/40 transition-colors">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                                <span class="text-brand-accent font-mono text-xs tracking-wider bg-brand-bg px-2 py-0.5 rounded border border-brand-accent/20">07</span>
+                                <h3 class="text-lg font-semibold text-brand-textMain mt-1">Actions on Objectives</h3>
+                            </div>
+                            <span class="text-xs font-mono text-brand-textMuted bg-brand-bg px-3 py-1 rounded-full border border-[#2a3457]">TA0010 · TA0009</span>
+                        </div>
+                        <p class="text-brand-textMuted text-sm mt-2 leading-relaxed">The adversary achieves their ultimate goal: data exfiltration, ransomware encryption, destructive wipes, or lateral movement to crown‑jewel systems.</p>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1048</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1486</span>
+                            <span class="text-xs bg-brand-bg px-2 py-0.5 rounded text-brand-textMuted border border-[#2a3457]">T1570</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-6 text-xs text-brand-textMuted/60 font-mono border-t border-[#1E2640] pt-4">
+                <span class="inline-block mr-4">🔗 Each phase is mapped to MITRE ATT&amp;CK tactics and techniques</span>
+                <span class="inline-block">Reference: Lockheed Martin Cyber Kill Chain®</span>
+            </div>
+        </section>
+
+        <hr class="section-divider" />
+
+        <!-- ====== 2. MITRE ATT&CK OVERVIEW ====== -->
+        <section class="mb-16">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">🛡️</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-brand-textMain">MITRE ATT&amp;CK<sup class="text-xs text-brand-textMuted font-mono">®</sup></h2>
+                <span class="ml-auto text-xs font-mono text-brand-textMuted bg-brand-card px-3 py-1 rounded-full border border-[#2a3457]">14 tactics · hundreds of techniques</span>
+            </div>
+            <p class="text-brand-textMuted leading-relaxed mb-8 max-w-3xl">
+                <span class="text-brand-textMain font-medium">ATT&amp;CK</span> (Adversarial Tactics, Techniques &amp; Common Knowledge)
+                classifies adversary behaviour into tactical objectives and technical procedures. It complements the Kill Chain:
+                the Kill Chain describes <em class="text-brand-textMain not-italic">attack sequence</em>, while ATT&amp;CK describes <em class="text-brand-textMain not-italic">attack methods</em>.
+            </p>
+
+            <!-- 14 Tactics Grid -->
+            <div class="attack-matrix-grid">
+                <div class="tactic-badge"><span class="tactic-code">TA0043</span> Reconnaissance</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0002</span> Initial Access</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0003</span> Persistence</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0004</span> Privilege Escalation</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0005</span> Defence Evasion</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0006</span> Credential Access</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0007</span> Discovery</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0008</span> Lateral Movement</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0009</span> Collection</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0010</span> Exfiltration</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0011</span> Command &amp; Control</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0040</span> Impact</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0001</span> Initial Access (legacy)</div>
+                <div class="tactic-badge"><span class="tactic-code">TA0000</span> other tactics</div>
+            </div>
+            <p class="text-xs text-brand-textMuted/60 mt-3">Note: ATT&amp;CK v15 includes 14 tactics; some techniques span multiple tactics.</p>
+        </section>
+
+        <hr class="section-divider" />
+
+        <!-- ====== 3. MAPPING TABLE ====== -->
+        <section class="mb-16">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">🔗</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-brand-textMain">Kill Chain → ATT&amp;CK Mapping</h2>
+            </div>
+            <p class="text-brand-textMuted leading-relaxed mb-8 max-w-3xl">
+                Aligning the seven Kill Chain phases with ATT&amp;CK tactics yields a <span class="text-brand-textMain font-medium">“phase‑tactic‑technique”</span>
+                tri‑dimensional view. The table below shows the primary mappings.
+            </p>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm border-collapse">
+                    <thead>
+                        <tr class="border-b border-[#1E2640]">
+                            <th class="text-left py-3 px-4 text-brand-accent font-mono text-xs tracking-wider">Kill Chain Phase</th>
+                            <th class="text-left py-3 px-4 text-brand-accent font-mono text-xs tracking-wider">ATT&amp;CK Tactic(s)</th>
+                            <th class="text-left py-3 px-4 text-brand-accent font-mono text-xs tracking-wider hidden md:table-cell">Example Techniques</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#1E2640]">
+                        <tr><td class="py-3 px-4 font-medium text-brand-textMain">Reconnaissance</td><td class="py-3 px-4 text-brand-textMuted"><span class="text-brand-accent font-mono">TA0043</span> Reconnaissance</td><td class="py-3 px-4 text-brand-textMuted/70 font-mono text-xs hidden md:table-cell">T1589, T1595, T1592</td></tr>
+                        <tr><td class="py-3 px-4 font-medium text-brand-textMain">Weaponization</td><td class="py-3 px-4 text-brand-textMuted"><span class="text-brand-accent font-mono">TA0002</span> Initial Access</td><td class="py-3 px-4 text-brand-textMuted/70 font-mono text-xs hidden md:table-cell">T1204, T1059, T1027</td></tr>
+                        <tr><td class="py-3 px-4 font-medium text-brand-textMain">Delivery</td><td class="py-3 px-4 text-brand-textMuted"><span class="text-brand-accent font-mono">TA0001</span> Initial Access</td><td class="py-3 px-4 text-brand-textMuted/70 font-mono text-xs hidden md:table-cell">T1566, T1189, T1072</td></tr>
+                        <tr><td class="py-3 px-4 font-medium text-brand-textMain">Exploitation</td><td class="py-3 px-4 text-brand-textMuted"><span class="text-brand-accent font-mono">TA0002</span> Initial Access</td><td class="py-3 px-4 text-brand-textMuted/70 font-mono text-xs hidden md:table-cell">T1203, T1059, T1068</td></tr>
+                        <tr><td class="py-3 px-4 font-medium text-brand-textMain">Installation</td><td class="py-3 px-4 text-brand-textMuted"><span class="text-brand-accent font-mono">TA0003</span> Persistence · <span class="text-brand-accent font-mono">TA0004</span> Priv. Escalation</td><td class="py-3 px-4 text-brand-textMuted/70 font-mono text-xs hidden md:table-cell">T1547, T1053, T1505</td></tr>
+                        <tr><td class="py-3 px-4 font-medium text-brand-textMain">C2</td><td class="py-3 px-4 text-brand-textMuted"><span class="text-brand-accent font-mono">TA0011</span> Command &amp; Control</td><td class="py-3 px-4 text-brand-textMuted/70 font-mono text-xs hidden md:table-cell">T1071, T1090, T1572</td></tr>
+                        <tr><td class="py-3 px-4 font-medium text-brand-textMain">Actions on Objectives</td><td class="py-3 px-4 text-brand-textMuted"><span class="text-brand-accent font-mono">TA0010</span> Exfiltration · <span class="text-brand-accent font-mono">TA0009</span> Collection</td><td class="py-3 px-4 text-brand-textMuted/70 font-mono text-xs hidden md:table-cell">T1048, T1486, T1570</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 text-xs text-brand-textMuted/60 font-mono border-t border-[#1E2640] pt-4">
+                ⚡ Mapping based on MITRE ATT&amp;CK official data and KillChainGraph research.
+            </div>
+        </section>
+
+        <hr class="section-divider" />
+
+        <!-- ====== 4. DEFENSIVE PERSPECTIVE ====== -->
+        <section class="mb-10">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">🛡️</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-brand-textMain">Unified Defence: From Detection to Disruption</h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-brand-card/30 border border-[#2a3457] rounded-xl p-5 custom-glow">
+                    <h4 class="text-brand-accent font-semibold flex items-center gap-2"><span class="text-lg">🔍</span> Kill Chain — Early Blocking</h4>
+                    <ul class="mt-3 space-y-2 text-sm text-brand-textMuted leading-relaxed list-disc list-inside marker:text-brand-accent/60">
+                        <li>Deploy deception (honeypots) and traffic analysis during Reconnaissance</li>
+                        <li>Strengthen email gateways and endpoint detection at the Delivery phase</li>
+                        <li>Disrupt C2 channels via DNS/HTTP behavioural analytics</li>
+                    </ul>
+                </div>
+                <div class="bg-brand-card/30 border border-[#2a3457] rounded-xl p-5 custom-glow">
+                    <h4 class="text-brand-accent font-semibold flex items-center gap-2"><span class="text-lg">🧩</span> ATT&amp;CK — Precision Hunting</h4>
+                    <ul class="mt-3 space-y-2 text-sm text-brand-textMuted leading-relaxed list-disc list-inside marker:text-brand-accent/60">
+                        <li>Build SIEM use cases around specific techniques (e.g. T1048 Exfiltration)</li>
+                        <li>Use ATT&amp;CK Navigator for coverage gap analysis</li>
+                        <li>Red/Blue teams simulate and validate using ATT&amp;CK playbooks</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-6 bg-brand-card/20 border border-[#1E2640] rounded-xl p-5 text-center text-brand-textMuted text-sm">
+                <span class="font-mono text-brand-accent">#</span> Combining both = a <span class="text-brand-textMain font-medium">“sequence + means”</span> dual‑layer defence paradigm
+            </div>
+        </section>
+
+        <hr class="section-divider" />
+
+        <!-- ====== FOOTER ====== -->
+        <footer class="pt-6 text-xs text-brand-textMuted/50 font-mono border-t border-[#1E2640] flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <span class="text-brand-accent/70">TheSudoLab</span> · Threat Framework Deep Dive · 2026
+            </div>
+            <div class="flex gap-4">
+                <span>Cyber Kill Chain® is a trademark of Lockheed Martin</span>
+                <span>MITRE ATT&amp;CK® is a trademark of The MITRE Corporation</span>
+            </div>
+        </footer>
+
+    </main>
+</body>
+</html>
