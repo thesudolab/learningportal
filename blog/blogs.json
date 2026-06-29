@@ -10,6 +10,11 @@
     "filename": "AI_fluency.html"
   },
   {
+    "title": "Comprehensive Pentesting Roadmap · TheSudoLab",
+    "slug": "pentest-roadmap",
+    "filename": "pentest_roadmap.html"
+  },
+  {
     "title": "Cyber Kill Chain · MITRE ATT&CK · TheSudoLab",
     "slug": "cyber-kill-chain",
     "filename": "Cyber-kill-chain.html"
@@ -38,10 +43,5 @@
     "title": "The Linux Filesystem | TheSudoLab",
     "slug": "linux-file-system",
     "filename": "Linux_File_System.html"
-  },
-  {
-    "title": "Web App Penetration Testing Roadmap",
-    "slug": "pentest-roadmap",
-    "filename": "pentest_roadmap.html"
   }
 ]
