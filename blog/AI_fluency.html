@@ -1,56 +1,514 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Fluency: A Comprehensive Glossary form TheSudoLab</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Fluency · Glossary · TheSudoLab</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#0B0F19',
+                            surface: '#151C2C',
+                            card: '#1E2640',
+                            accent: '#D4AF37',
+                            accentHover: '#F3E5AB',
+                            crimson: '#E63946',
+                            textMain: '#F8FAFC',
+                            textMuted: '#94A3B8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1 { color: #2c3e50; }
-        h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 30px; }
-        .term { font-weight: bold; color: #2980b9; }
-        .container { background: #f9f9f9; padding: 20px; border-radius: 8px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+        body {
+            background-color: #0B0F19;
+            font-family: 'Inter', sans-serif;
+            color: #F8FAFC;
+        }
+
+        .custom-glow {
+            box-shadow: 0 4px 30px rgba(212, 169, 55, 0.05);
+        }
+
+        .radar-pulse {
+            position: relative;
+        }
+        .radar-pulse::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border: 1px solid #D4AF37;
+            border-radius: 4px;
+            opacity: 0;
+            animation: pulseScan 2.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+        }
+        @keyframes pulseScan {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1.25);
+                opacity: 0;
+            }
+        }
+
+        .glow-text {
+            text-shadow: 0 0 30px rgba(212, 169, 55, 0.08);
+        }
+
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #D4AF37, #94A3B8, #D4AF37, transparent);
+            opacity: 0.25;
+            margin: 2.5rem 0;
+        }
+
+        .term-badge {
+            display: inline-block;
+            background: #1E2640;
+            border: 1px solid #2a3457;
+            border-radius: 0.375rem;
+            padding: 0.1rem 0.6rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #D4AF37;
+            letter-spacing: 0.02em;
+            transition: all 0.2s;
+        }
+        .term-badge:hover {
+            border-color: #D4AF37;
+            background: #252f4a;
+            color: #F3E5AB;
+        }
+
+        .glossary-card {
+            background: #151C2C;
+            border: 1px solid #1E2640;
+            border-radius: 0.75rem;
+            padding: 1.25rem 1.5rem;
+            transition: all 0.25s ease;
+        }
+        .glossary-card:hover {
+            border-color: #D4AF37;
+            box-shadow: 0 0 30px rgba(212, 169, 55, 0.04);
+            transform: translateY(-2px);
+        }
+
+        .glossary-card .term {
+            color: #D4AF37;
+            font-weight: 600;
+            font-size: 1.05rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .glossary-card .term .term-code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.6rem;
+            font-weight: 400;
+            color: #94A3B8;
+            background: #0B0F19;
+            padding: 0.1rem 0.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid #2a3457;
+        }
+        .glossary-card p {
+            color: #94A3B8;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-top: 0.25rem;
+        }
+        .glossary-card .meta-tag {
+            display: inline-block;
+            font-size: 0.6rem;
+            font-family: 'Fira Code', monospace;
+            color: #94A3B8;
+            background: #0B0F19;
+            padding: 0.1rem 0.6rem;
+            border-radius: 0.25rem;
+            border: 1px solid #2a3457;
+            margin-right: 0.4rem;
+            margin-top: 0.5rem;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .category-header .icon {
+            font-size: 1.75rem;
+        }
+        .category-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #F8FAFC;
+            letter-spacing: -0.02em;
+        }
+        .category-header .count {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            color: #94A3B8;
+            background: #1E2640;
+            padding: 0.1rem 0.7rem;
+            border-radius: 0.5rem;
+            border: 1px solid #2a3457;
+            margin-left: auto;
+        }
+
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .glossary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .floating-accent {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: #D4AF37;
+            opacity: 0.06;
+            pointer-events: none;
+            animation: floatGlow 6s ease-in-out infinite;
+        }
+        @keyframes floatGlow {
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.04;
+            }
+            50% {
+                transform: translateY(-12px) scale(1.1);
+                opacity: 0.1;
+            }
+        }
+
+        .term-highlight {
+            color: #D4AF37;
+            font-weight: 500;
+        }
+
+        /* subtle pulse on section headers */
+        .pulse-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #D4AF37;
+            margin-right: 0.5rem;
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+        @keyframes pulseDot {
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.3);
+            }
+        }
     </style>
 </head>
 <body>
 
-    <h1>Navigating the AI Landscape</h1>
-    <p>Welcome to TheSudoLab's guide on the foundational technologies shaping the future of artificial intelligence.</p>
+    <!-- floating decoration -->
+    <div class="floating-accent"></div>
 
-    <div class="container">
-        <h2>Core Concepts</h2>
-        <p><span class="term">Artificial Intelligence (AI):</span> The broad science of creating systems capable of performing tasks that typically require human intelligence.</p>
-        <p><span class="term">Machine Learning (ML):</span> A subset of AI focused on algorithms that allow computers to learn from and make predictions based on data.</p>
-        <p><span class="term">Deep Learning:</span> A specialized subset of ML using multi-layered <span class="term">Neural Networks</span> to model complex patterns in data.</p>
-        <p><span class="term">Transformer:</span> The underlying architecture that powers modern AI, enabling the processing of sequential data with high efficiency.</p>
-    </div>
+    <!-- ====== HEADER ====== -->
+    <header class="border-b border-[#1E2640] bg-brand-bg/80 backdrop-blur-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+            <div class="flex items-center gap-3">
+                <div class="radar-pulse w-7 h-7 bg-brand-accent/10 rounded flex items-center justify-center text-brand-accent font-mono text-sm font-bold tracking-wider">
+                    <span class="relative z-10">#</span>
+                </div>
+                <span class="text-brand-accent font-mono text-sm tracking-widest hidden sm:block">TheSudoLab</span>
+                <span class="text-brand-textMuted text-xs font-mono hidden md:block">·</span>
+                <span class="text-brand-textMuted text-xs font-mono hidden md:block">ai · glossary</span>
+            </div>
+            <nav class="flex items-center gap-6 text-sm font-medium">
+                <a href="#" class="text-brand-accent border-b-2 border-brand-accent pb-1">Blog</a>
+                <a href="#" class="text-brand-textMuted hover:text-brand-textMain transition-colors pb-1 border-b-2 border-transparent hover:border-brand-accent/30">Research</a>
+                <a href="#" class="text-brand-textMuted hover:text-brand-textMain transition-colors pb-1 border-b-2 border-transparent hover:border-brand-accent/30">Publications</a>
+            </nav>
+        </div>
+    </header>
 
-    <h2>Large Language Models & Mechanics</h2>
-    <ul>
-        <li><span class="term">Large Language Model (LLM):</span> A model trained on vast text data to understand, generate, and manipulate human language.</li>
-        <li><span class="term">Token:</span> The basic unit of text processing (often words or sub-words) that models use to "read" input.</li>
-        <li><span class="term">Prompt:</span> The input instruction provided by a user to guide the model's output.</li>
-        <li><span class="term">Context Window:</span> The limit of information (tokens) a model can "remember" or consider at one time.</li>
-        <li><span class="term">Inference:</span> The process of a trained model generating an output based on a new input.</li>
-        <li><span class="term">Temperature:</span> A setting that controls the randomness or "creativity" of the model's output.</li>
-        <li><span class="term">Hallucination:</span> When an AI confidently generates information that is factually incorrect.</li>
-    </ul>
+    <!-- ====== MAIN ====== -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
 
-    <h2>Training & Optimization</h2>
-    <ul>
-        <li><span class="term">Pre-training:</span> The initial stage where a model learns from massive, unlabeled datasets.</li>
-        <li><span class="term">Fine-tuning:</span> The process of training a pre-trained model further on a smaller, curated dataset for specific tasks.</li>
-        <li><span class="term">RLHF (Reinforcement Learning from Human Feedback):</span> Using human feedback to align the model’s behavior with human intent.</li>
-        <li><span class="term">AI Alignment:</span> The field of research ensuring AI systems behave in ways consistent with human values and goals.</li>
-    </ul>
+        <!-- Hero -->
+        <div class="mb-12">
+            <div class="flex items-center gap-3 text-xs font-mono text-brand-textMuted mb-3">
+                <span class="bg-brand-card px-3 py-1 rounded-full border border-[#2a3457]">#ai</span>
+                <span class="bg-brand-card px-3 py-1 rounded-full border border-[#2a3457]">#machine-learning</span>
+                <span class="bg-brand-card px-3 py-1 rounded-full border border-[#2a3457]">#llm</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-bold tracking-tight glow-text">
+                Navigating the <span class="text-brand-accent">AI</span> Landscape
+                <br class="hidden sm:block" />
+                <span class="text-brand-textMuted text-2xl md:text-4xl font-light">A Comprehensive Glossary</span>
+            </h1>
+            <p class="text-brand-textMuted text-base md:text-lg mt-4 max-w-2xl leading-relaxed">
+                Foundational concepts, architectural mechanics, and advanced capabilities —
+                a curated reference for engineers, researchers, and curious minds.
+            </p>
+            <div class="flex flex-wrap items-center gap-4 mt-6 text-sm text-brand-textMuted">
+                <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-accent/60"></span> 20+ terms</span>
+                <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-accent/60"></span> 4 core domains</span>
+                <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-accent/60"></span> From transformers to agents</span>
+            </div>
+        </div>
 
-    <h2>Advanced Capabilities</h2>
-    <ul>
-        <li><span class="term">Embeddings:</span> Representing words or data as numerical vectors in a multi-dimensional space to capture semantic meaning.</li>
-        <li><span class="term">Retrieval-Augmented Generation (RAG):</span> A technique where the model fetches external, up-to-date data before generating an answer.</li>
-        <li><span class="term">AI Agent:</span> An autonomous AI system capable of using tools and taking actions to achieve complex goals.</li>
-        <li><span class="term">Multimodal AI:</span> Models capable of processing and generating multiple types of media, such as text, images, and audio.</li>
-    </ul>
+        <hr class="section-divider" />
 
+        <!-- ====== CORE CONCEPTS ====== -->
+        <section class="mb-14">
+            <div class="category-header">
+                <span class="icon">🧠</span>
+                <h2>Core Concepts</h2>
+                <span class="count">4 terms</span>
+            </div>
+            <div class="glossary-grid">
+                <div class="glossary-card">
+                    <div class="term">
+                        Artificial Intelligence (AI)
+                        <span class="term-code">AI</span>
+                    </div>
+                    <p>The broad scientific discipline of creating systems capable of performing tasks that typically require human intelligence — reasoning, perception, learning, and decision-making.</p>
+                    <span class="meta-tag">foundational</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        Machine Learning (ML)
+                        <span class="term-code">ML</span>
+                    </div>
+                    <p>A subset of AI focused on algorithms that allow computers to learn from and make predictions based on data, without being explicitly programmed for every rule.</p>
+                    <span class="meta-tag">subset</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        Deep Learning
+                        <span class="term-code">DL</span>
+                    </div>
+                    <p>A specialised subset of ML using multi-layered <span class="term-highlight">Neural Networks</span> to model complex, hierarchical patterns in large volumes of data.</p>
+                    <span class="meta-tag">subset</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        Transformer
+                        <span class="term-code">architecture</span>
+                    </div>
+                    <p>The underlying neural architecture that powers modern AI, enabling efficient processing of sequential data through self‑attention mechanisms — the backbone of LLMs.</p>
+                    <span class="meta-tag">architecture</span>
+                </div>
+            </div>
+        </section>
+
+        <hr class="section-divider" />
+
+        <!-- ====== LLMs & MECHANICS ====== -->
+        <section class="mb-14">
+            <div class="category-header">
+                <span class="icon">⚙️</span>
+                <h2>Large Language Models &amp; Mechanics</h2>
+                <span class="count">6 terms</span>
+            </div>
+            <div class="glossary-grid">
+                <div class="glossary-card">
+                    <div class="term">
+                        Large Language Model (LLM)
+                        <span class="term-code">LLM</span>
+                    </div>
+                    <p>A model trained on vast text corpora to understand, generate, and manipulate human language with remarkable fluency and contextual awareness.</p>
+                    <span class="meta-tag">model</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        Token
+                        <span class="term-code">token</span>
+                    </div>
+                    <p>The basic unit of text processing — often words, sub‑words, or characters — that models use to "read" and encode input sequences.</p>
+                    <span class="meta-tag">mechanics</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        Prompt
+                        <span class="term-code">prompt</span>
+                    </div>
+                    <p>The input instruction or query provided by a user to guide the model's output. Prompt engineering is a critical skill for effective AI interaction.</p>
+                    <span class="meta-tag">interaction</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        Context Window
+                        <span class="term-code">context</span>
+                    </div>
+                    <p>The maximum number of tokens a model can "remember" or consider at one time — a key constraint for long‑form reasoning and document analysis.</p>
+                    <span class="meta-tag">limitation</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        Inference
+                        <span class="term-code">inference</span>
+                    </div>
+                    <p>The process of a trained model generating an output (prediction, text, or decision) based on a new, unseen input — the "run time" phase.</p>
+                    <span class="meta-tag">operation</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        Temperature
+                        <span class="term-code">temp</span>
+                    </div>
+                    <p>A hyperparameter that controls the randomness or "creativity" of the model's output. Lower values yield deterministic, focused responses; higher values encourage diversity.</p>
+                    <span class="meta-tag">control</span>
+                </div>
+            </div>
+            <!-- Hallucination as a standalone highlight -->
+            <div class="mt-4 glossary-card border border-[#2a3457] bg-brand-card/30">
+                <div class="term">
+                    Hallucination
+                    <span class="term-code">artifact</span>
+                </div>
+                <p>When an AI confidently generates information that is factually incorrect, fabricated, or inconsistent with the source data — a critical challenge in deployment.</p>
+                <span class="meta-tag">risk</span>
+                <span class="meta-tag">alignment</span>
+            </div>
+        </section>
+
+        <hr class="section-divider" />
+
+        <!-- ====== TRAINING & OPTIMIZATION ====== -->
+        <section class="mb-14">
+            <div class="category-header">
+                <span class="icon">🔬</span>
+                <h2>Training &amp; Optimization</h2>
+                <span class="count">4 terms</span>
+            </div>
+            <div class="glossary-grid">
+                <div class="glossary-card">
+                    <div class="term">
+                        Pre‑training
+                        <span class="term-code">pre-train</span>
+                    </div>
+                    <p>The initial stage where a model learns language structure and world knowledge from massive, unlabeled datasets — the foundation of all modern LLMs.</p>
+                    <span class="meta-tag">phase</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        Fine‑tuning
+                        <span class="term-code">fine-tune</span>
+                    </div>
+                    <p>The process of training a pre‑trained model further on a smaller, curated dataset for specific tasks or domains, adapting its capabilities.</p>
+                    <span class="meta-tag">phase</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        RLHF
+                        <span class="term-code">Reinforcement Learning from Human Feedback</span>
+                    </div>
+                    <p>Using human preference signals to align the model's behaviour with human intent, improving safety, helpfulness, and tone.</p>
+                    <span class="meta-tag">alignment</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        AI Alignment
+                        <span class="term-code">alignment</span>
+                    </div>
+                    <p>The field of research dedicated to ensuring AI systems behave in ways consistent with human values, goals, and ethical principles.</p>
+                    <span class="meta-tag">safety</span>
+                </div>
+            </div>
+        </section>
+
+        <hr class="section-divider" />
+
+        <!-- ====== ADVANCED CAPABILITIES ====== -->
+        <section class="mb-14">
+            <div class="category-header">
+                <span class="icon">🚀</span>
+                <h2>Advanced Capabilities</h2>
+                <span class="count">4 terms</span>
+            </div>
+            <div class="glossary-grid">
+                <div class="glossary-card">
+                    <div class="term">
+                        Embeddings
+                        <span class="term-code">vectors</span>
+                    </div>
+                    <p>Numerical representations of words, phrases, or data points in a multi‑dimensional space that capture semantic meaning and relationships.</p>
+                    <span class="meta-tag">representation</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        Retrieval‑Augmented Generation (RAG)
+                        <span class="term-code">RAG</span>
+                    </div>
+                    <p>A technique where the model fetches external, up‑to‑date data from a knowledge base before generating an answer — grounding responses in verifiable facts.</p>
+                    <span class="meta-tag">grounding</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        AI Agent
+                        <span class="term-code">agent</span>
+                    </div>
+                    <p>An autonomous AI system capable of using tools, planning sequences, and taking actions to achieve complex, multi‑step goals with minimal human oversight.</p>
+                    <span class="meta-tag">autonomy</span>
+                </div>
+                <div class="glossary-card">
+                    <div class="term">
+                        Multimodal AI
+                        <span class="term-code">multimodal</span>
+                    </div>
+                    <p>Models capable of processing and generating multiple types of media — text, images, audio, video — enabling richer, more context‑aware interactions.</p>
+                    <span class="meta-tag">capability</span>
+                </div>
+            </div>
+        </section>
+
+        <hr class="section-divider" />
+
+        <!-- ====== FOOTER ====== -->
+        <footer class="pt-6 text-xs text-brand-textMuted/50 font-mono border-t border-[#1E2640] flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <span class="text-brand-accent/70">TheSudoLab</span> · AI Fluency Glossary · 2026
+            </div>
+            <div class="flex gap-4">
+                <span>built with <span class="text-brand-accent/50">✦</span> for the curious</span>
+                <span>v1.0 · 20+ terms</span>
+            </div>
+        </footer>
+
+    </main>
 </body>
 </html>
