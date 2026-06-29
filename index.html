@@ -14,7 +14,7 @@
                             bg: '#0B0F19',
                             surface: '#151C2C',
                             card: '#1E2640',
-                            accent: '#D4AF37', /* Premium Subtle Gold */
+                            accent: '#D4AF37',
                             accentHover: '#F3E5AB',
                             crimson: '#E63946',
                             textMain: '#F8FAFC',
@@ -31,13 +31,13 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
-        
+
         body {
             background-color: #0B0F19;
             font-family: 'Inter', sans-serif;
             color: #F8FAFC;
         }
-        
+
         .custom-glow {
             box-shadow: 0 4px 30px rgba(212, 169, 55, 0.05);
         }
@@ -61,7 +61,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Continuous Cyber Scanning Pulse Animation for Logo Node */
         .radar-pulse {
             position: relative;
         }
@@ -78,6 +77,54 @@
             0% { transform: scale(0.95); opacity: 0.8; }
             50% { opacity: 0.3; }
             100% { transform: scale(1.25); opacity: 0; }
+        }
+
+        /* ── Animated Gold Thread Logo ── */
+        .logo-thread-wrap {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo-thread-svg {
+            width: 44px;
+            height: 32px;
+            overflow: visible;
+        }
+
+        .thread-gold {
+            stroke: #D4AF37;
+            stroke-width: 4.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            stroke-dasharray: 800;
+            stroke-dashoffset: 800;
+            animation: drawThreadGold 6s linear infinite;
+            filter: drop-shadow(0 0 8px rgba(212, 169, 55, 0.35));
+        }
+
+        @keyframes drawThreadGold {
+            0%   { stroke-dashoffset: 800; }
+            50%  { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -800; }
+        }
+
+        .thread-glow {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 169, 55, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.3; transform: scale(0.95); }
+            50% { opacity: 0.8; transform: scale(1.05); }
         }
     </style>
 </head>
@@ -96,12 +143,16 @@
 
     <header class="sticky top-0 z-50 bg-brand-bg/90 backdrop-blur-md border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            
+
             <a href="#" class="flex items-center gap-3 group">
-                <div class="radar-pulse w-10 h-10 rounded border border-brand-accent/40 bg-[#0F1524] flex flex-col items-center justify-center font-mono text-[10px] tracking-tighter text-brand-accent font-bold shadow-lg transition-all duration-300 group-hover:border-brand-accent">
-                    <span class="leading-none text-brand-textMain animate-pulse">SUDO</span>
-                    <span class="text-[8px] tracking-widest text-slate-500 -mt-0.5 font-normal">LAB</span>
+                <!-- Animated Gold Thread Logo — replaces square box -->
+                <div class="logo-thread-wrap radar-pulse">
+                    <div class="thread-glow"></div>
+                    <svg class="logo-thread-svg" viewBox="150 170 550 330" xmlns="http://www.w3.org/2000/svg">
+                        <path class="thread-gold" d="M 250,250 C 220,200 170,220 180,260 C 190,300 240,240 250,280 C 260,320 200,350 180,310 C 160,270 210,230 230,210 C 260,180 320,220 310,270 C 300,320 240,310 230,340 C 210,380 290,380 310,330 C 320,300 300,270 330,270 C 360,270 390,360 450,340 C 510,320 520,220 590,220 C 660,220 680,290 660,340 C 630,400 550,380 540,300 C 530,240 610,240 630,280 C 650,320 600,340 580,310 C 560,280 580,260 600,270 C 610,275 610,290 600,290" />
+                    </svg>
                 </div>
+
                 <div>
                     <span class="text-xl font-bold tracking-tight text-brand-textMain">TheSudo<span class="text-brand-accent">Lab</span></span>
                     <p class="text-[10px] font-mono tracking-widest text-brand-textMuted uppercase -mt-1">Enterprise Security</p>
@@ -135,7 +186,7 @@
     </header>
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 w-full">
-        
+
         <section id="about" class="tab-section active space-y-16">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                 <div class="lg:col-span-7 space-y-6">
@@ -370,12 +421,12 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('header nav button').forEach(el => el.classList.remove('active-nav'));
-            
+
             let targetedSection = document.getElementById(tabId === 'services' ? 'services' : tabId);
             if (targetedSection) {
                 targetedSection.classList.add('active');
             }
-            
+
             const nativeBtn = document.getElementById(`nav-btn-${tabId}`);
             if (nativeBtn) nativeBtn.classList.add('active-nav');
 
@@ -441,7 +492,7 @@
                     card.href = `./blog/${post.filename}`;
                     card.setAttribute('data-title', post.title.toLowerCase());
                     const postDate = post.date || post.published || post.time || post.created || 'N/A';
-                    
+
                     card.innerHTML = `
                         <div class="space-y-3">
                             <div class="flex items-center justify-between text-[11px] font-mono text-brand-accent">
