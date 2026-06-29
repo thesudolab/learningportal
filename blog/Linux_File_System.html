@@ -1,130 +1,1153 @@
----
-title: "The Linux Filesystem — TheSudoLab Learning Portal"
-description: "Learn how the Linux filesystem works, understand the root directory structure, explore key directories like /home, /etc, /bin, and /usr, and build a strong foundation in Linux administration."
-date: 2026-06-21
-author: "TheSudoLab"
-tags:
-  - Linux
-  - Filesystem
-  - Linux Administration
-  - Operating Systems
-  - Beginner
-category: "Linux Fundamentals"
----
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Linux Filesystem | TheSudoLab</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#0B0F19',
+                            surface: '#151C2C',
+                            card: '#1E2640',
+                            accent: '#D4AF37',
+                            accentHover: '#F3E5AB',
+                            crimson: '#E63946',
+                            textMain: '#F8FAFC',
+                            textMuted: '#94A3B8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --primary: #2d3436;
-            --accent: #00b894;
-            --bg: #f8f9fa;
-            --card: #ffffff;
-            --text: #2d3436;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            background-color: #0B0F19;
+            font-family: 'Inter', sans-serif;
+            color: #F8FAFC;
             line-height: 1.6;
-            margin: 0;
-            padding: 20px;
+            min-height: 100vh;
         }
 
-        .container {
-            max-width: 900px;
-            margin: auto;
-            background: var(--card);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        .radar-pulse {
+            position: relative;
+        }
+        .radar-pulse::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border: 1px solid #D4AF37;
+            border-radius: 4px;
+            opacity: 0;
+            animation: pulseScan 2.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+        }
+        @keyframes pulseScan {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1.25);
+                opacity: 0;
+            }
         }
 
-        h1 { color: var(--primary); border-bottom: 3px solid var(--accent); display: inline-block; }
+        .glow-text {
+            text-shadow: 0 0 30px rgba(212, 169, 55, 0.08);
+        }
+
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #D4AF37, #94A3B8, #D4AF37, transparent);
+            opacity: 0.25;
+            margin: 2.5rem 0;
+        }
+
+        .site-header {
+            border-bottom: 1px dashed #1E2640;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .site-logo {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #F8FAFC;
+        }
+        .site-logo .prompt {
+            color: #94A3B8;
+            margin-right: 6px;
+        }
+        .site-logo .brand {
+            color: #D4AF37;
+        }
+        .header-badge {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.65rem;
+            color: #D4AF37;
+            background: rgba(212, 169, 55, 0.08);
+            border: 1px solid rgba(212, 169, 55, 0.25);
+            padding: 4px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .header-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #D4AF37;
+            border-radius: 50%;
+            animation: blink 2s ease-in-out infinite;
+        }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .page-hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 40px 32px;
+            border-bottom: 1px dashed #1E2640;
+        }
+        .page-hero h1 {
+            font-family: 'Fira Code', monospace;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+            color: #F8FAFC;
+        }
+        .page-hero h1 .cmd {
+            color: #94A3B8;
+            font-weight: 400;
+        }
+        .page-hero .sub {
+            font-size: 0.95rem;
+            color: #94A3B8;
+            max-width: 700px;
+            font-family: 'Fira Code', monospace;
+        }
+        .page-hero .meta-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .page-hero .meta-tags span {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.65rem;
+            color: #94A3B8;
+            background: #1E2640;
+            padding: 3px 12px;
+            border-radius: 20px;
+            border: 1px solid #2a3457;
+        }
+        .page-hero .meta-tags span .hl {
+            color: #D4AF37;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 40px 80px;
+        }
+
+        @media (max-width: 768px) {
+            .site-header {
+                padding: 12px 16px;
+            }
+            .page-hero {
+                padding: 32px 16px 24px;
+            }
+            main {
+                padding: 24px 16px 60px;
+            }
+        }
+
+        .content-card {
+            background: #151C2C;
+            border: 1px solid #1E2640;
+            border-radius: 8px;
+            padding: 28px 32px;
+            transition: all 0.25s ease;
+            margin-bottom: 28px;
+        }
+        .content-card:hover {
+            border-color: #D4AF37;
+            box-shadow: 0 0 40px rgba(212, 169, 55, 0.03);
+        }
+        .content-card h2 {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #F8FAFC;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .content-card h2 .badge-icon {
+            font-size: 1.1rem;
+        }
+        .content-card p {
+            color: #94A3B8;
+            font-size: 0.95rem;
+            margin-bottom: 14px;
+        }
+        .content-card p strong {
+            color: #F8FAFC;
+        }
+        .content-card p .accent-text {
+            color: #D4AF37;
+        }
+        .content-card ul,
+        .content-card ol {
+            color: #94A3B8;
+            font-size: 0.92rem;
+            padding-left: 22px;
+            margin-bottom: 14px;
+        }
+        .content-card ul li,
+        .content-card ol li {
+            margin-bottom: 6px;
+        }
+        .content-card ul li strong,
+        .content-card ol li strong {
+            color: #F8FAFC;
+        }
 
         .interactive-tree {
             display: flex;
-            justify-content: space-between;
-            margin: 40px 0;
-            padding: 20px;
-            background: #f1f2f6;
-            border-radius: 8px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
+            padding: 20px;
+            background: #0B0F19;
+            border-radius: 8px;
+            border: 1px solid #1E2640;
+            margin: 16px 0 10px;
+            justify-content: center;
         }
-
-        .node {
-            padding: 10px 15px;
-            background: white;
-            border: 2px solid var(--accent);
+        .tree-node {
+            padding: 10px 16px;
+            background: #0B0F19;
+            border: 2px solid #1E2640;
             border-radius: 6px;
             cursor: pointer;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #94A3B8;
             transition: all 0.3s ease;
-            font-weight: bold;
+            user-select: none;
+            position: relative;
+        }
+        .tree-node:hover {
+            border-color: #D4AF37;
+            color: #F8FAFC;
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(212, 169, 55, 0.08);
+            background: #1E2640;
+        }
+        .tree-node.active {
+            border-color: #D4AF37;
+            background: rgba(212, 169, 55, 0.08);
+            color: #D4AF37;
+            box-shadow: 0 0 30px rgba(212, 169, 55, 0.04);
+        }
+        .tree-node .node-desc {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #151C2C;
+            border: 1px solid #D4AF37;
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 0.75rem;
+            color: #F8FAFC;
+            white-space: nowrap;
+            z-index: 10;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            max-width: 280px;
+            white-space: normal;
+        }
+        .tree-node .node-desc::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #D4AF37;
+        }
+        .tree-node:hover .node-desc {
+            display: block;
+        }
+        @media (max-width: 640px) {
+            .tree-node .node-desc {
+                max-width: 180px;
+                font-size: 0.7rem;
+                padding: 6px 10px;
+            }
+            .interactive-tree {
+                gap: 6px;
+                padding: 12px;
+            }
+            .tree-node {
+                padding: 6px 10px;
+                font-size: 0.7rem;
+            }
         }
 
-        .node:hover {
-            background: var(--accent);
-            color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,184,148,0.3);
+        .dir-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 24px;
+            margin: 16px 0 8px;
+        }
+        .dir-item {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #0B0F19;
+            border-radius: 4px;
+            border-left: 3px solid #D4AF37;
+            transition: all 0.2s;
+        }
+        .dir-item:hover {
+            background: #1E2640;
+            border-left-color: #F3E5AB;
+        }
+        .dir-item .dir-name {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #D4AF37;
+            min-width: 60px;
+            flex-shrink: 0;
+        }
+        .dir-item .dir-desc {
+            color: #94A3B8;
+            font-size: 0.85rem;
+        }
+        @media (max-width: 640px) {
+            .dir-list {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .directory-list dt {
-            font-weight: bold;
-            color: var(--accent);
-            margin-top: 15px;
+        .pro-tip {
+            background: rgba(212, 169, 55, 0.06);
+            border-left: 4px solid #D4AF37;
+            padding: 18px 22px;
+            border-radius: 4px;
+            margin: 16px 0 10px;
+        }
+        .pro-tip .label {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #D4AF37;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .pro-tip p {
+            color: #94A3B8;
+            font-size: 0.92rem;
+            margin: 0;
+        }
+        .pro-tip p strong {
+            color: #F8FAFC;
         }
 
-        blockquote {
-            border-left: 5px solid var(--accent);
-            padding-left: 15px;
-            font-style: italic;
-            background: #f9f9f9;
-            padding: 10px;
+        .fs-layers {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 16px 0 10px;
+        }
+        .fs-layer {
+            padding: 10px 24px;
+            border: 1px solid #1E2640;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.82rem;
+            color: #94A3B8;
+            background: #0B0F19;
+            width: fit-content;
+            transition: all 0.4s;
+            cursor: default;
+            position: relative;
+            min-width: 180px;
+            text-align: center;
+        }
+        .fs-layer .layer-label {
+            color: #D4AF37;
+            font-weight: 700;
+        }
+        .fs-layer .layer-desc {
+            color: #94A3B8;
+            font-weight: 400;
+        }
+        .fs-layer.active-layer {
+            border-color: #D4AF37;
+            background: rgba(212, 169, 55, 0.06);
+            color: #F8FAFC;
+            box-shadow: 0 0 30px rgba(212, 169, 55, 0.04);
+            transform: scale(1.02);
+        }
+        .fs-layer .layer-arrow {
+            position: absolute;
+            right: -28px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #D4AF37;
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .fs-layer.active-layer .layer-arrow {
+            opacity: 1;
+        }
+        .fs-connector {
+            width: 2px;
+            height: 12px;
+            background: #1E2640;
+            transition: background 0.4s;
+        }
+        .fs-connector.active-connector {
+            background: #D4AF37;
+        }
+        .fs-layers-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+        }
+        @media (max-width: 640px) {
+            .fs-layer {
+                font-size: 0.7rem;
+                padding: 8px 14px;
+                min-width: 140px;
+            }
+            .fs-layer .layer-arrow {
+                display: none;
+            }
+        }
+
+        .terminal-demo {
+            background: #0B0F19;
+            border: 1px solid #1E2640;
+            border-radius: 6px;
+            padding: 16px 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.82rem;
+            color: #D4AF37;
+            min-height: 120px;
+            white-space: pre-wrap;
+            margin: 16px 0 8px;
+            position: relative;
+        }
+        .terminal-demo .term-prompt {
+            color: #94A3B8;
+        }
+        .terminal-demo .term-output {
+            color: #F8FAFC;
+        }
+        .terminal-demo .term-accent {
+            color: #D4AF37;
+        }
+        .terminal-demo .term-error {
+            color: #E63946;
+        }
+
+        .action-btn {
+            background: #D4AF37;
+            color: #0B0F19;
+            border: none;
+            padding: 10px 18px;
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            letter-spacing: 0.05em;
+            transition: opacity 0.2s;
+        }
+        .action-btn:hover {
+            opacity: 0.85;
+        }
+        .action-btn:disabled {
+            background: #1E2640;
+            color: #94A3B8;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .action-btn.gray-btn {
+            background: #1E2640;
+            color: #94A3B8;
+        }
+        .action-btn.gray-btn:hover {
+            background: #2a3457;
+            color: #F8FAFC;
+        }
+        .action-btn.small-btn {
+            padding: 6px 14px;
+            font-size: 0.7rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .site-footer {
+            border-top: 1px dashed #1E2640;
+            padding-top: 24px;
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            color: #94A3B8;
+            opacity: 0.6;
+        }
+        .site-footer .footer-brand {
+            color: #D4AF37;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E2640;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2a3457;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-in {
+            animation: fadeSlideUp 0.5s ease forwards;
+        }
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+        .delay-4 {
+            animation-delay: 0.4s;
+        }
+        .delay-5 {
+            animation-delay: 0.5s;
+        }
+        .delay-6 {
+            animation-delay: 0.6s;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 16px 0 8px;
+        }
+        .feature-item {
+            background: #0B0F19;
+            border: 1px solid #1E2640;
+            border-radius: 6px;
+            padding: 14px 18px;
+            transition: all 0.2s;
+        }
+        .feature-item:hover {
+            border-color: #D4AF37;
+            background: #151C2C;
+        }
+        .feature-item .feat-title {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #D4AF37;
+        }
+        .feature-item .feat-desc {
+            color: #94A3B8;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        @media (max-width: 640px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .inline-code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #D4AF37;
+            background: rgba(212, 169, 55, 0.06);
+            padding: 1px 6px;
+            border-radius: 3px;
+            border: 1px solid rgba(212, 169, 55, 0.12);
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>The Linux Filesystem</h1>
-    <p>Unlike Windows, which uses physical drive letters (like <em>C:</em>), Linux utilizes a <strong>logical, hierarchical tree structure</strong> starting from a single point known as the <strong>root (/)</strong>.</p>
+    <!-- ====== HEADER ====== -->
+    <header class="site-header">
+        <div class="site-logo">
+            <span class="prompt">$</span> sudo ./<span class="brand">TheSudoLab</span>
+        </div>
+        <div class="header-badge">Learning Portal · Linux</div>
+    </header>
 
-    <div class="interactive-tree">
-        <div class="node">/boot</div>
-        <div class="node">/home</div>
-        <div class="node">/proc</div>
-        <div class="node">/dev</div>
-        <div class="node">/sbin</div>
-        <div class="node">/usr</div>
-        <div class="node">/etc</div>
-        <div class="node">/mnt</div>
+    <!-- ====== HERO ====== -->
+    <div class="page-hero">
+        <h1><span class="cmd">&gt; </span>The Linux Filesystem</h1>
+        <p class="sub">// A logical, hierarchical tree structure starting from a single point — the <span style="color:#D4AF37;">root (/)</span>. Everything is a file.</p>
+        <div class="meta-tags">
+            <span>#<span class="hl">linux</span></span>
+            <span>#<span class="hl">filesystem</span></span>
+            <span>#<span class="hl">FHS</span></span>
+            <span>#<span class="hl">administration</span></span>
+            <span>#<span class="hl">beginner</span></span>
+        </div>
     </div>
 
-    <h3>Key Directories</h3>
-    <dl class="directory-list">
-        <dt>/root</dt>
-        <dd>The home directory for the superuser (root).</dd>
-        <dt>/etc</dt>
-        <dd>Contains system-wide configuration files.</dd>
-        <dt>/home</dt>
-        <dd>Individual user directories reside here.</dd>
-        <dt>/bin</dt>
-        <dd>Essential user binaries (executable programs).</dd>
-        <dt>/lib</dt>
-        <dd>Shared libraries required for binaries.</dd>
-    </dl>
+    <main>
 
-    <blockquote>
-        <strong>Pro-tip:</strong> Always log in as a regular user for routine tasks. Only use root privileges when strictly necessary to keep your system secure.
-    </blockquote>
-</div>
+        <!-- ====== INTRO ====== -->
+        <div class="content-card animate-in">
+            <h2><span class="badge-icon">📂</span> Understanding the Hierarchy</h2>
+            <p>
+                Unlike Windows, which uses physical drive letters (like <strong>C:</strong>), Linux utilises a
+                <strong>logical, hierarchical tree structure</strong> starting from a single point known as the
+                <span class="accent-text">root (/)</span>.
+            </p>
+            <p>
+                Everything in a Linux system — files, directories, devices, and even running processes — is represented
+                as a file within this unified namespace. This design, inherited from Unix, is one of the core philosophies
+                that makes Linux powerful, flexible, and scriptable.
+            </p>
+            <p>
+                The <span class="accent-text">Filesystem Hierarchy Standard (FHS)</span> defines the structure and
+                purpose of each major directory, ensuring consistency across all Linux distributions.
+            </p>
+        </div>
+
+        <!-- ====== INTERACTIVE TREE ====== -->
+        <div class="content-card animate-in delay-1">
+            <h2><span class="badge-icon">🌳</span> Explore the Filesystem Tree</h2>
+            <p>Hover or click any directory below to learn its purpose — each plays a specific role in the system.</p>
+
+            <div class="interactive-tree" id="treeContainer">
+                <div class="tree-node" data-path="/boot" data-desc="Boot loader files — the Linux kernel, initrd/initramfs, and boot configuration (GRUB).">
+                    /boot
+                    <span class="node-desc"></span>
+                </div>
+                <div class="tree-node" data-path="/home" data-desc="User home directories — each user gets a subdirectory (e.g., /home/alice) for personal files.">
+                    /home
+                    <span class="node-desc"></span>
+                </div>
+                <div class="tree-node" data-path="/proc" data-desc="Virtual filesystem — exposes running process information and kernel parameters (e.g., /proc/cpuinfo).">
+                    /proc
+                    <span class="node-desc"></span>
+                </div>
+                <div class="tree-node" data-path="/dev" data-desc="Device files — hardware devices represented as files (e.g., /dev/sda for the first hard disk).">
+                    /dev
+                    <span class="node-desc"></span>
+                </div>
+                <div class="tree-node" data-path="/sbin" data-desc="System binaries — essential administration tools (fdisk, mkfs, mount) — usually only root can execute.">
+                    /sbin
+                    <span class="node-desc"></span>
+                </div>
+                <div class="tree-node" data-path="/usr" data-desc="User system resources — shareable, read-only data: binaries, libraries, documentation, and header files.">
+                    /usr
+                    <span class="node-desc"></span>
+                </div>
+                <div class="tree-node" data-path="/etc" data-desc="System-wide configuration files — text files that control services, networking, and user settings.">
+                    /etc
+                    <span class="node-desc"></span>
+                </div>
+                <div class="tree-node" data-path="/mnt" data-desc="Temporary mount point for manually mounting filesystems (e.g., USB drives, network shares).">
+                    /mnt
+                    <span class="node-desc"></span>
+                </div>
+                <div class="tree-node" data-path="/var" data-desc="Variable data — log files, caches, mail spools, and temporary files that persist across reboots.">
+                    /var
+                    <span class="node-desc"></span>
+                </div>
+                <div class="tree-node" data-path="/tmp" data-desc="Temporary files — cleared on reboot. Used by programs for short-lived data.">
+                    /tmp
+                    <span class="node-desc"></span>
+                </div>
+                <div class="tree-node" data-path="/root" data-desc="Home directory for the superuser (root) — not to be confused with the root (/) directory.">
+                    /root
+                    <span class="node-desc"></span>
+                </div>
+                <div class="tree-node" data-path="/opt" data-desc="Optional add-on software packages — self-contained third-party applications.">
+                    /opt
+                    <span class="node-desc"></span>
+                </div>
+            </div>
+
+            <div style="margin-top:14px;font-family:'Fira Code',monospace;font-size:0.75rem;color:#94A3B8;text-align:center;border-top:1px dashed #1E2640;padding-top:12px;">
+                <span id="treeStatus">// hover or click any node to explore</span>
+            </div>
+        </div>
+
+        <!-- ====== KEY DIRECTORIES ====== -->
+        <div class="content-card animate-in delay-2">
+            <h2><span class="badge-icon">📋</span> Essential Directories Explained</h2>
+            <p>These are the core directories you'll encounter on every standard Linux system. Understanding them is the first step to mastering Linux administration.</p>
+
+            <div class="dir-list">
+                <div class="dir-item"><span class="dir-name">/</span><span class="dir-desc">Root — the top of the filesystem tree.</span></div>
+                <div class="dir-item"><span class="dir-name">/bin</span><span class="dir-desc">Essential user binaries — <span class="inline-code">ls</span>, <span class="inline-code">cp</span>, <span class="inline-code">mv</span>, <span class="inline-code">cat</span>.</span></div>
+                <div class="dir-item"><span class="dir-name">/boot</span><span class="dir-desc">Kernel and boot loader files (GRUB, initramfs).</span></div>
+                <div class="dir-item"><span class="dir-name">/dev</span><span class="dir-desc">Device files — hardware interfaces (disks, terminals, printers).</span></div>
+                <div class="dir-item"><span class="dir-name">/etc</span><span class="dir-desc">System configuration files — <span class="inline-code">/etc/passwd</span>, <span class="inline-code">/etc/fstab</span>.</span></div>
+                <div class="dir-item"><span class="dir-name">/home</span><span class="dir-desc">User home directories — personal workspace for each user.</span></div>
+                <div class="dir-item"><span class="dir-name">/lib</span><span class="dir-desc">Shared libraries and kernel modules — essential for binaries in <span class="inline-code">/bin</span> and <span class="inline-code">/sbin</span>.</span></div>
+                <div class="dir-item"><span class="dir-name">/mnt</span><span class="dir-desc">Temporary mount point for manual filesystem mounts.</span></div>
+                <div class="dir-item"><span class="dir-name">/opt</span><span class="dir-desc">Optional third-party software packages (self-contained).</span></div>
+                <div class="dir-item"><span class="dir-name">/proc</span><span class="dir-desc">Virtual process filesystem — runtime system information.</span></div>
+                <div class="dir-item"><span class="dir-name">/root</span><span class="dir-desc">Home directory for the root (superuser) account.</span></div>
+                <div class="dir-item"><span class="dir-name">/sbin</span><span class="dir-desc">System administration binaries — <span class="inline-code">fdisk</span>, <span class="inline-code">mount</span>, <span class="inline-code">mkfs</span>.</span></div>
+                <div class="dir-item"><span class="dir-name">/tmp</span><span class="dir-desc">Temporary files — cleared on system reboot.</span></div>
+                <div class="dir-item"><span class="dir-name">/usr</span><span class="dir-desc">User system resources — shareable, read-only data (binaries, libraries, docs).</span></div>
+                <div class="dir-item"><span class="dir-name">/var</span><span class="dir-desc">Variable data — logs, caches, spool files, and temporary data.</span></div>
+                <div class="dir-item"><span class="dir-name">/sys</span><span class="dir-desc">Virtual filesystem exposing kernel objects and device information.</span></div>
+            </div>
+        </div>
+
+        <!-- ====== FHS & FEATURES ====== -->
+        <div class="content-card animate-in delay-3">
+            <h2><span class="badge-icon">🧩</span> Filesystem Hierarchy Standard (FHS)</h2>
+            <p>
+                The <span class="accent-text">FHS</span> is a collaborative standard that defines the structure and
+                purpose of directories on Linux and Unix-like systems. It ensures consistency, making it easier for
+                administrators and developers to know where to find or place files.
+            </p>
+
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feat-title">📁 /bin vs /usr/bin</div>
+                    <div class="feat-desc"><span class="inline-code">/bin</span> holds essential binaries needed for booting and recovery; <span class="inline-code">/usr/bin</span> holds non-essential user programs.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feat-title">📁 /lib vs /usr/lib</div>
+                    <div class="feat-desc"><span class="inline-code">/lib</span> contains libraries for <span class="inline-code">/bin</span> and <span class="inline-code">/sbin</span>; <span class="inline-code">/usr/lib</span> holds libraries for user applications.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feat-title">🔗 Symbolic Links</div>
+                    <div class="feat-desc">Modern distributions often symlink <span class="inline-code">/bin → /usr/bin</span> and <span class="inline-code">/sbin → /usr/sbin</span> for simplification.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feat-title">📦 Package Management</div>
+                    <div class="feat-desc">The FHS ensures that package managers (apt, dnf, pacman) know exactly where to install files, avoiding conflicts.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feat-title">🧵 Mount Points</div>
+                    <div class="feat-desc">Directories like <span class="inline-code">/mnt</span> and <span class="inline-code">/media</span> are reserved for mounting external filesystems (USB, CD-ROM, network shares).</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feat-title">📊 Virtual Filesystems</div>
+                    <div class="feat-desc"><span class="inline-code">/proc</span>, <span class="inline-code">/sys</span>, and <span class="inline-code">/dev</span> are virtual — they exist only in memory and expose kernel and device information.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== FILE TYPES & PERMISSIONS ====== -->
+        <div class="content-card animate-in delay-4">
+            <h2><span class="badge-icon">🔐</span> File Types &amp; Permissions</h2>
+            <p>
+                In Linux, <strong>everything is a file</strong> — but not all files are the same. The first character
+                of a long listing (<span class="inline-code">ls -l</span>) reveals the file type.
+            </p>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0 8px;">
+                <div style="background:#0B0F19;border:1px solid #1E2640;border-radius:4px;padding:10px 14px;">
+                    <span style="font-family:'Fira Code',monospace;font-size:0.85rem;color:#D4AF37;">-</span>
+                    <span style="color:#94A3B8;font-size:0.85rem;margin-left:6px;">Regular file (text, binary, data)</span>
+                </div>
+                <div style="background:#0B0F19;border:1px solid #1E2640;border-radius:4px;padding:10px 14px;">
+                    <span style="font-family:'Fira Code',monospace;font-size:0.85rem;color:#D4AF37;">d</span>
+                    <span style="color:#94A3B8;font-size:0.85rem;margin-left:6px;">Directory — contains files and subdirectories</span>
+                </div>
+                <div style="background:#0B0F19;border:1px solid #1E2640;border-radius:4px;padding:10px 14px;">
+                    <span style="font-family:'Fira Code',monospace;font-size:0.85rem;color:#D4AF37;">l</span>
+                    <span style="color:#94A3B8;font-size:0.85rem;margin-left:6px;">Symbolic link — points to another file or directory</span>
+                </div>
+                <div style="background:#0B0F19;border:1px solid #1E2640;border-radius:4px;padding:10px 14px;">
+                    <span style="font-family:'Fira Code',monospace;font-size:0.85rem;color:#D4AF37;">c</span>
+                    <span style="color:#94A3B8;font-size:0.85rem;margin-left:6px;">Character device — serial ports, terminals</span>
+                </div>
+                <div style="background:#0B0F19;border:1px solid #1E2640;border-radius:4px;padding:10px 14px;">
+                    <span style="font-family:'Fira Code',monospace;font-size:0.85rem;color:#D4AF37;">b</span>
+                    <span style="color:#94A3B8;font-size:0.85rem;margin-left:6px;">Block device — hard disks, SSDs</span>
+                </div>
+                <div style="background:#0B0F19;border:1px solid #1E2640;border-radius:4px;padding:10px 14px;">
+                    <span style="font-family:'Fira Code',monospace;font-size:0.85rem;color:#D4AF37;">s</span>
+                    <span style="color:#94A3B8;font-size:0.85rem;margin-left:6px;">Socket — inter-process communication</span>
+                </div>
+            </div>
+
+            <p style="margin-top:10px;">
+                Permissions are represented as <span class="inline-code">rwxr-xr--</span> — three triples for
+                <strong>owner</strong>, <strong>group</strong>, and <strong>others</strong>.
+                <span class="inline-code">r</span> = read, <span class="inline-code">w</span> = write, <span class="inline-code">x</span> = execute.
+            </p>
+
+            <div class="pro-tip" style="margin-top:12px;">
+                <span class="label">💡 Quick Tip</span>
+                <p>Use <span class="inline-code">chmod 755 script.sh</span> to give the owner full permissions (rwx) and read+execute to everyone else. Never use <span class="inline-code">chmod 777</span> on production systems!</p>
+            </div>
+        </div>
+
+        <!-- ====== INODES ====== -->
+        <div class="content-card animate-in delay-4">
+            <h2><span class="badge-icon">🔢</span> Understanding Inodes</h2>
+            <p>
+                An <span class="accent-text">inode</span> (index node) is a data structure that stores metadata about a file —
+                everything <em>except</em> its name and actual data. Each file on a Linux filesystem has a unique inode number.
+            </p>
+            <p>
+                Inodes store: file type, permissions, owner, group, size, timestamps (access, modify, change), and pointers
+                to the data blocks on disk. The filename is stored only in the directory entry, which maps a name to an inode number.
+            </p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 6px;">
+                <div style="background:#0B0F19;border:1px solid #1E2640;border-radius:4px;padding:12px 16px;">
+                    <span style="font-family:'Fira Code',monospace;font-size:0.7rem;color:#94A3B8;">COMMAND</span>
+                    <div style="font-family:'Fira Code',monospace;font-size:0.85rem;color:#D4AF37;margin-top:2px;">ls -li</div>
+                    <div style="color:#94A3B8;font-size:0.8rem;margin-top:4px;">Shows inode numbers for files in a directory.</div>
+                </div>
+                <div style="background:#0B0F19;border:1px solid #1E2640;border-radius:4px;padding:12px 16px;">
+                    <span style="font-family:'Fira Code',monospace;font-size:0.7rem;color:#94A3B8;">COMMAND</span>
+                    <div style="font-family:'Fira Code',monospace;font-size:0.85rem;color:#D4AF37;margin-top:2px;">stat filename</div>
+                    <div style="color:#94A3B8;font-size:0.8rem;margin-top:4px;">Displays detailed inode metadata for a specific file.</div>
+                </div>
+            </div>
+            <p style="font-size:0.85rem;color:#94A3B8;">
+                <span class="accent-text">🔑 Key insight:</span> A hard link creates a new directory entry pointing to the same inode.
+                Deleting the original file doesn't remove the data until all hard links are gone.
+            </p>
+        </div>
+
+        <!-- ====== FILESYSTEM LAYERS ====== -->
+        <div class="content-card animate-in delay-5">
+            <h2><span class="badge-icon">📊</span> Filesystem Layers in Action</h2>
+            <p>Watch the hierarchy build from the root outward — click <strong class="accent-text">"Build Layers"</strong> to visualise how Linux structures its filesystem.</p>
+
+            <div class="fs-layers-wrapper">
+                <div class="fs-layers" id="fsLayers">
+                    <div class="fs-layer" data-layer="0">
+                        <span class="layer-label">/</span> <span class="layer-desc">— Root (the base)</span>
+                        <span class="layer-arrow">⤷</span>
+                    </div>
+                    <div class="fs-connector" data-connector="0"></div>
+                    <div class="fs-layer" data-layer="1">
+                        <span class="layer-label">/etc</span> <span class="layer-desc">— Configuration</span>
+                        <span class="layer-arrow">⤷</span>
+                    </div>
+                    <div class="fs-connector" data-connector="1"></div>
+                    <div class="fs-layer" data-layer="2">
+                        <span class="layer-label">/usr</span> <span class="layer-desc">— User binaries</span>
+                        <span class="layer-arrow">⤷</span>
+                    </div>
+                    <div class="fs-connector" data-connector="2"></div>
+                    <div class="fs-layer" data-layer="3">
+                        <span class="layer-label">/home</span> <span class="layer-desc">— User data</span>
+                        <span class="layer-arrow">⤷</span>
+                    </div>
+                    <div class="fs-connector" data-connector="3"></div>
+                    <div class="fs-layer" data-layer="4">
+                        <span class="layer-label">/var</span> <span class="layer-desc">— Logs &amp; caches</span>
+                        <span class="layer-arrow">⤷</span>
+                    </div>
+                    <div class="fs-connector" data-connector="4"></div>
+                    <div class="fs-layer" data-layer="5">
+                        <span class="layer-label">/tmp</span> <span class="layer-desc">— Temporary files</span>
+                        <span class="layer-arrow">⤷</span>
+                    </div>
+                </div>
+                <button class="action-btn" id="btnFsLayers" style="margin-top:16px;max-width:220px;width:100%;">
+                    $ build_layers()
+                </button>
+            </div>
+        </div>
+
+        <!-- ====== TERMINAL DEMO ====== -->
+        <div class="content-card animate-in delay-5">
+            <h2><span class="badge-icon">💻</span> Terminal Demo — Explore the Filesystem</h2>
+            <p>Run common Linux commands to see how the filesystem responds — click any button to simulate terminal output.</p>
+
+            <div class="terminal-demo" id="terminalDemo">
+                <span class="term-prompt">$ </span><span id="termCommand">ls -la /home</span>
+                <br />
+                <span class="term-output" id="termOutput">total 16<br />drwxr-xr-x 4 root  root  4096 Jun 21 10:42 .<br />drwxr-xr-x 1 root  root  4096 Jun 21 10:42 ..<br />drwxr-xr-x 2 user  user  4096 Jun 21 10:42 alice/<br />drwxr-xr-x 2 user  user  4096 Jun 21 10:42 thesudolab/</span>
+            </div>
+
+            <div class="btn-group">
+                <button class="action-btn small-btn" id="btnTerminal1">$ ls /etc</button>
+                <button class="action-btn small-btn" id="btnTerminal2">$ ls /usr/bin</button>
+                <button class="action-btn small-btn" id="btnTerminal3">$ tree /var</button>
+                <button class="action-btn small-btn" id="btnTerminal4">$ df -h</button>
+                <button class="action-btn small-btn" id="btnTerminal5">$ find / -name "*.conf"</button>
+                <button class="action-btn gray-btn small-btn" id="btnTerminalReset">$ reset</button>
+            </div>
+        </div>
+
+        <!-- ====== PATH NAVIGATION ====== -->
+        <div class="content-card animate-in delay-6">
+            <h2><span class="badge-icon">🧭</span> Absolute vs Relative Paths</h2>
+            <p>
+                Understanding path navigation is essential for moving through the filesystem efficiently.
+            </p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0 6px;">
+                <div style="background:#0B0F19;border:1px solid #1E2640;border-radius:6px;padding:14px 18px;">
+                    <div style="font-family:'Fira Code',monospace;font-size:0.8rem;color:#D4AF37;font-weight:700;">Absolute Path</div>
+                    <div style="color:#94A3B8;font-size:0.85rem;margin-top:4px;">Starts from the <span class="inline-code">/</span> (root) and specifies the exact location.</div>
+                    <div style="font-family:'Fira Code',monospace;font-size:0.8rem;color:#F8FAFC;margin-top:6px;background:#0B0F19;padding:4px 8px;border-radius:3px;border:1px solid #1E2640;">/home/alice/Documents/report.txt</div>
+                    <div style="color:#94A3B8;font-size:0.75rem;margin-top:4px;">✅ Works from anywhere in the filesystem.</div>
+                </div>
+                <div style="background:#0B0F19;border:1px solid #1E2640;border-radius:6px;padding:14px 18px;">
+                    <div style="font-family:'Fira Code',monospace;font-size:0.8rem;color:#D4AF37;font-weight:700;">Relative Path</div>
+                    <div style="color:#94A3B8;font-size:0.85rem;margin-top:4px;">Starts from your current working directory (<span class="inline-code">pwd</span>).</div>
+                    <div style="font-family:'Fira Code',monospace;font-size:0.8rem;color:#F8FAFC;margin-top:6px;background:#0B0F19;padding:4px 8px;border-radius:3px;border:1px solid #1E2640;">./Documents/report.txt</div>
+                    <div style="color:#94A3B8;font-size:0.75rem;margin-top:4px;">🔹 <span class="inline-code">.</span> = current dir, <span class="inline-code">..</span> = parent dir.</div>
+                </div>
+            </div>
+            <div class="pro-tip" style="margin-top:10px;">
+                <span class="label">⚡ Quick Reference</span>
+                <p>
+                    <span class="inline-code">~</span> = home directory &nbsp;·&nbsp;
+                    <span class="inline-code">/</span> = root &nbsp;·&nbsp;
+                    <span class="inline-code">.</span> = current directory &nbsp;·&nbsp;
+                    <span class="inline-code">..</span> = parent directory
+                </p>
+            </div>
+        </div>
+
+        <!-- ====== PRO TIP ====== -->
+        <div class="content-card animate-in delay-6" style="border-color:#D4AF37;border-width:1px;">
+            <div class="pro-tip">
+                <span class="label">⚡ Pro-tip</span>
+                <p>
+                    Always log in as a <strong>regular user</strong> for routine tasks. Only use <strong>root</strong>
+                    privileges when strictly necessary — it keeps your system secure and prevents accidental damage.
+                    Use <span class="inline-code">sudo</span> for individual commands that require elevated privileges.
+                </p>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+                <span style="font-family:'Fira Code',monospace;font-size:0.7rem;color:#94A3B8;background:#0B0F19;padding:4px 12px;border-radius:20px;border:1px solid #1E2640;">sudo apt update</span>
+                <span style="font-family:'Fira Code',monospace;font-size:0.7rem;color:#94A3B8;background:#0B0F19;padding:4px 12px;border-radius:20px;border:1px solid #1E2640;">sudo systemctl restart nginx</span>
+                <span style="font-family:'Fira Code',monospace;font-size:0.7rem;color:#94A3B8;background:#0B0F19;padding:4px 12px;border-radius:20px;border:1px solid #1E2640;">sudo chown user:group file</span>
+            </div>
+        </div>
+
+        <!-- ====== FOOTER ====== -->
+        <footer class="site-footer">
+            <span><span class="footer-brand">TheSudoLab</span> · Linux Filesystem Deep Dive · 2026</span>
+            <span>built with <span style="color:#D4AF37;">✦</span> for the curious</span>
+        </footer>
+
+    </main>
+
+    <script>
+        // ── INTERACTIVE TREE ──
+        const treeNodes = document.querySelectorAll('.tree-node');
+        const treeStatus = document.getElementById('treeStatus');
+
+        treeNodes.forEach(node => {
+            const desc = node.getAttribute('data-desc');
+            const path = node.getAttribute('data-path');
+            const tooltip = node.querySelector('.node-desc');
+            if (tooltip) tooltip.textContent = desc;
+
+            node.addEventListener('click', function() {
+                treeNodes.forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                treeStatus.textContent = `// selected: ${path} — ${desc}`;
+            });
+
+            node.addEventListener('mouseenter', function() {
+                treeStatus.textContent = `// hovering: ${path} — ${desc}`;
+            });
+
+            node.addEventListener('mouseleave', function() {
+                const active = document.querySelector('.tree-node.active');
+                if (active) {
+                    const p = active.getAttribute('data-path');
+                    const d = active.getAttribute('data-desc');
+                    treeStatus.textContent = `// selected: ${p} — ${d}`;
+                } else {
+                    treeStatus.textContent = '// hover or click any node to explore';
+                }
+            });
+        });
+
+        // ── FILESYSTEM LAYERS ──
+        const layers = document.querySelectorAll('.fs-layer');
+        const connectors = document.querySelectorAll('.fs-connector');
+        const btnLayers = document.getElementById('btnFsLayers');
+        let layerAnimRunning = false;
+
+        btnLayers.addEventListener('click', function() {
+            if (layerAnimRunning) return;
+            layerAnimRunning = true;
+            this.disabled = true;
+            this.textContent = '$ building...';
+
+            layers.forEach(l => l.classList.remove('active-layer'));
+            connectors.forEach(c => c.classList.remove('active-connector'));
+
+            let idx = 0;
+
+            function step() {
+                if (idx < layers.length) {
+                    layers[idx].classList.add('active-layer');
+                    if (idx > 0) {
+                        connectors[idx - 1].classList.add('active-connector');
+                    }
+                    idx++;
+                    setTimeout(step, 500);
+                } else {
+                    btnLayers.textContent = '$ build_layers() ✓';
+                    btnLayers.disabled = false;
+                    layerAnimRunning = false;
+                    setTimeout(() => {
+                        btnLayers.textContent = '$ build_layers()';
+                    }, 1800);
+                }
+            }
+            setTimeout(step, 300);
+        });
+
+        // ── TERMINAL DEMO ──
+        const termCommand = document.getElementById('termCommand');
+        const termOutput = document.getElementById('termOutput');
+
+        const terminalPresets = {
+            'ls /etc': {
+                cmd: 'ls /etc',
+                out: 'cron.d/  default/  fstab  hostname  hosts  init.d/  network/  passwd  profile  resolv.conf  shadow  ssh/  sysctl.conf'
+            },
+            'ls /usr/bin': {
+                cmd: 'ls /usr/bin | head -20',
+                out: 'awk  bash  cat  cp  curl  cut  diff  find  grep  head  ls  mkdir  mv  ncat  netstat  ping  ps  python3  rm  sed  ssh  tail  tar  top  vim  wget  zip'
+            },
+            'tree /var': {
+                cmd: 'tree /var -L 2',
+                out: '/var\n├── backups/\n├── cache/\n│   └── apt/\n├── lib/\n│   └── dpkg/\n├── log/\n│   ├── syslog\n│   ├── auth.log\n│   └── nginx/\n├── mail/\n├── run/\n├── spool/\n│   └── cron/\n└── tmp/'
+            },
+            'df -h': {
+                cmd: 'df -h',
+                out: 'Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1       120G   45G   75G  38% /\nudev            7.8G     0  7.8G   0% /dev\ntmpfs           1.6G  1.2M  1.6G   1% /run\n/dev/sda2       500G  200G  300G  40% /home'
+            },
+            'find / -name "*.conf"': {
+                cmd: 'find / -name "*.conf" -type f | head -10',
+                out: '/etc/resolv.conf\n/etc/host.conf\n/etc/nsswitch.conf\n/etc/ssh/sshd_config\n/etc/ssh/ssh_config\n/etc/nginx/nginx.conf\n/etc/nginx/sites-available/default.conf\n/etc/apt/apt.conf.d/00trusted\n/etc/apt/apt.conf.d/00aptitude\n/etc/apt/apt.conf.d/01autoremove'
+            }
+        };
+
+        function runTerminal(cmdKey) {
+            const preset = terminalPresets[cmdKey];
+            if (!preset) return;
+            termCommand.textContent = preset.cmd;
+            termOutput.textContent = preset.out;
+        }
+
+        document.getElementById('btnTerminal1').addEventListener('click', () => runTerminal('ls /etc'));
+        document.getElementById('btnTerminal2').addEventListener('click', () => runTerminal('ls /usr/bin'));
+        document.getElementById('btnTerminal3').addEventListener('click', () => runTerminal('tree /var'));
+        document.getElementById('btnTerminal4').addEventListener('click', () => runTerminal('df -h'));
+        document.getElementById('btnTerminal5').addEventListener('click', () => runTerminal('find / -name "*.conf"'));
+        document.getElementById('btnTerminalReset').addEventListener('click', () => {
+            termCommand.textContent = 'ls -la /home';
+            termOutput.textContent =
+                'total 16\ndrwxr-xr-x 4 root  root  4096 Jun 21 10:42 .\ndrwxr-xr-x 1 root  root  4096 Jun 21 10:42 ..\ndrwxr-xr-x 2 user  user  4096 Jun 21 10:42 alice/\ndrwxr-xr-x 2 user  user  4096 Jun 21 10:42 thesudolab/';
+        });
+
+        // ── INITIAL STATE ──
+        setTimeout(() => {
+            layers[0].classList.add('active-layer');
+        }, 600);
+
+        setTimeout(() => {
+            const firstNode = document.querySelector('.tree-node');
+            if (firstNode) {
+                firstNode.classList.add('active');
+                const p = firstNode.getAttribute('data-path');
+                const d = firstNode.getAttribute('data-desc');
+                treeStatus.textContent = `// selected: ${p} — ${d}`;
+            }
+        }, 400);
+    </script>
 
 </body>
 </html>
