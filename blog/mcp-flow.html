@@ -1,798 +1,1138 @@
----
-title: "Model Context Protocol (MCP) Explained — TheSudoLab Learning Portal"
-description: "Learn how Model Context Protocol (MCP) enables AI models to securely connect with external tools, APIs, databases, and services. Explore MCP architecture, clients, servers, tool calls, resources, and real-world workflows through interactive visualizations."
-date: 2026-06-21
-author: "TheSudoLab"
-tags:
-  - MCP
-  - Model Context Protocol
-  - Artificial Intelligence
-  - AI Agents
-  - LLM
-  - AI Tools
-  - Agentic AI
-  - AI Security
-category: "Artificial Intelligence"
----
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MCP Flow Visualizer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Model Context Protocol (MCP) · TheSudoLab</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#0B0F19',
+                            surface: '#151C2C',
+                            card: '#1E2640',
+                            accent: '#D4AF37',
+                            accentHover: '#F3E5AB',
+                            crimson: '#E63946',
+                            textMain: '#F8FAFC',
+                            textMuted: '#94A3B8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600;700&display=swap');
 
-  :root {
-    --bg: #070709;
-    --bg2: #0d0d10;
-    --border: rgba(255,255,255,0.06);
-    --border-hover: rgba(255,255,255,0.14);
-    --text: #d4d4d8;
-    --text-muted: #52525b;
-    --text-dim: #3f3f46;
-    --user: #3b82f6;
-    --client: #a855f7;
-    --server: #10b981;
-    --thought: #f59e0b;
-    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-  }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-  html { scroll-behavior: smooth; }
+        body {
+            background-color: #0B0F19;
+            font-family: 'Inter', sans-serif;
+            color: #F8FAFC;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-sans);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+        .radar-pulse {
+            position: relative;
+        }
+        .radar-pulse::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border: 1px solid #D4AF37;
+            border-radius: 4px;
+            opacity: 0;
+            animation: pulseScan 2.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+        }
+        @keyframes pulseScan {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1.25);
+                opacity: 0;
+            }
+        }
 
-  /* Background blobs */
-  .bg-blobs {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .bg-blobs::before {
-    content: '';
-    position: absolute;
-    top: -15%;
-    left: -10%;
-    width: 45%;
-    height: 45%;
-    background: radial-gradient(circle, rgba(168,85,247,0.06) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-  .bg-blobs::after {
-    content: '';
-    position: absolute;
-    bottom: -15%;
-    right: -10%;
-    width: 45%;
-    height: 45%;
-    background: radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%);
-    border-radius: 50%;
-  }
+        .glow-text {
+            text-shadow: 0 0 30px rgba(212, 169, 55, 0.08);
+        }
 
-  .grid-bg {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background-image: radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
-    background-size: 28px 28px;
-  }
+        .site-header {
+            border-bottom: 1px dashed #1E2640;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .site-logo {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #F8FAFC;
+        }
+        .site-logo .prompt {
+            color: #94A3B8;
+            margin-right: 6px;
+        }
+        .site-logo .brand {
+            color: #D4AF37;
+        }
+        .header-badge {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.65rem;
+            color: #D4AF37;
+            background: rgba(212, 169, 55, 0.08);
+            border: 1px solid rgba(212, 169, 55, 0.25);
+            padding: 4px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .header-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #D4AF37;
+            border-radius: 50%;
+            animation: blink 2s ease-in-out infinite;
+        }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
 
-  .wrapper {
-    position: relative;
-    z-index: 1;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-  }
+        .page-hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 40px 32px;
+            border-bottom: 1px dashed #1E2640;
+        }
+        .page-hero h1 {
+            font-family: 'Fira Code', monospace;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+            color: #F8FAFC;
+        }
+        .page-hero h1 .cmd {
+            color: #94A3B8;
+            font-weight: 400;
+        }
+        .page-hero .sub {
+            font-size: 0.95rem;
+            color: #94A3B8;
+            max-width: 700px;
+            font-family: 'Fira Code', monospace;
+        }
 
-  /* Header */
-  header {
-    margin-bottom: 56px;
-  }
-  .header-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    background: rgba(168,85,247,0.08);
-    border: 1px solid rgba(168,85,247,0.2);
-    border-radius: 8px;
-    margin-bottom: 16px;
-  }
-  .header-badge svg { width: 14px; height: 14px; color: #a855f7; }
-  .header-badge span { font-size: 11px; font-family: var(--font-mono); color: #a855f7; letter-spacing: 0.1em; text-transform: uppercase; }
-  h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; color: #fff; line-height: 1.1; letter-spacing: -0.02em; }
-  h1 .dim { color: var(--text-muted); font-weight: 400; }
-  .subtitle { margin-top: 12px; font-size: 15px; color: var(--text-muted); max-width: 580px; line-height: 1.7; font-family: var(--font-sans); font-weight: 400; }
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 40px 80px;
+        }
 
-  /* Main layout */
-  .main-grid {
-    display: grid;
-    grid-template-columns: 1fr 360px;
-    gap: 20px;
-  }
-  @media (max-width: 900px) {
-    .main-grid { grid-template-columns: 1fr; }
-  }
+        @media (max-width: 768px) {
+            .site-header {
+                padding: 12px 16px;
+            }
+            .page-hero {
+                padding: 32px 16px 24px;
+            }
+            main {
+                padding: 24px 16px 60px;
+            }
+        }
 
-  .left-col { display: flex; flex-direction: column; gap: 16px; }
+        .content-card {
+            background: #151C2C;
+            border: 1px solid #1E2640;
+            border-radius: 8px;
+            padding: 28px 32px;
+            transition: all 0.25s ease;
+            margin-bottom: 28px;
+        }
+        .content-card:hover {
+            border-color: #D4AF37;
+            box-shadow: 0 0 40px rgba(212, 169, 55, 0.03);
+        }
 
-  /* Card base */
-  .card {
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,0.015);
-    border-radius: 20px;
-    padding: 28px;
-  }
+        /* ── MCP Specific Styles ── */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 20px;
+        }
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
 
-  /* Visualizer stage */
-  .stage {
-    position: relative;
-    min-height: 240px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    padding: 40px 24px;
-    border-radius: 24px;
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,0.01);
-  }
+        .stage {
+            position: relative;
+            min-height: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 40px 24px;
+            border-radius: 24px;
+            border: 1px solid #1E2640;
+            background: rgba(255, 255, 255, 0.01);
+        }
 
-  .nodes-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: 0;
-    position: relative;
-    z-index: 2;
-  }
+        .nodes-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 0;
+            position: relative;
+            z-index: 2;
+        }
 
-  .node {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 16px;
-    border-radius: 16px;
-    border: 1px solid transparent;
-    min-width: 110px;
-    transition: all 0.3s ease;
-    position: relative;
-    flex-shrink: 0;
-  }
-  .node.user   { border-color: rgba(59,130,246,0.2);  background: rgba(59,130,246,0.04); }
-  .node.client { border-color: rgba(168,85,247,0.2);  background: rgba(168,85,247,0.04); }
-  .node.server { border-color: rgba(16,185,129,0.2);  background: rgba(16,185,129,0.04); }
+        .node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 16px;
+            border-radius: 16px;
+            border: 1px solid transparent;
+            min-width: 110px;
+            transition: all 0.3s ease;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .node.user {
+            border-color: rgba(59, 130, 246, 0.2);
+            background: rgba(59, 130, 246, 0.04);
+        }
+        .node.client {
+            border-color: rgba(168, 85, 247, 0.2);
+            background: rgba(168, 85, 247, 0.04);
+        }
+        .node.server {
+            border-color: rgba(16, 185, 129, 0.2);
+            background: rgba(16, 185, 129, 0.04);
+        }
+        .node.active.user {
+            border-color: rgba(59, 130, 246, 0.6);
+            background: rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 24px rgba(59, 130, 246, 0.15);
+            transform: scale(1.06);
+        }
+        .node.active.client {
+            border-color: rgba(168, 85, 247, 0.6);
+            background: rgba(168, 85, 247, 0.1);
+            box-shadow: 0 0 24px rgba(168, 85, 247, 0.15);
+            transform: scale(1.06);
+        }
+        .node.active.server {
+            border-color: rgba(16, 185, 129, 0.6);
+            background: rgba(16, 185, 129, 0.1);
+            box-shadow: 0 0 24px rgba(16, 185, 129, 0.15);
+            transform: scale(1.06);
+        }
+        .node-type-tag {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0B0F19;
+            border: 1px solid #1E2640;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 9px;
+            font-family: 'Fira Code', monospace;
+            color: #94A3B8;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .node-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            transition: background 0.3s;
+        }
+        .node.active .node-icon {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .node-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+        .node.user .node-icon svg {
+            color: #3b82f6;
+        }
+        .node.client .node-icon svg {
+            color: #a855f7;
+        }
+        .node.server .node-icon svg {
+            color: #10b981;
+        }
+        .node-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #94A3B8;
+            text-align: center;
+            transition: color 0.3s;
+        }
+        .node.active .node-label {
+            color: #fff;
+        }
 
-  .node.active.user   { border-color: rgba(59,130,246,0.6);  background: rgba(59,130,246,0.1);  box-shadow: 0 0 24px rgba(59,130,246,0.15);  transform: scale(1.06); }
-  .node.active.client { border-color: rgba(168,85,247,0.6);  background: rgba(168,85,247,0.1);  box-shadow: 0 0 24px rgba(168,85,247,0.15); transform: scale(1.06); }
-  .node.active.server { border-color: rgba(16,185,129,0.6);  background: rgba(16,185,129,0.1);  box-shadow: 0 0 24px rgba(16,185,129,0.15); transform: scale(1.06); }
+        .connector {
+            flex: 1;
+            position: relative;
+            height: 2px;
+            overflow: visible;
+        }
+        .connector-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            transform: translateY(-50%);
+        }
+        .connector.left .connector-line {
+            background: linear-gradient(to right, rgba(59, 130, 246, 0.15), rgba(168, 85, 247, 0.3), rgba(168, 85, 247, 0.15));
+        }
+        .connector.right .connector-line {
+            background: linear-gradient(to right, rgba(168, 85, 247, 0.15), rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.15));
+        }
 
-  .node-type-tag {
-    position: absolute;
-    top: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 2px 6px;
-    font-size: 9px;
-    font-family: var(--font-mono);
-    color: var(--text-muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
+        .packet {
+            position: absolute;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            filter: blur(1px);
+        }
+        .packet.user-to-client {
+            background: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.9);
+        }
+        .packet.client-to-user {
+            background: #a855f7;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.9);
+        }
+        .packet.client-to-server {
+            background: #a855f7;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.9);
+        }
+        .packet.server-to-client {
+            background: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.9);
+        }
+        .packet.animate-fwd {
+            animation: travel-fwd 1.1s ease-in-out infinite;
+        }
+        .packet.animate-bwd {
+            animation: travel-bwd 1.1s ease-in-out infinite;
+        }
 
-  .node-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.04);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-    transition: background 0.3s;
-  }
-  .node.active .node-icon { background: rgba(255,255,255,0.1); }
-  .node-icon svg { width: 22px; height: 22px; }
-  .node.user   .node-icon svg { color: #3b82f6; }
-  .node.client .node-icon svg { color: #a855f7; }
-  .node.server .node-icon svg { color: #10b981; }
+        @keyframes travel-fwd {
+            0% {
+                left: 5%;
+                opacity: 0;
+            }
+            15% {
+                opacity: 1;
+            }
+            85% {
+                opacity: 1;
+            }
+            100% {
+                left: 90%;
+                opacity: 0;
+            }
+        }
+        @keyframes travel-bwd {
+            0% {
+                left: 90%;
+                opacity: 0;
+            }
+            15% {
+                opacity: 1;
+            }
+            85% {
+                opacity: 1;
+            }
+            100% {
+                left: 5%;
+                opacity: 0;
+            }
+        }
 
-  .node-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    color: var(--text-muted);
-    text-align: center;
-    transition: color 0.3s;
-  }
-  .node.active .node-label { color: #fff; }
+        .controls-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 600px) {
+            .controls-row {
+                grid-template-columns: 1fr;
+            }
+        }
 
-  /* Connectors */
-  .connector {
-    flex: 1;
-    position: relative;
-    height: 2px;
-    overflow: visible;
-  }
-  .connector-line {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    transform: translateY(-50%);
-  }
-  .connector.left .connector-line  { background: linear-gradient(to right, rgba(59,130,246,0.15), rgba(168,85,247,0.3), rgba(168,85,247,0.15)); }
-  .connector.right .connector-line { background: linear-gradient(to right, rgba(168,85,247,0.15), rgba(16,185,129,0.3), rgba(16,185,129,0.15)); }
+        .card-label {
+            font-size: 10px;
+            font-family: 'Fira Code', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #94A3B8;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .card-label svg {
+            width: 12px;
+            height: 12px;
+        }
 
-  .packet {
-    position: absolute;
-    top: 50%;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    transform: translateY(-50%);
-    opacity: 0;
-    filter: blur(1px);
-  }
-  .packet.user-to-client   { background: #3b82f6; box-shadow: 0 0 10px rgba(59,130,246,0.9); }
-  .packet.client-to-user   { background: #a855f7; box-shadow: 0 0 10px rgba(168,85,247,0.9); }
-  .packet.client-to-server { background: #a855f7; box-shadow: 0 0 10px rgba(168,85,247,0.9); }
-  .packet.server-to-client { background: #10b981; box-shadow: 0 0 10px rgba(16,185,129,0.9); }
+        .btn-primary {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: #D4AF37;
+            color: #0B0F19;
+            border: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn-primary:hover {
+            background: #F3E5AB;
+        }
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        .btn-primary .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #0B0F19;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
 
-  .packet.animate-fwd { animation: travel-fwd 1.1s ease-in-out infinite; }
-  .packet.animate-bwd { animation: travel-bwd 1.1s ease-in-out infinite; }
+        .btn-icon {
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #1E2640;
+            background: transparent;
+            cursor: pointer;
+            color: #94A3B8;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-icon:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #F8FAFC;
+            border-color: #D4AF37;
+        }
+        .btn-icon svg {
+            width: 18px;
+            height: 18px;
+        }
 
-  @keyframes travel-fwd {
-    0%   { left: 5%;  opacity: 0; }
-    15%  { opacity: 1; }
-    85%  { opacity: 1; }
-    100% { left: 90%; opacity: 0; }
-  }
-  @keyframes travel-bwd {
-    0%   { left: 90%; opacity: 0; }
-    15%  { opacity: 1; }
-    85%  { opacity: 1; }
-    100% { left: 5%;  opacity: 0; }
-  }
+        .controls-flex {
+            display: flex;
+            gap: 8px;
+        }
 
-  /* Controls row */
-  .controls-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  @media (max-width: 600px) { .controls-row { grid-template-columns: 1fr; } }
+        .step-info {
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .step-text {
+            font-size: 10px;
+            font-family: 'Fira Code', monospace;
+            color: #94A3B8;
+        }
+        .step-dots {
+            display: flex;
+            gap: 4px;
+        }
+        .step-dot {
+            width: 14px;
+            height: 3px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: background 0.3s;
+        }
+        .step-dot.done {
+            background: #D4AF37;
+        }
 
-  .card-label {
-    font-size: 10px;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: var(--text-muted);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .card-label svg { width: 12px; height: 12px; }
+        .scenario-btn {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+            color: #94A3B8;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            margin-bottom: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+        .scenario-btn:hover {
+            border-color: #D4AF37;
+            background: rgba(212, 169, 55, 0.05);
+            color: #F8FAFC;
+        }
+        .scenario-btn.active {
+            border-color: rgba(212, 169, 55, 0.5);
+            background: rgba(212, 169, 55, 0.08);
+            color: #F8FAFC;
+        }
+        .scenario-btn-inner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .scenario-btn-inner svg {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+        }
+        .scenario-btn span {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .chevron {
+            width: 14px;
+            height: 14px;
+            opacity: 0.35;
+        }
 
-  .btn-primary {
-    flex: 1;
-    padding: 12px 16px;
-    border-radius: 12px;
-    background: #7c3aed;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    font-family: var(--font-sans);
-    font-size: 13px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: background 0.2s, transform 0.1s;
-  }
-  .btn-primary:hover { background: #6d28d9; }
-  .btn-primary:active { transform: scale(0.98); }
-  .btn-primary .pulse-dot { width: 8px; height: 8px; background: #fff; border-radius: 50%; animation: pulse 1s infinite; }
+        .how-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            margin-top: 20px;
+        }
+        @media (max-width: 700px) {
+            .how-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .how-step {
+            font-size: 10px;
+            font-family: 'Fira Code', monospace;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .how-step.user-color {
+            color: #3b82f6;
+        }
+        .how-step.client-color {
+            color: #a855f7;
+        }
+        .how-step.server-color {
+            color: #10b981;
+        }
+        .how-body {
+            font-size: 13px;
+            color: #94A3B8;
+            line-height: 1.75;
+        }
+        .how-body em {
+            color: #F8FAFC;
+            font-style: normal;
+        }
 
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.2)} }
+        .log-card {
+            border: 1px solid #1E2640;
+            background: #0B0F19;
+            border-radius: 20px;
+            padding: 24px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 640px;
+        }
+        .log-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .log-badge {
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 5px;
+            font-size: 10px;
+            font-family: 'Fira Code', monospace;
+            color: #94A3B8;
+        }
+        .log-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .log-list::-webkit-scrollbar {
+            width: 3px;
+        }
+        .log-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .log-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+        }
 
-  .btn-icon {
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: transparent;
-    cursor: pointer;
-    color: var(--text-muted);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-  }
-  .btn-icon:hover { background: rgba(255,255,255,0.05); color: var(--text); border-color: var(--border-hover); }
-  .btn-icon svg { width: 18px; height: 18px; }
+        .log-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #3f3f46;
+            text-align: center;
+            padding: 40px;
+            gap: 12px;
+        }
+        .log-empty svg {
+            width: 40px;
+            height: 40px;
+            opacity: 0.07;
+        }
+        .log-empty p {
+            font-size: 13px;
+            font-style: italic;
+        }
 
-  .controls-flex { display: flex; gap: 8px; }
+        .log-entry {
+            padding: 14px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid #1E2640;
+            position: relative;
+            overflow: hidden;
+            animation: slide-in 0.3s ease forwards;
+        }
+        @keyframes slide-in {
+            from {
+                opacity: 0;
+                transform: translateX(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .log-entry::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #a855f7, transparent);
+            opacity: 0.5;
+        }
+        .log-entry-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        .log-type {
+            font-size: 9px;
+            font-family: 'Fira Code', monospace;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+        .log-type.request {
+            color: #3b82f6;
+        }
+        .log-type.response {
+            color: #10b981;
+        }
+        .log-type.thought {
+            color: #f59e0b;
+        }
+        .log-type.notification {
+            color: #a855f7;
+        }
+        .log-route {
+            font-size: 10px;
+            font-family: 'Fira Code', monospace;
+            color: #3f3f46;
+        }
+        .log-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .log-payload {
+            font-size: 10px;
+            font-family: 'Fira Code', monospace;
+            color: rgba(147, 197, 253, 0.75);
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 8px;
+            padding: 10px;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.6;
+        }
 
-  .step-info {
-    margin-top: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .step-text { font-size: 10px; font-family: var(--font-mono); color: var(--text-muted); }
-  .step-dots { display: flex; gap: 4px; }
-  .step-dot { width: 14px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.05); transition: background 0.3s; }
-  .step-dot.done { background: #7c3aed; }
-
-  /* Scenario buttons */
-  .scenario-btn {
-    width: 100%;
-    padding: 14px 16px;
-    border-radius: 12px;
-    background: transparent;
-    border: 1px solid transparent;
-    cursor: pointer;
-    color: var(--text-muted);
-    text-align: left;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: all 0.2s;
-    margin-bottom: 6px;
-    font-family: var(--font-sans);
-  }
-  .scenario-btn:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.03); color: var(--text); }
-  .scenario-btn.active { border-color: rgba(168,85,247,0.45); background: rgba(168,85,247,0.08); color: #fff; }
-  .scenario-btn-inner { display: flex; align-items: center; gap: 10px; }
-  .scenario-btn-inner svg { width: 15px; height: 15px; flex-shrink: 0; }
-  .scenario-btn span { font-size: 13px; font-weight: 600; }
-  .chevron { width: 14px; height: 14px; opacity: 0.35; }
-
-  /* How it works */
-  .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 20px; }
-  @media (max-width: 700px) { .how-grid { grid-template-columns: 1fr; } }
-  .how-item {}
-  .how-step { font-size: 10px; font-family: var(--font-mono); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
-  .how-step.user-color   { color: #3b82f6; }
-  .how-step.client-color { color: #a855f7; }
-  .how-step.server-color { color: #10b981; }
-  .how-body { font-size: 13px; color: var(--text-muted); line-height: 1.75; }
-  .how-body em { color: var(--text); font-style: normal; }
-
-  .section-title { font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
-  .section-title svg { width: 17px; height: 17px; color: #3b82f6; }
-
-  /* Right sidebar */
-  .right-col {}
-  .log-card {
-    border: 1px solid var(--border);
-    background: var(--bg2);
-    border-radius: 20px;
-    padding: 24px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    min-height: 640px;
-  }
-  .log-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-  .log-badge { padding: 4px 8px; background: rgba(255,255,255,0.04); border-radius: 5px; font-size: 10px; font-family: var(--font-mono); color: var(--text-muted); }
-  .log-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-  .log-list::-webkit-scrollbar { width: 3px; }
-  .log-list::-webkit-scrollbar-track { background: transparent; }
-  .log-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
-
-  .log-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--text-dim);
-    text-align: center;
-    padding: 40px;
-    gap: 12px;
-  }
-  .log-empty svg { width: 40px; height: 40px; opacity: 0.07; }
-  .log-empty p { font-size: 13px; font-style: italic; }
-
-  .log-entry {
-    padding: 14px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.025);
-    border: 1px solid var(--border);
-    position: relative;
-    overflow: hidden;
-    animation: slide-in 0.3s ease forwards;
-  }
-  @keyframes slide-in {
-    from { opacity: 0; transform: translateX(14px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-  .log-entry::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: linear-gradient(to bottom, #a855f7, transparent);
-    opacity: 0.5;
-  }
-  .log-entry-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-  .log-type { font-size: 9px; font-family: var(--font-mono); font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; }
-  .log-type.request      { color: #3b82f6; }
-  .log-type.response     { color: #10b981; }
-  .log-type.thought      { color: #f59e0b; }
-  .log-type.notification { color: #a855f7; }
-  .log-route { font-size: 10px; font-family: var(--font-mono); color: var(--text-dim); }
-  .log-label { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 8px; }
-  .log-payload {
-    font-size: 10px;
-    font-family: var(--font-mono);
-    color: rgba(147,197,253,0.75);
-    background: rgba(0,0,0,0.35);
-    border-radius: 8px;
-    padding: 10px;
-    overflow-x: auto;
-    white-space: pre;
-    line-height: 1.6;
-  }
-</style>
+        .site-footer {
+            border-top: 1px dashed #1E2640;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            color: #94A3B8;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+        .site-footer .footer-brand {
+            color: #D4AF37;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E2640;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2a3457;
+        }
+    </style>
 </head>
 <body>
-<div class="bg-blobs"></div>
-<div class="grid-bg"></div>
 
-<div class="wrapper">
-  <!-- Header -->
-  <header>
-    <div class="header-badge">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="14" y="3" rx="1"/><path d="M10 21V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H3"/></svg>
-      <span>Protocol Visualizer</span>
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="site-logo">
+            <span class="prompt">$</span> sudo ./<span class="brand">TheSudoLab</span>
+        </div>
+        <div class="header-badge">Learning Portal · MCP</div>
+    </header>
+
+    <!-- HERO -->
+    <div class="page-hero">
+        <h1><span class="cmd">&gt; </span>Model Context Protocol <span style="color:#94A3B8;font-weight:400;">(MCP)</span></h1>
+        <p class="sub">// An open standard enabling AI models to securely connect with external tools, APIs, and databases.</p>
     </div>
-    <h1>Model Context Protocol <span class="dim">(MCP)</span></h1>
-    <p class="subtitle">MCP is an open standard that enables AI models to connect to data and tools through a universal interface.</p>
-  </header>
 
-  <div class="main-grid">
-    <div class="left-col">
+    <!-- MAIN CONTENT -->
+    <main>
 
-      <!-- Stage -->
-      <div class="stage">
-        <div class="nodes-row">
-          <!-- User Node -->
-          <div class="node user" id="node-user">
-            <div class="node-type-tag">user</div>
-            <div class="node-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+        <div class="main-grid">
+            <!-- LEFT COLUMN -->
+            <div class="left-col">
+
+                <!-- STAGE -->
+                <div class="content-card" style="padding: 1.5rem;">
+                    <div class="stage">
+                        <div class="nodes-row">
+                            <!-- User Node -->
+                            <div class="node user" id="node-user">
+                                <div class="node-type-tag">user</div>
+                                <div class="node-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+                                </div>
+                                <div class="node-label">End User</div>
+                            </div>
+
+                            <!-- Connector Left -->
+                            <div class="connector left" id="conn-left">
+                                <div class="connector-line"></div>
+                                <div class="packet user-to-client" id="pkt-u2c"></div>
+                                <div class="packet client-to-user" id="pkt-c2u"></div>
+                            </div>
+
+                            <!-- Client Node -->
+                            <div class="node client" id="node-client">
+                                <div class="node-type-tag">client</div>
+                                <div class="node-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="10" x="4" y="8" rx="2"/><path d="M12 8V6"/><path d="M8 8V6"/><path d="M16 8V6"/><path d="M2 14h2"/><path d="M20 14h2"/></svg>
+                                </div>
+                                <div class="node-label">MCP Host / AI</div>
+                            </div>
+
+                            <!-- Connector Right -->
+                            <div class="connector right" id="conn-right">
+                                <div class="connector-line"></div>
+                                <div class="packet client-to-server" id="pkt-c2s"></div>
+                                <div class="packet server-to-client" id="pkt-s2c"></div>
+                            </div>
+
+                            <!-- Server Node -->
+                            <div class="node server" id="node-server">
+                                <div class="node-type-tag">server</div>
+                                <div class="node-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+                                </div>
+                                <div class="node-label">MCP Server</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTROLS -->
+                <div class="controls-row">
+                    <div class="content-card" style="padding: 20px 24px;">
+                        <div class="card-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+                            Execute Flow
+                        </div>
+                        <div class="controls-flex">
+                            <button class="btn-primary" id="btn-play" onclick="togglePlay()">
+                                <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+                                <span id="btn-label">Run Simulation</span>
+                            </button>
+                            <button class="btn-icon" onclick="reset()" title="Reset">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                            </button>
+                        </div>
+                        <div class="step-info">
+                            <span class="step-text" id="step-text">STEP 0 / 0</span>
+                            <div class="step-dots" id="step-dots"></div>
+                        </div>
+                    </div>
+
+                    <div class="content-card" style="padding: 20px 24px;">
+                        <div class="card-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                            Select Scenario
+                        </div>
+                        <div id="scenario-list"></div>
+                    </div>
+                </div>
+
+                <!-- HOW IT WORKS -->
+                <div class="content-card">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;color:#D4AF37;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                        <span style="font-size:16px;font-weight:700;color:#F8FAFC;">How the Flow Works</span>
+                    </div>
+                    <div class="how-grid">
+                        <div class="how-item">
+                            <div class="how-step user-color">1. Tool Discovery</div>
+                            <div class="how-body">The Client first asks the Server for its capabilities. The Server responds with a list of available <em>Tools</em> and <em>Resources</em>.</div>
+                        </div>
+                        <div class="how-item">
+                            <div class="how-step client-color">2. Context Execution</div>
+                            <div class="how-body">Based on the user request, the Client (AI model) decides which tool to call. It sends a JSON-RPC request with arguments to the MCP Server.</div>
+                        </div>
+                        <div class="how-item">
+                            <div class="how-step server-color">3. Data Injection</div>
+                            <div class="how-body">The Server processes the request and returns structured data. This data is injected back into the AI's context for a finalized response.</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="node-label">End User</div>
-          </div>
 
-          <!-- Connector Left -->
-          <div class="connector left" id="conn-left">
-            <div class="connector-line"></div>
-            <div class="packet user-to-client" id="pkt-u2c"></div>
-            <div class="packet client-to-user" id="pkt-c2u"></div>
-          </div>
-
-          <!-- Client Node -->
-          <div class="node client" id="node-client">
-            <div class="node-type-tag">client</div>
-            <div class="node-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="10" x="4" y="8" rx="2"/><path d="M12 8V6"/><path d="M8 8V6"/><path d="M16 8V6"/><path d="M2 14h2"/><path d="M20 14h2"/></svg>
+            <!-- RIGHT COLUMN: LOGS -->
+            <div class="right-col">
+                <div class="log-card">
+                    <div class="log-header">
+                        <div class="card-label" style="margin-bottom:0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+                            Message Logs
+                        </div>
+                        <div class="log-badge">JSON-RPC 2.0</div>
+                    </div>
+                    <div class="log-list" id="log-list">
+                        <div class="log-empty" id="log-empty">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+                            <p>Logs will appear here once the simulation starts.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="node-label">MCP Host / AI Client</div>
-          </div>
-
-          <!-- Connector Right -->
-          <div class="connector right" id="conn-right">
-            <div class="connector-line"></div>
-            <div class="packet client-to-server" id="pkt-c2s"></div>
-            <div class="packet server-to-client" id="pkt-s2c"></div>
-          </div>
-
-          <!-- Server Node -->
-          <div class="node server" id="node-server">
-            <div class="node-type-tag">server</div>
-            <div class="node-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
-            </div>
-            <div class="node-label">MCP Server</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Controls Row -->
-      <div class="controls-row">
-        <!-- Execute -->
-        <div class="card">
-          <div class="card-label">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
-            Execute Flow
-          </div>
-          <div class="controls-flex">
-            <button class="btn-primary" id="btn-play" onclick="togglePlay()">
-              <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><polygon points="6 3 20 12 6 21 6 3"/></svg>
-              <span id="btn-label">Run Simulation</span>
-            </button>
-            <button class="btn-icon" onclick="reset()" title="Reset">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            </button>
-          </div>
-          <div class="step-info">
-            <span class="step-text" id="step-text">STEP 0 / 0</span>
-            <div class="step-dots" id="step-dots"></div>
-          </div>
         </div>
 
-        <!-- Scenario -->
-        <div class="card">
-          <div class="card-label">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            Select Scenario
-          </div>
-          <div id="scenario-list"></div>
-        </div>
-      </div>
+    </main>
 
-      <!-- How it works -->
-      <div class="card">
-        <div class="section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          How the Flow Works
-        </div>
-        <div class="how-grid">
-          <div class="how-item">
-            <div class="how-step user-color">1. Tool Discovery</div>
-            <div class="how-body">The Client first asks the Server for its capabilities. The Server responds with a list of available <em>Tools</em> and <em>Resources</em>.</div>
-          </div>
-          <div class="how-item">
-            <div class="how-step client-color">2. Context Execution</div>
-            <div class="how-body">Based on the user request, the Client (AI model) decides which tool to call. It sends a JSON-RPC request with arguments to the MCP Server.</div>
-          </div>
-          <div class="how-item">
-            <div class="how-step server-color">3. Data Injection</div>
-            <div class="how-body">The Server processes the request and returns structured data. This data is injected back into the AI's context for a finalized response.</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <span><span class="footer-brand">TheSudoLab</span> · MCP Explainer · 2026</span>
+        <br />
+        <span style="font-size:0.7rem;opacity:0.6;">built with ✦ for the curious</span>
+    </footer>
 
-    <!-- Right: Message Log -->
-    <div class="right-col">
-      <div class="log-card">
-        <div class="log-header">
-          <div class="card-label" style="margin-bottom:0">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
-            Message Logs
-          </div>
-          <div class="log-badge">JSON-RPC 2.0</div>
-        </div>
-        <div class="log-list" id="log-list">
-          <div class="log-empty" id="log-empty">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
-            <p>Logs will appear here once the simulation starts.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+    <script>
+        // ── SCENARIOS ──
+        const SCENARIOS = [{
+            id: 'nmap-scan',
+            title: 'Nmap Port Scan',
+            icon: 'shield',
+            description: 'An AI model requests a network security audit of a domain via an MCP network-tools server.',
+            steps: [
+                { label: 'User: "Run port scan on test.com"', from: 'user', to: 'client', type: 'notification',
+                    payload: { query: "Run all ports scan on test.com" } },
+                { label: 'list_tools()', from: 'client', to: 'server', type: 'request',
+                    payload: { method: "list_tools" } },
+                { label: 'Tools: [nmap_scan, ping, traceroute]', from: 'server', to: 'client', type: 'response',
+                    payload: { tools: ["nmap_scan", "ping", "traceroute"] } },
+                { label: 'LLM Reasoning', from: 'client', to: 'client', type: 'thought',
+                    payload: { reasoning: "User requested 'all ports'. The standard port range for a full Nmap scan is 1-65535. Formulating tool call...",
+                        action: "call_tool('nmap_scan')" } },
+                { label: 'call_tool("nmap_scan")', from: 'client', to: 'server', type: 'request',
+                    payload: { name: "nmap_scan", arguments: { target: "test.com", ports: "1-65535" } } },
+                { label: 'Scan Results (XML/JSON)', from: 'server', to: 'client', type: 'response',
+                    payload: { open_ports: [80, 443, 22], status: "complete" } },
+                { label: 'AI: "Scan done. 3 ports open."', from: 'client', to: 'user', type: 'notification',
+                    payload: { response: "Scan complete for test.com. Found open ports: 80 (http), 443 (https), and 22 (ssh)." } },
+            ]
+        }, {
+            id: 'fetch-github',
+            title: 'GitHub Issue Analysis',
+            icon: 'github',
+            description: 'Retrieving real-time issue data from a GitHub repository using MCP server capabilities.',
+            steps: [
+                { label: 'User: "Check repo issues"', from: 'user', to: 'client', type: 'notification',
+                    payload: { query: "Get latest issues from v0-app" } },
+                { label: 'get_resource("github://issues")', from: 'client', to: 'server', type: 'request',
+                    payload: { uri: "github://v0-app/issues?state=open" } },
+                { label: 'Repo Data (JSON)', from: 'server', to: 'client', type: 'response',
+                    payload: { content: [{ id: 1, title: "Auth bug", status: "open" }] } },
+                { label: 'AI: "1 open issue found."', from: 'client', to: 'user', type: 'notification',
+                    payload: { response: "There is 1 open issue: Auth bug" } },
+            ]
+        }];
 
-<script>
-const SCENARIOS = [
-  {
-    id: 'nmap-scan',
-    title: 'Nmap Port Scan',
-    icon: 'shield',
-    description: 'An AI model requests a network security audit of a domain via an MCP network-tools server.',
-    steps: [
-      { label: 'User: "Run port scan on test.com"', from: 'user', to: 'client', type: 'notification', payload: { query: "Run all ports scan on test.com" } },
-      { label: 'list_tools()', from: 'client', to: 'server', type: 'request', payload: { method: "list_tools" } },
-      { label: 'Tools: [nmap_scan, ping, traceroute]', from: 'server', to: 'client', type: 'response', payload: { tools: ["nmap_scan", "ping", "traceroute"] } },
-      { label: 'LLM Reasoning', from: 'client', to: 'client', type: 'thought', payload: { reasoning: "User requested 'all ports'. The standard port range for a full Nmap scan is 1-65535. Formulating tool call...", action: "call_tool('nmap_scan')" } },
-      { label: 'call_tool("nmap_scan")', from: 'client', to: 'server', type: 'request', payload: { name: "nmap_scan", arguments: { target: "test.com", ports: "1-65535" } } },
-      { label: 'Scan Results (XML/JSON)', from: 'server', to: 'client', type: 'response', payload: { open_ports: [80, 443, 22], status: "complete" } },
-      { label: 'AI: "Scan done. 3 ports open."', from: 'client', to: 'user', type: 'notification', payload: { response: "Scan complete for test.com. Found open ports: 80 (http), 443 (https), and 22 (ssh)." } },
-    ]
-  },
-  {
-    id: 'fetch-github',
-    title: 'GitHub Issue Analysis',
-    icon: 'github',
-    description: 'Retrieving real-time issue data from a GitHub repository using MCP server capabilities.',
-    steps: [
-      { label: 'User: "Check repo issues"', from: 'user', to: 'client', type: 'notification', payload: { query: "Get latest issues from v0-app" } },
-      { label: 'get_resource("github://issues")', from: 'client', to: 'server', type: 'request', payload: { uri: "github://v0-app/issues?state=open" } },
-      { label: 'Repo Data (JSON)', from: 'server', to: 'client', type: 'response', payload: { content: [{ id: 1, title: "Auth bug", status: "open" }] } },
-      { label: 'AI: "1 open issue found."', from: 'client', to: 'user', type: 'notification', payload: { response: "There is 1 open issue: Auth bug" } },
-    ]
-  }
-];
+        const ICONS = {
+            shield: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+            github: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>`,
+            chevron: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chevron"><path d="m9 18 6-6-6-6"/></svg>`
+        };
 
-const ICONS = {
-  shield: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-  github: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>`,
-  chevron: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chevron"><path d="m9 18 6-6-6-6"/></svg>`
-};
+        // ── STATE ──
+        let selectedId = SCENARIOS[0].id;
+        let currentStep = -1;
+        let isPlaying = false;
+        let playTimer = null;
+        let messages = [];
 
-// State
-let selectedId = SCENARIOS[0].id;
-let currentStep = -1;
-let isPlaying = false;
-let playTimer = null;
-let messages = [];
-
-function getScenario() {
-  return SCENARIOS.find(s => s.id === selectedId);
-}
-
-function renderScenarioList() {
-  const container = document.getElementById('scenario-list');
-  container.innerHTML = SCENARIOS.map(s => `
-    <button class="scenario-btn ${s.id === selectedId ? 'active' : ''}" onclick="selectScenario('${s.id}')">
-      <div class="scenario-btn-inner">${ICONS[s.icon]}<span>${s.title}</span></div>
-      ${ICONS.chevron}
-    </button>
-  `).join('');
-}
-
-function selectScenario(id) {
-  selectedId = id;
-  reset();
-  renderScenarioList();
-}
-
-function updateStepDots() {
-  const scenario = getScenario();
-  const container = document.getElementById('step-dots');
-  container.innerHTML = scenario.steps.map((_, i) => `<div class="step-dot ${i <= currentStep ? 'done' : ''}"></div>`).join('');
-  document.getElementById('step-text').textContent = `STEP ${currentStep + 1} / ${scenario.steps.length}`;
-}
-
-function updateNodes() {
-  const nodes = ['user', 'client', 'server'];
-  nodes.forEach(n => document.getElementById('node-' + n).classList.remove('active'));
-
-  // Hide all packets
-  ['pkt-u2c','pkt-c2u','pkt-c2s','pkt-s2c'].forEach(id => {
-    const el = document.getElementById(id);
-    el.classList.remove('animate-fwd', 'animate-bwd');
-  });
-
-  if (currentStep < 0) return;
-
-  const step = getScenario().steps[currentStep];
-  const from = step.from;
-  const to = step.to;
-
-  // Activate nodes
-  if (from !== 'client' || to !== 'client') {
-    document.getElementById('node-' + from)?.classList.add('active');
-    document.getElementById('node-' + to)?.classList.add('active');
-  } else {
-    document.getElementById('node-client').classList.add('active');
-  }
-
-  // Animate packet
-  if (from === 'user'   && to === 'client') document.getElementById('pkt-u2c').classList.add('animate-fwd');
-  if (from === 'client' && to === 'user')   document.getElementById('pkt-c2u').classList.add('animate-bwd');
-  if (from === 'client' && to === 'server') document.getElementById('pkt-c2s').classList.add('animate-fwd');
-  if (from === 'server' && to === 'client') document.getElementById('pkt-s2c').classList.add('animate-bwd');
-}
-
-function addLogEntry(step) {
-  const list = document.getElementById('log-list');
-  const empty = document.getElementById('log-empty');
-  if (empty) empty.remove();
-
-  const entry = document.createElement('div');
-  entry.className = 'log-entry';
-  entry.innerHTML = `
-    <div class="log-entry-top">
-      <span class="log-type ${step.type}">${step.type}</span>
-      <span class="log-route">${step.from} → ${step.to}</span>
-    </div>
-    <div class="log-label">${step.label}</div>
-    <pre class="log-payload">${JSON.stringify(step.payload, null, 2)}</pre>
-  `;
-  list.insertBefore(entry, list.firstChild);
-}
-
-function nextStep() {
-  const scenario = getScenario();
-  if (currentStep < scenario.steps.length - 1) {
-    currentStep++;
-    addLogEntry(scenario.steps[currentStep]);
-    updateNodes();
-    updateStepDots();
-    return true;
-  }
-  return false;
-}
-
-function togglePlay() {
-  if (isPlaying) {
-    isPlaying = false;
-    clearInterval(playTimer);
-    document.getElementById('play-icon').innerHTML = '<polygon points="6 3 20 12 6 21 6 3"/>';
-    document.getElementById('btn-label').textContent = 'Run Simulation';
-    document.getElementById('btn-play').querySelector('.pulse-dot')?.remove();
-  } else {
-    // Check if already done
-    const scenario = getScenario();
-    if (currentStep >= scenario.steps.length - 1) reset();
-    
-    isPlaying = true;
-    document.getElementById('play-icon').outerHTML = '<span class="pulse-dot"></span>';
-    document.getElementById('btn-label').textContent = 'Running...';
-
-    playTimer = setInterval(() => {
-      const hasNext = nextStep();
-      if (!hasNext) {
-        isPlaying = false;
-        clearInterval(playTimer);
-        // Restore button
-        const btn = document.getElementById('btn-play');
-        const pulseDot = btn.querySelector('.pulse-dot');
-        if (pulseDot) {
-          pulseDot.outerHTML = `<svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><polygon points="6 3 20 12 6 21 6 3"/></svg>`;
+        function getScenario() {
+            return SCENARIOS.find(s => s.id === selectedId);
         }
-        document.getElementById('btn-label').textContent = 'Run Simulation';
-      }
-    }, 1500);
-  }
-}
 
-function reset() {
-  isPlaying = false;
-  clearInterval(playTimer);
-  currentStep = -1;
-  messages = [];
+        function renderScenarioList() {
+            const container = document.getElementById('scenario-list');
+            container.innerHTML = SCENARIOS.map(s => `
+                <button class="scenario-btn ${s.id === selectedId ? 'active' : ''}" onclick="selectScenario('${s.id}')">
+                    <div class="scenario-btn-inner">${ICONS[s.icon]}<span>${s.title}</span></div>
+                    ${ICONS.chevron}
+                </button>
+            `).join('');
+        }
 
-  // Reset button
-  const btn = document.getElementById('btn-play');
-  btn.innerHTML = `<svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><polygon points="6 3 20 12 6 21 6 3"/></svg><span id="btn-label">Run Simulation</span>`;
+        function selectScenario(id) {
+            selectedId = id;
+            reset();
+            renderScenarioList();
+        }
 
-  // Reset log
-  const list = document.getElementById('log-list');
-  list.innerHTML = `<div class="log-empty" id="log-empty">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
-    <p>Logs will appear here once the simulation starts.</p>
-  </div>`;
+        function updateStepDots() {
+            const scenario = getScenario();
+            const container = document.getElementById('step-dots');
+            container.innerHTML = scenario.steps.map((_, i) =>
+                `<div class="step-dot ${i <= currentStep ? 'done' : ''}"></div>`
+            ).join('');
+            document.getElementById('step-text').textContent = `STEP ${currentStep + 1} / ${scenario.steps.length}`;
+        }
 
-  updateNodes();
-  updateStepDots();
-}
+        function updateNodes() {
+            const nodes = ['user', 'client', 'server'];
+            nodes.forEach(n => document.getElementById('node-' + n).classList.remove('active'));
 
-// Init
-renderScenarioList();
-updateStepDots();
-</script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"c4a9a4acdf814479b92958761cbef4da","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+            ['pkt-u2c', 'pkt-c2u', 'pkt-c2s', 'pkt-s2c'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.remove('animate-fwd', 'animate-bwd');
+            });
+
+            if (currentStep < 0) return;
+
+            const step = getScenario().steps[currentStep];
+            const from = step.from;
+            const to = step.to;
+
+            if (from !== 'client' || to !== 'client') {
+                document.getElementById('node-' + from)?.classList.add('active');
+                document.getElementById('node-' + to)?.classList.add('active');
+            } else {
+                document.getElementById('node-client').classList.add('active');
+            }
+
+            if (from === 'user' && to === 'client') document.getElementById('pkt-u2c').classList.add('animate-fwd');
+            if (from === 'client' && to === 'user') document.getElementById('pkt-c2u').classList.add('animate-bwd');
+            if (from === 'client' && to === 'server') document.getElementById('pkt-c2s').classList.add('animate-fwd');
+            if (from === 'server' && to === 'client') document.getElementById('pkt-s2c').classList.add('animate-fwd');
+        }
+
+        function addLogEntry(step) {
+            const list = document.getElementById('log-list');
+            const empty = document.getElementById('log-empty');
+            if (empty) empty.remove();
+
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `
+                <div class="log-entry-top">
+                    <span class="log-type ${step.type}">${step.type}</span>
+                    <span class="log-route">${step.from} → ${step.to}</span>
+                </div>
+                <div class="log-label">${step.label}</div>
+                <pre class="log-payload">${JSON.stringify(step.payload, null, 2)}</pre>
+            `;
+            list.insertBefore(entry, list.firstChild);
+        }
+
+        function nextStep() {
+            const scenario = getScenario();
+            if (currentStep < scenario.steps.length - 1) {
+                currentStep++;
+                addLogEntry(scenario.steps[currentStep]);
+                updateNodes();
+                updateStepDots();
+                return true;
+            }
+            return false;
+        }
+
+        function togglePlay() {
+            if (isPlaying) {
+                isPlaying = false;
+                clearInterval(playTimer);
+                document.getElementById('play-icon').outerHTML =
+                    `<svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><polygon points="6 3 20 12 6 21 6 3"/></svg>`;
+                document.getElementById('btn-label').textContent = 'Run Simulation';
+            } else {
+                const scenario = getScenario();
+                if (currentStep >= scenario.steps.length - 1) reset();
+
+                isPlaying = true;
+                document.getElementById('play-icon').outerHTML = '<span class="pulse-dot"></span>';
+                document.getElementById('btn-label').textContent = 'Running...';
+
+                playTimer = setInterval(() => {
+                    const hasNext = nextStep();
+                    if (!hasNext) {
+                        isPlaying = false;
+                        clearInterval(playTimer);
+                        const btn = document.getElementById('btn-play');
+                        const pulseDot = btn.querySelector('.pulse-dot');
+                        if (pulseDot) {
+                            pulseDot.outerHTML =
+                                `<svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><polygon points="6 3 20 12 6 21 6 3"/></svg>`;
+                        }
+                        document.getElementById('btn-label').textContent = 'Run Simulation';
+                    }
+                }, 1500);
+            }
+        }
+
+        function reset() {
+            isPlaying = false;
+            clearInterval(playTimer);
+            currentStep = -1;
+            messages = [];
+
+            const btn = document.getElementById('btn-play');
+            btn.innerHTML =
+                `<svg id="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><polygon points="6 3 20 12 6 21 6 3"/></svg><span id="btn-label">Run Simulation</span>`;
+
+            const list = document.getElementById('log-list');
+            list.innerHTML = `<div class="log-empty" id="log-empty">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+                <p>Logs will appear here once the simulation starts.</p>
+            </div>`;
+
+            updateNodes();
+            updateStepDots();
+        }
+
+        // ── INIT ──
+        renderScenarioList();
+        updateStepDots();
+    </script>
+
 </body>
 </html>
