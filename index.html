@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TheSudoLab | Global Enterprise Security & Threat Intelligence</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
     <script>
         tailwind.config = {
             theme: {
@@ -32,10 +33,16 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             background-color: #0B0F19;
             font-family: 'Inter', sans-serif;
             color: #F8FAFC;
+            margin: 0;
+            padding: 0;
         }
 
         .custom-glow {
@@ -49,16 +56,22 @@
 
         .tab-section {
             display: none;
+            animation: fadeIn 0.4s ease-out forwards;
         }
 
         .tab-section.active {
             display: block;
-            animation: fadeIn 0.5s ease-in-out forwards;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .radar-pulse {
@@ -74,9 +87,17 @@
             animation: pulseScan 2.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
         }
         @keyframes pulseScan {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { opacity: 0.3; }
-            100% { transform: scale(1.25); opacity: 0; }
+            0% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1.25);
+                opacity: 0;
+            }
         }
 
         /* ── Animated Gold Thread Logo ── */
@@ -108,9 +129,15 @@
         }
 
         @keyframes drawThreadGold {
-            0%   { stroke-dashoffset: 800; }
-            50%  { stroke-dashoffset: 0; }
-            100% { stroke-dashoffset: -800; }
+            0% {
+                stroke-dashoffset: 800;
+            }
+            50% {
+                stroke-dashoffset: 0;
+            }
+            100% {
+                stroke-dashoffset: -800;
+            }
         }
 
         .thread-glow {
@@ -123,13 +150,239 @@
         }
 
         @keyframes pulseGlow {
-            0%, 100% { opacity: 0.3; transform: scale(0.95); }
-            50% { opacity: 0.8; transform: scale(1.05); }
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(0.95);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a3250;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37;
+        }
+
+        /* ── Back to top ── */
+        #back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 999;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #1E2640;
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+            font-size: 1.25rem;
+            cursor: pointer;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s, transform 0.3s, background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        #back-to-top.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        #back-to-top:hover {
+            background: #D4AF37;
+            color: #0B0F19;
+        }
+
+        /* ── Professional PDF table ── */
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        .pdf-table thead th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #94A3B8;
+            border-bottom: 1px solid #1e2a3a;
+            background: #0f1624;
+        }
+        .pdf-table tbody td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #1a2333;
+            vertical-align: middle;
+            color: #E2E8F0;
+        }
+        .pdf-table tbody tr:hover {
+            background: rgba(30, 38, 64, 0.5);
+        }
+        .pdf-table .file-size {
+            color: #64748b;
+            font-size: 0.7rem;
+            font-family: 'Fira Code', monospace;
+        }
+        .pdf-table .download-link {
+            color: #D4AF37;
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-family: 'Fira Code', monospace;
+            padding: 0.3rem 0.9rem;
+            border: 1px solid #D4AF37;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+        .pdf-table .download-link:hover {
+            background: #D4AF37;
+            color: #0B0F19;
+        }
+        .pdf-table .badge-new {
+            background: rgba(212, 169, 55, 0.15);
+            color: #D4AF37;
+            font-size: 0.55rem;
+            font-weight: 600;
+            padding: 0.15rem 0.6rem;
+            border-radius: 12px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-left: 0.5rem;
+            border: 1px solid rgba(212, 169, 55, 0.2);
+        }
+        .pdf-table .doc-icon {
+            opacity: 0.5;
+            margin-right: 0.5rem;
+        }
+
+        /* ── Blog card date fix ── */
+        .blog-date-placeholder {
+            color: #64748b;
+            font-size: 0.6rem;
+            letter-spacing: 0.05em;
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* ── Terminal cursor blink ── */
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* ── Keyboard hint ── */
+        .kbd-hint {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 22, 36, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid #1e2a3a;
+            border-radius: 8px;
+            padding: 0.4rem 1rem;
+            font-size: 0.6rem;
+            font-family: 'Fira Code', monospace;
+            color: #64748b;
+            letter-spacing: 0.04em;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+            display: none;
+        }
+        @media (min-width: 768px) {
+            .kbd-hint {
+                display: block;
+            }
+        }
+        .kbd-hint kbd {
+            background: #1a2333;
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+            color: #D4AF37;
+            font-size: 0.6rem;
+            margin: 0 0.1rem;
+            border: 1px solid #2a3250;
+        }
+
+        /* ── Responsive tweaks ── */
+        @media (max-width: 640px) {
+            .pdf-table thead {
+                display: none;
+            }
+            .pdf-table tbody tr {
+                display: block;
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid #1a2333;
+            }
+            .pdf-table tbody td {
+                display: block;
+                padding: 0.2rem 0;
+                border: none;
+            }
+            .pdf-table tbody td:first-child {
+                font-weight: 600;
+                color: #D4AF37;
+            }
+            .pdf-table .file-size,
+            .pdf-table .badge-new {
+                display: inline-block;
+                margin: 0.2rem 0.4rem 0.2rem 0;
+            }
+        }
+
+        /* ── Loading shimmer ── */
+        .shimmer {
+            background: linear-gradient(90deg, #151C2C 25%, #1E2640 50%, #151C2C 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s infinite;
+        }
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* ── Smooth hover lift ── */
+        .card-lift {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .card-lift:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
+    <!-- ===== TOP STATUS BAR ===== -->
     <div class="bg-[#070A10] border-b border-slate-800 text-[11px] font-mono tracking-wider text-brand-textMuted px-4 py-2 flex justify-between items-center">
         <div class="flex items-center gap-2">
             <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -141,33 +394,32 @@
         </div>
     </div>
 
+    <!-- ===== HEADER ===== -->
     <header class="sticky top-0 z-50 bg-brand-bg/90 backdrop-blur-md border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
 
             <a href="#" class="flex items-center gap-3 group">
-                <!-- Animated Gold Thread Logo — replaces square box -->
                 <div class="logo-thread-wrap radar-pulse">
                     <div class="thread-glow"></div>
                     <svg class="logo-thread-svg" viewBox="150 170 550 330" xmlns="http://www.w3.org/2000/svg">
                         <path class="thread-gold" d="M 250,250 C 220,200 170,220 180,260 C 190,300 240,240 250,280 C 260,320 200,350 180,310 C 160,270 210,230 230,210 C 260,180 320,220 310,270 C 300,320 240,310 230,340 C 210,380 290,380 310,330 C 320,300 300,270 330,270 C 360,270 390,360 450,340 C 510,320 520,220 590,220 C 660,220 680,290 660,340 C 630,400 550,380 540,300 C 530,240 610,240 630,280 C 650,320 600,340 580,310 C 560,280 580,260 600,270 C 610,275 610,290 600,290" />
                     </svg>
                 </div>
-
                 <div>
                     <span class="text-xl font-bold tracking-tight text-brand-textMain">TheSudo<span class="text-brand-accent">Lab</span></span>
                     <p class="text-[10px] font-mono tracking-widest text-brand-textMuted uppercase -mt-1">Enterprise Security</p>
                 </div>
             </a>
 
-            <nav class="hidden md:flex items-center gap-1 font-medium text-sm">
-                <button id="nav-btn-about" onclick="switchTab('about')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors active-nav">/about</button>
-                <button id="nav-btn-services" onclick="switchTab('services')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/services</button>
-                <button id="nav-btn-blog" onclick="switchTab('blog')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/blog</button>
-                <button id="nav-btn-pdf" onclick="switchTab('pdf')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/publications</button>
-                <button id="nav-btn-videos" onclick="switchTab('videos')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/videos</button>
-                <button id="nav-btn-plugins" onclick="switchTab('plugins')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/modules</button>
-                <button id="nav-btn-projects" onclick="switchTab('projects')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/repositories</button>
-                <button id="nav-btn-contact" onclick="switchTab('contact')" class="ml-4 px-5 py-2 rounded bg-slate-800 text-brand-accent hover:bg-slate-700 font-mono transition-all text-xs border border-slate-700">/contact</button>
+            <nav class="hidden md:flex items-center gap-1 font-medium text-sm" id="main-nav">
+                <button data-tab="about"    onclick="switchTab('about')"    class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors active-nav">/about</button>
+                <button data-tab="services" onclick="switchTab('services')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/services</button>
+                <button data-tab="blog"     onclick="switchTab('blog')"     class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/blog</button>
+                <button data-tab="pdf"      onclick="switchTab('pdf')"      class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/publications</button>
+                <button data-tab="videos"   onclick="switchTab('videos')"   class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/videos</button>
+                <button data-tab="plugins"  onclick="switchTab('plugins')"  class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/modules</button>
+                <button data-tab="projects" onclick="switchTab('projects')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/repositories</button>
+                <button data-tab="contact"  onclick="switchTab('contact')"  class="ml-4 px-5 py-2 rounded bg-slate-800 text-brand-accent hover:bg-slate-700 font-mono transition-all text-xs border border-slate-700">/contact</button>
             </nav>
 
             <div class="md:hidden">
@@ -185,8 +437,22 @@
         </div>
     </header>
 
+    <!-- ===== KEYBOARD HINT ===== -->
+    <div class="kbd-hint" id="kbd-hint">
+        <kbd>1</kbd>–<kbd>8</kbd> navigate &nbsp;·&nbsp; <kbd>Esc</kbd> contact
+    </div>
+
+    <!-- ===== BACK TO TOP ===== -->
+    <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+    </button>
+
+    <!-- ===== MAIN ===== -->
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 w-full">
 
+        <!-- ============================================================ -->
+        <!-- ABOUT -->
+        <!-- ============================================================ -->
         <section id="about" class="tab-section active space-y-16">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                 <div class="lg:col-span-7 space-y-6">
@@ -194,7 +460,7 @@
                         <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> Threat Intelligence & Advisory
                     </div>
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-                        Adversary Simulation <br>& Dynamic Defenses.
+                        Adversary Simulation <br />& Dynamic Defenses.
                     </h1>
                     <p class="text-lg text-brand-textMuted leading-relaxed max-w-2xl">
                         <strong class="text-brand-textMain">TheSudoLab</strong> operates as an elite international security research collective. We offer high-fidelity adversary-simulation penetration testing, deep-dive vulnerability infrastructure assessments, and strategic technology consulting with a core mandate built around rigorous security training and systemic defense hardening.
@@ -234,35 +500,37 @@
             </div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- SERVICES -->
+        <!-- ============================================================ -->
         <section id="services" class="tab-section space-y-12">
             <div class="text-center max-w-3xl mx-auto space-y-4">
                 <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Core Capabilities & Security Architecture</h2>
                 <p class="text-brand-textMuted">Tailored programmatic solutions built to neutralize sophisticated threat profiles before operational impact occurs.</p>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between">
+                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between card-lift">
                     <div class="space-y-4">
                         <div class="text-xs font-mono text-brand-accent tracking-widest uppercase">01 // Advanced Vector Assessment</div>
                         <h3 class="text-xl font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors">Penetration Testing</h3>
                         <p class="text-brand-textMuted text-sm leading-relaxed">Comprehensive structural environments, mobile applications, and high-throughput API vulnerability infrastructure diagnostics. We orchestrate simulated real-world cyber attack chains to identify and fortify deep programmatic weaknesses before adversaries can exploit them.</p>
                     </div>
                 </div>
-                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between">
+                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between card-lift">
                     <div class="space-y-4">
                         <div class="text-xs font-mono text-brand-accent tracking-widest uppercase">02 // Framework Infrastructure</div>
                         <h3 class="text-xl font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors">Security Consulting</h3>
                         <p class="text-brand-textMuted text-sm leading-relaxed">Architecting mathematically verified security baselines, zero-trust access control paradigms, and comprehensive continuous threat modeling profiles. Our industry experts work across sectors to integrate defenses directly into native logic pipelines.</p>
                     </div>
                 </div>
-                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between">
+                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between card-lift">
                     <div class="space-y-4">
                         <div class="text-xs font-mono text-brand-accent tracking-widest uppercase">03 // Educational Vectors</div>
                         <h3 class="text-xl font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors">Cybersecurity Training</h3>
                         <p class="text-brand-textMuted text-sm leading-relaxed">Hands-on learning programs customized for enterprise security operations teams. Ranging from baseline ethical hacking frameworks to sophisticated reverse-engineering techniques, we arm teams with actionable operational counter-knowledge.</p>
                     </div>
                 </div>
-                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between">
+                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between card-lift">
                     <div class="space-y-4">
                         <div class="text-xs font-mono text-brand-accent tracking-widest uppercase">04 // Full-Scale Adversary Emulation</div>
                         <h3 class="text-xl font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors">Red Team Operations</h3>
@@ -272,6 +540,9 @@
             </div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- BLOG -->
+        <!-- ============================================================ -->
         <section id="blog" class="tab-section space-y-8">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
                 <div>
@@ -280,12 +551,15 @@
                 </div>
                 <div class="relative max-w-xs w-full">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">grep:</span>
-                    <input type="text" id="blog-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-14 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="keyword..." oninput="filterBlogs()">
+                    <input type="text" id="blog-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-14 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="keyword..." oninput="filterBlogs()" />
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="blog-container"></div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- PDF / PUBLICATIONS  (PROFESSIONAL TABLE) -->
+        <!-- ============================================================ -->
         <section id="pdf" class="tab-section space-y-8">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
                 <div>
@@ -294,18 +568,37 @@
                 </div>
                 <div class="relative max-w-xs w-full">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">find:</span>
-                    <input type="text" id="pdf-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-14 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="document name..." oninput="filterPdfs()">
+                    <input type="text" id="pdf-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-14 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="document name..." oninput="filterPdfs()" />
                 </div>
             </div>
+
             <div class="bg-brand-surface border border-slate-800 rounded-lg overflow-hidden custom-glow">
-                <div class="bg-slate-900 px-6 py-3 border-b border-slate-800 font-mono text-xs text-slate-400 flex items-center justify-between">
+                <div class="bg-slate-900/70 px-6 py-3 border-b border-slate-800 font-mono text-xs text-slate-400 flex items-center justify-between">
                     <span>ls -la ./publications/</span>
                     <span class="text-brand-accent text-[10px]">PDF DOCUMENTS</span>
                 </div>
-                <ul class="divide-y divide-slate-800/60 font-mono text-sm" id="pdf-container"></ul>
+                <div class="overflow-x-auto" id="pdf-table-wrap">
+                    <table class="pdf-table" id="pdf-table">
+                        <thead>
+                            <tr>
+                                <th style="width:8%;">#</th>
+                                <th style="width:18%;">Date</th>
+                                <th style="width:44%;">Title</th>
+                                <th style="width:12%;">Size</th>
+                                <th style="width:18%;">Download</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pdf-container">
+                            <tr><td colspan="5" class="text-center text-brand-textMuted font-mono text-sm py-8 animate-pulse">> Querying secure indexing files...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- VIDEOS -->
+        <!-- ============================================================ -->
         <section id="videos" class="tab-section space-y-8">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
                 <div>
@@ -314,12 +607,15 @@
                 </div>
                 <div class="relative max-w-xs w-full">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">query:</span>
-                    <input type="text" id="video-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-16 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="title name..." oninput="filterVideos()">
+                    <input type="text" id="video-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-16 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="title name..." oninput="filterVideos()" />
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="video-container"></div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- PLUGINS / MODULES -->
+        <!-- ============================================================ -->
         <section id="plugins" class="tab-section space-y-8">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
                 <div>
@@ -328,12 +624,15 @@
                 </div>
                 <div class="relative max-w-xs w-full">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">pkg:</span>
-                    <input type="text" id="plugin-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-12 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="registry entry..." oninput="filterPlugins()">
+                    <input type="text" id="plugin-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-12 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="registry entry..." oninput="filterPlugins()" />
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="plugin-container"></div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- PROJECTS / REPOSITORIES -->
+        <!-- ============================================================ -->
         <section id="projects" class="tab-section space-y-8">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
                 <div>
@@ -342,12 +641,15 @@
                 </div>
                 <div class="relative max-w-xs w-full">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">git:</span>
-                    <input type="text" id="project-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-12 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="tree parameter..." oninput="filterProjects()">
+                    <input type="text" id="project-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-12 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="tree parameter..." oninput="filterProjects()" />
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="project-container"></div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- CONTACT -->
+        <!-- ============================================================ -->
         <section id="contact" class="tab-section max-w-4xl mx-auto space-y-8">
             <div class="text-center space-y-3">
                 <h2 class="text-3xl font-bold tracking-tight">Secure Communications Interface</h2>
@@ -359,22 +661,22 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label for="first-name" class="text-xs font-mono uppercase text-slate-400 block">First Name <span class="text-brand-crimson">*</span></label>
-                            <input type="text" id="first-name" name="name" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="John" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required>
+                            <input type="text" id="first-name" name="name" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="John" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required />
                         </div>
                         <div class="space-y-2">
                             <label for="last-name" class="text-xs font-mono uppercase text-slate-400 block">Last Name <span class="text-brand-crimson">*</span></label>
-                            <input type="text" id="last-name" name="subject" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="Doe" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required>
+                            <input type="text" id="last-name" name="subject" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="Doe" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required />
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label for="email" class="text-xs font-mono uppercase text-slate-400 block">Email Address <span class="text-brand-crimson">*</span></label>
-                            <input type="email" id="email" name="email" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="name@domain.com" required>
+                            <input type="email" id="email" name="email" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="name@domain.com" required />
                         </div>
                         <div class="space-y-2">
                             <label for="phone" class="text-xs font-mono uppercase text-slate-400 block">Phone Vector <span class="text-brand-crimson">*</span></label>
-                            <input type="text" id="phone" name="telephone" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="+91 XXXXX XXXXX" pattern="[0-9+ ]*" title="Only numbers, spaces, and the plus (+) symbol are allowed." required>
+                            <input type="text" id="phone" name="telephone" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="+91 XXXXX XXXXX" pattern="[0-9+ ]*" title="Only numbers, spaces, and the plus (+) symbol are allowed." required />
                         </div>
                     </div>
 
@@ -396,13 +698,15 @@
                 <h3 class="text-sm font-mono uppercase tracking-wider text-brand-accent">// Live Threat Feed Stream</h3>
                 <div class="max-h-80 overflow-y-auto rounded bg-brand-bg/60 p-2 border border-slate-800/80">
                     <a class="twitter-timeline" data-theme="dark" href="https://x.com/gb414ji?ref_src=twsrc%5Etfw">Posts by gb414ji</a>
-                    <script async src="https://platform.x.com/widgets.js" charset="utf-8"></script>
+                    <script async src="https://platform.x.com/widgets.js" charset="utf-8">
+                    </script>
                 </div>
             </div>
         </section>
 
     </main>
 
+    <!-- ===== FOOTER ===== -->
     <footer class="bg-[#070A10] border-t border-slate-900 mt-20 py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-brand-textMuted">
             <div class="flex items-center gap-2">
@@ -417,26 +721,63 @@
         </div>
     </footer>
 
+    <!-- ============================================================ -->
+    <!-- SCRIPTS -->
+    <!-- ============================================================ -->
     <script>
+        // ─── Tab switching ──────────────────────────────────────────────
         function switchTab(tabId) {
+            // Hide all sections
             document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('header nav button').forEach(el => el.classList.remove('active-nav'));
 
-            let targetedSection = document.getElementById(tabId === 'services' ? 'services' : tabId);
-            if (targetedSection) {
-                targetedSection.classList.add('active');
-            }
+            // Remove active nav from all buttons
+            document.querySelectorAll('#main-nav button').forEach(el => el.classList.remove('active-nav'));
 
-            const nativeBtn = document.getElementById(`nav-btn-${tabId}`);
-            if (nativeBtn) nativeBtn.classList.add('active-nav');
+            // Show target section
+            const target = document.getElementById(tabId);
+            if (target) target.classList.add('active');
 
-            if (tabId === 'blog')     loadBlogs();
-            if (tabId === 'pdf')      loadPdfs();
-            if (tabId === 'videos')   loadVideos();
-            if (tabId === 'plugins')  loadPlugins();
+            // Highlight nav button
+            const btn = document.getElementById(`nav-btn-${tabId}`);
+            if (btn) btn.classList.add('active-nav');
+
+            // Load data on demand
+            if (tabId === 'blog') loadBlogs();
+            if (tabId === 'pdf') loadPdfs();
+            if (tabId === 'videos') loadVideos();
+            if (tabId === 'plugins') loadPlugins();
             if (tabId === 'projects') loadProjects();
+
+            // Scroll to top of section
+            const main = document.querySelector('main');
+            if (main) main.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
+        // ─── Keyboard shortcuts ─────────────────────────────────────────
+        document.addEventListener('keydown', (e) => {
+            const tabs = ['about', 'services', 'blog', 'pdf', 'videos', 'plugins', 'projects', 'contact'];
+            const num = parseInt(e.key);
+            if (num >= 1 && num <= 8) {
+                e.preventDefault();
+                switchTab(tabs[num - 1]);
+            }
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                switchTab('contact');
+            }
+        });
+
+        // ─── Back to top button ────────────────────────────────────────
+        const backBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                backBtn.classList.add('visible');
+            } else {
+                backBtn.classList.remove('visible');
+            }
+        });
+
+        // ─── Contact form ──────────────────────────────────────────────
         document.getElementById('contact-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             const form = event.target;
@@ -456,13 +797,16 @@
                     headers: { 'Accept': 'application/json' }
                 });
                 if (response.ok) {
-                    status.className = "text-emerald-500 text-xs font-mono p-3 rounded bg-emerald-950/20 border border-emerald-900/50";
+                    status.className =
+                        "text-emerald-500 text-xs font-mono p-3 rounded bg-emerald-950/20 border border-emerald-900/50";
                     status.innerText = '> [SUCCESS] Transmission validated by remote peer node. Connection routed.';
                     form.reset();
-                    setTimeout(() => { status.classList.add('hidden'); switchTab('about'); }, 2000);
+                    setTimeout(() => { status.classList.add('hidden');
+                        switchTab('about'); }, 2000);
                 } else {
                     const err = await response.json().catch(() => ({}));
-                    throw new Error(err.errors ? err.errors.map(e => e.message).join(', ') : 'Infrastructure payload verification rejection block.');
+                    throw new Error(err.errors ? err.errors.map(e => e.message).join(', ') :
+                        'Infrastructure payload verification rejection block.');
                 }
             } catch (error) {
                 status.className = "text-brand-crimson text-xs font-mono p-3 rounded bg-red-950/20 border border-red-900/50";
@@ -473,39 +817,51 @@
             }
         });
 
+        // ─── Fetch helper ──────────────────────────────────────────────
         async function fetchJSON(path) {
             const res = await fetch(`${path}?_=${Date.now()}`);
             if (!res.ok) throw new Error(`HTTP ${res.status} – ${path}`);
             return res.json();
         }
 
+        // ─── BLOG ──────────────────────────────────────────────────────
         async function loadBlogs() {
             const container = document.getElementById('blog-container');
-            container.innerHTML = '<div class="col-span-full text-center font-mono text-sm py-12 text-brand-textMuted animate-pulse">> Initializing blog data-structure scan...</div>';
+            container.innerHTML =
+                '<div class="col-span-full text-center font-mono text-sm py-12 text-brand-textMuted animate-pulse">> Initializing blog data-structure scan...</div>';
             try {
                 const posts = await fetchJSON('./blog/blogs.json');
                 container.innerHTML = '';
-                if (!posts.length) { container.innerHTML = '<div class="col-span-full text-center font-mono py-12 text-slate-600">[ Directory Structural State: Empty ]</div>'; return; }
+                if (!posts || !posts.length) {
+                    container.innerHTML =
+                        '<div class="col-span-full text-center font-mono py-12 text-slate-600">[ Directory Structural State: Empty ]</div>';
+                    return;
+                }
                 posts.forEach(post => {
                     const card = document.createElement('a');
-                    card.className = 'bg-brand-surface border border-slate-800 rounded-lg p-6 hover:border-brand-accent/40 transition-all group flex flex-col justify-between';
+                    card.className =
+                        'bg-brand-surface border border-slate-800 rounded-lg p-6 hover:border-brand-accent/40 transition-all group flex flex-col justify-between card-lift';
                     card.href = `./blog/${post.filename}`;
-                    card.setAttribute('data-title', post.title.toLowerCase());
-                    const postDate = post.date || post.published || post.time || post.created || 'N/A';
+                    card.setAttribute('data-title', (post.title || '').toLowerCase());
+
+                    // ── FIX: if no date, show a dash (not "N/A") ──
+                    const rawDate = post.date || post.published || post.time || post.created || null;
+                    const displayDate = rawDate ? rawDate : '—';
 
                     card.innerHTML = `
                         <div class="space-y-3">
-                            <div class="flex items-center justify-between text-[11px] font-mono text-brand-accent">
-                                <span>[🕒 ${postDate}]</span>
-                                <span class="opacity-0 group-hover:opacity-100 transition-opacity">READ VECTOR →</span>
+                            <div class="flex items-center justify-between text-[11px] font-mono">
+                                <span class="blog-date-placeholder">[🕒 ${displayDate}]</span>
+                                <span class="text-brand-accent opacity-0 group-hover:opacity-100 transition-opacity">READ VECTOR →</span>
                             </div>
-                            <h3 class="text-base font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors line-clamp-2">${post.title}</h3>
+                            <h3 class="text-base font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors line-clamp-2">${post.title || 'Untitled'}</h3>
                         </div>
                     `;
                     container.appendChild(card);
                 });
             } catch (e) {
-                container.innerHTML = '<div class="col-span-full text-center font-mono text-brand-crimson py-12">[ERROR] Directory scan operation terminated prematurely.</div>';
+                container.innerHTML =
+                    '<div class="col-span-full text-center font-mono text-brand-crimson py-12">[ERROR] Directory scan operation terminated prematurely.</div>';
                 console.error(e);
             }
         }
@@ -513,121 +869,163 @@
         function filterBlogs() {
             const q = document.getElementById('blog-search').value.toLowerCase().trim();
             document.querySelectorAll('#blog-container > a').forEach(card => {
-                card.style.display = card.getAttribute('data-title').includes(q) ? 'flex' : 'none';
+                const title = card.getAttribute('data-title') || '';
+                card.style.display = title.includes(q) ? 'flex' : 'none';
             });
         }
 
+        // ─── PDF ──────────────────────────────────────────────────────
         async function loadPdfs() {
-            const container = document.getElementById('pdf-container');
-            container.innerHTML = '<div class="text-center font-mono text-sm py-8 text-brand-textMuted animate-pulse">> Querying secure indexing files...</div>';
+            const tbody = document.getElementById('pdf-container');
+            tbody.innerHTML =
+                '<tr><td colspan="5" class="text-center text-brand-textMuted font-mono text-sm py-8 animate-pulse">> Querying secure indexing files...</td></tr>';
             try {
                 const pdfs = await fetchJSON('./pdf/pdfs.json');
-                container.innerHTML = '';
-                if (!pdfs.length) { container.innerHTML = '<div class="p-6 text-slate-600">total 0 components discovered</div>'; return; }
-                pdfs.forEach(pdf => {
-                    const li = document.createElement('li');
-                    li.className = 'px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-slate-900/50 transition-colors';
-                    li.setAttribute('data-title', pdf.title.toLowerCase());
-                    li.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <span class="text-slate-600 text-xs">[🕒 ${pdf.date}]</span>
-                            <span class="text-brand-accent font-medium text-xs">CAT_LOG //</span>
-                            <span class="text-brand-textMain font-medium font-sans">${pdf.title}</span>
-                        </div>
-                        <a href="./pdf/${pdf.filename}" target="_blank" class="text-xs text-slate-400 hover:text-brand-accent underline font-medium">Download Secure Copy</a>
+                tbody.innerHTML = '';
+                if (!pdfs || !pdfs.length) {
+                    tbody.innerHTML =
+                        '<tr><td colspan="5" class="text-center font-mono py-8 text-slate-600">total 0 components discovered</td></tr>';
+                    return;
+                }
+                pdfs.forEach((pdf, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.setAttribute('data-title', (pdf.title || '').toLowerCase());
+
+                    const size = pdf.size || '—';
+                    const date = pdf.date || '—';
+
+                    tr.innerHTML = `
+                        <td><span class="text-slate-500 text-xs font-mono">${String(idx + 1).padStart(2, '0')}</span></td>
+                        <td class="text-slate-400 text-xs font-mono">${date}</td>
+                        <td>
+                            <span class="doc-icon">📄</span>
+                            <span class="font-medium text-brand-textMain">${pdf.title || 'Untitled'}</span>
+                            ${pdf.isNew ? '<span class="badge-new">new</span>' : ''}
+                        </td>
+                        <td class="file-size">${size}</td>
+                        <td>
+                            <a href="./pdf/${pdf.filename}" target="_blank" class="download-link">⬇ PDF</a>
+                        </td>
                     `;
-                    container.appendChild(li);
+                    tbody.appendChild(tr);
                 });
             } catch (e) {
-                container.innerHTML = '<div class="p-6 text-brand-crimson">[ERROR] Core architecture validation failure. Internal pointer exception.</div>';
+                tbody.innerHTML =
+                    '<tr><td colspan="5" class="text-center font-mono text-brand-crimson py-8">[ERROR] Core architecture validation failure. Internal pointer exception.</td></tr>';
                 console.error(e);
             }
         }
 
         function filterPdfs() {
             const q = document.getElementById('pdf-search').value.toLowerCase().trim();
-            document.querySelectorAll('#pdf-container > li').forEach(item => {
-                item.style.display = item.getAttribute('data-title').includes(q) ? 'flex' : 'none';
+            document.querySelectorAll('#pdf-container > tr').forEach(row => {
+                const title = row.getAttribute('data-title') || '';
+                row.style.display = title.includes(q) ? '' : 'none';
             });
         }
 
+        // ─── VIDEOS ────────────────────────────────────────────────────
         async function loadVideos() {
             const container = document.getElementById('video-container');
-            container.innerHTML = '<div class="col-span-full text-center font-mono text-sm py-12 text-brand-textMuted animate-pulse">> Aggregating educational streaming arrays...</div>';
+            container.innerHTML =
+                '<div class="col-span-full text-center font-mono text-sm py-12 text-brand-textMuted animate-pulse">> Aggregating educational streaming arrays...</div>';
             try {
                 const videos = await fetchJSON('./tabs/videos.json');
                 container.innerHTML = '';
-                if (!videos.length) { container.innerHTML = '<div class="col-span-full text-center font-mono py-12 text-slate-600">> No active distribution streams recorded.</div>'; return; }
+                if (!videos || !videos.length) {
+                    container.innerHTML =
+                        '<div class="col-span-full text-center font-mono py-12 text-slate-600">> No active distribution streams recorded.</div>';
+                    return;
+                }
                 videos.forEach((video, index) => {
                     const card = document.createElement('div');
-                    card.className = 'bg-brand-surface border border-slate-800 rounded-lg overflow-hidden shadow-md flex flex-col';
-                    card.setAttribute('data-title', video.title.toLowerCase());
-                    card.setAttribute('data-desc', video.description.toLowerCase());
+                    card.className =
+                        'bg-brand-surface border border-slate-800 rounded-lg overflow-hidden shadow-md flex flex-col card-lift';
+                    card.setAttribute('data-title', (video.title || '').toLowerCase());
+                    card.setAttribute('data-desc', (video.description || '').toLowerCase());
+
+                    const date = video.date || '—';
+
                     card.innerHTML = `
                         <div class="relative aspect-video bg-black flex items-center justify-center group" id="thumb-container-${index}">
-                            <img src="https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg" class="absolute w-full h-full object-cover opacity-60 group-hover:scale-102 transition-transform duration-500" alt="Video thumbnail">
+                            <img src="https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg" class="absolute w-full h-full object-cover opacity-60 group-hover:scale-102 transition-transform duration-500" alt="Video thumbnail" loading="lazy">
                             <button onclick="activateVideoPlayer(${index}, '${video.youtubeId}')" class="relative z-10 px-4 py-2.5 bg-brand-bg/90 border border-brand-accent text-brand-accent font-mono text-xs rounded hover:bg-brand-accent hover:text-brand-bg transition-all">
                                 execute ./stream_logs
                             </button>
                         </div>
                         <div class="p-6 space-y-2 flex-grow flex flex-col justify-between">
                             <div class="space-y-1">
-                                <span class="text-[10px] font-mono text-brand-accent">[LOG DATE: ${video.date}]</span>
-                                <h3 class="text-base font-semibold text-brand-textMain">${video.title}</h3>
-                                <p class="text-xs text-brand-textMuted leading-relaxed line-clamp-3">${video.description}</p>
+                                <span class="text-[10px] font-mono text-brand-accent">[LOG DATE: ${date}]</span>
+                                <h3 class="text-base font-semibold text-brand-textMain">${video.title || 'Untitled'}</h3>
+                                <p class="text-xs text-brand-textMuted leading-relaxed line-clamp-3">${video.description || ''}</p>
                             </div>
                         </div>
                     `;
                     container.appendChild(card);
                 });
             } catch (e) {
-                container.innerHTML = '<div class="col-span-full text-center font-mono text-brand-crimson py-12">[ERROR] Streaming payload map assembly fault.</div>';
+                container.innerHTML =
+                    '<div class="col-span-full text-center font-mono text-brand-crimson py-12">[ERROR] Streaming payload map assembly fault.</div>';
                 console.error(e);
             }
         }
 
         function activateVideoPlayer(index, videoId) {
             const box = document.getElementById(`thumb-container-${index}`);
-            box.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" class="w-full h-full absolute inset-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            if (!box) return;
+            box.innerHTML =
+                `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" class="w-full h-full absolute inset-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
         }
 
         function filterVideos() {
             const q = document.getElementById('video-search').value.toLowerCase().trim();
             document.querySelectorAll('#video-container > div').forEach(card => {
-                const match = card.getAttribute('data-title').includes(q) || card.getAttribute('data-desc').includes(q);
-                card.style.display = match ? 'flex' : 'none';
+                const title = card.getAttribute('data-title') || '';
+                const desc = card.getAttribute('data-desc') || '';
+                card.style.display = (title.includes(q) || desc.includes(q)) ? 'flex' : 'none';
             });
         }
 
+        // ─── PLUGINS ──────────────────────────────────────────────────
         async function loadPlugins() {
             const container = document.getElementById('plugin-container');
-            container.innerHTML = '<div class="col-span-full text-center font-mono text-sm py-12 text-brand-textMuted animate-pulse">> Querying peripheral modules tree...</div>';
+            container.innerHTML =
+                '<div class="col-span-full text-center font-mono text-sm py-12 text-brand-textMuted animate-pulse">> Querying peripheral modules tree...</div>';
             try {
                 const plugins = await fetchJSON('./tabs/plugins.json');
                 container.innerHTML = '';
-                if (!plugins.length) { container.innerHTML = '<div class="col-span-full text-center font-mono py-12 text-slate-600">> No active structural records verified.</div>'; return; }
+                if (!plugins || !plugins.length) {
+                    container.innerHTML =
+                        '<div class="col-span-full text-center font-mono py-12 text-slate-600">> No active structural records verified.</div>';
+                    return;
+                }
                 plugins.forEach(plugin => {
                     const card = document.createElement('div');
-                    card.className = 'bg-brand-surface border border-slate-800 p-6 rounded-lg flex flex-col justify-between hover:border-brand-accent/30 transition-colors';
-                    card.setAttribute('data-title', plugin.title.toLowerCase());
-                    card.setAttribute('data-desc', plugin.description.toLowerCase());
+                    card.className =
+                        'bg-brand-surface border border-slate-800 p-6 rounded-lg flex flex-col justify-between hover:border-brand-accent/30 transition-colors card-lift';
+                    card.setAttribute('data-title', (plugin.title || '').toLowerCase());
+                    card.setAttribute('data-desc', (plugin.description || '').toLowerCase());
+
+                    const version = plugin.version || '0.0';
+
                     card.innerHTML = `
                         <div class="space-y-2">
                             <div class="flex justify-between items-center text-[10px] font-mono text-slate-500">
-                                <span>BUILD: v${plugin.version}</span>
+                                <span>BUILD: v${version}</span>
                                 <span class="text-brand-accent">MODULE</span>
                             </div>
-                            <h3 class="text-base font-semibold text-brand-textMain">${plugin.title}</h3>
-                            <p class="text-xs text-brand-textMuted leading-relaxed">${plugin.description}</p>
+                            <h3 class="text-base font-semibold text-brand-textMain">${plugin.title || 'Untitled'}</h3>
+                            <p class="text-xs text-brand-textMuted leading-relaxed">${plugin.description || ''}</p>
                         </div>
-                        <a href="${plugin.link}" target="_blank" class="mt-6 block text-center px-4 py-2 bg-slate-900 border border-slate-800 rounded text-xs text-slate-300 font-medium hover:border-brand-accent transition-colors">
+                        <a href="${plugin.link || '#'}" target="_blank" class="mt-6 block text-center px-4 py-2 bg-slate-900 border border-slate-800 rounded text-xs text-slate-300 font-medium hover:border-brand-accent transition-colors">
                             View Extension Ledger
                         </a>
                     `;
                     container.appendChild(card);
                 });
             } catch (e) {
-                container.innerHTML = '<div class="col-span-full text-center font-mono text-brand-crimson py-12">[ERROR] Module register evaluation failure.</div>';
+                container.innerHTML =
+                    '<div class="col-span-full text-center font-mono text-brand-crimson py-12">[ERROR] Module register evaluation failure.</div>';
                 console.error(e);
             }
         }
@@ -635,40 +1033,52 @@
         function filterPlugins() {
             const q = document.getElementById('plugin-search').value.toLowerCase().trim();
             document.querySelectorAll('#plugin-container > div').forEach(card => {
-                const match = card.getAttribute('data-title').includes(q) || card.getAttribute('data-desc').includes(q);
-                card.style.display = match ? 'flex' : 'none';
+                const title = card.getAttribute('data-title') || '';
+                const desc = card.getAttribute('data-desc') || '';
+                card.style.display = (title.includes(q) || desc.includes(q)) ? 'flex' : 'none';
             });
         }
 
+        // ─── PROJECTS ──────────────────────────────────────────────────
         async function loadProjects() {
             const container = document.getElementById('project-container');
-            container.innerHTML = '<div class="col-span-full text-center font-mono text-sm py-12 text-brand-textMuted animate-pulse">> Fetching core code matrix systems...</div>';
+            container.innerHTML =
+                '<div class="col-span-full text-center font-mono text-sm py-12 text-brand-textMuted animate-pulse">> Fetching core code matrix systems...</div>';
             try {
                 const projects = await fetchJSON('./tabs/projects.json');
                 container.innerHTML = '';
-                if (!projects.length) { container.innerHTML = '<div class="col-span-full text-center font-mono py-12 text-slate-600">> No open operational targets allocated.</div>'; return; }
+                if (!projects || !projects.length) {
+                    container.innerHTML =
+                        '<div class="col-span-full text-center font-mono py-12 text-slate-600">> No open operational targets allocated.</div>';
+                    return;
+                }
                 projects.forEach(project => {
                     const card = document.createElement('div');
-                    card.className = 'bg-brand-surface border border-slate-800 p-6 rounded-lg flex flex-col justify-between hover:border-brand-accent/30 transition-colors';
-                    card.setAttribute('data-title', project.title.toLowerCase());
-                    card.setAttribute('data-desc', project.description.toLowerCase());
+                    card.className =
+                        'bg-brand-surface border border-slate-800 p-6 rounded-lg flex flex-col justify-between hover:border-brand-accent/30 transition-colors card-lift';
+                    card.setAttribute('data-title', (project.title || '').toLowerCase());
+                    card.setAttribute('data-desc', (project.description || '').toLowerCase());
+
+                    const lang = project.language || 'N/A';
+
                     card.innerHTML = `
                         <div class="space-y-2">
                             <div class="flex justify-between items-center text-[10px] font-mono text-slate-500">
-                                <span>ENGINE: ${project.language}</span>
+                                <span>ENGINE: ${lang}</span>
                                 <span class="text-brand-accent">REPOSITORY</span>
                             </div>
-                            <h3 class="text-base font-semibold text-brand-textMain">${project.title}</h3>
-                            <p class="text-xs text-brand-textMuted leading-relaxed">${project.description}</p>
+                            <h3 class="text-base font-semibold text-brand-textMain">${project.title || 'Untitled'}</h3>
+                            <p class="text-xs text-brand-textMuted leading-relaxed">${project.description || ''}</p>
                         </div>
-                        <a href="${project.link}" target="_blank" class="mt-6 block text-center px-4 py-2 bg-slate-900 border border-slate-800 rounded text-xs text-brand-accent font-mono hover:bg-brand-accent hover:text-brand-bg transition-all">
+                        <a href="${project.link || '#'}" target="_blank" class="mt-6 block text-center px-4 py-2 bg-slate-900 border border-slate-800 rounded text-xs text-brand-accent font-mono hover:bg-brand-accent hover:text-brand-bg transition-all">
                             $ git clone source_tree
                         </a>
                     `;
                     container.appendChild(card);
                 });
             } catch (e) {
-                container.innerHTML = '<div class="col-span-full text-center font-mono text-brand-crimson py-12">[ERROR] Repository connection path timeout.</div>';
+                container.innerHTML =
+                    '<div class="col-span-full text-center font-mono text-brand-crimson py-12">[ERROR] Repository connection path timeout.</div>';
                 console.error(e);
             }
         }
@@ -676,10 +1086,17 @@
         function filterProjects() {
             const q = document.getElementById('project-search').value.toLowerCase().trim();
             document.querySelectorAll('#project-container > div').forEach(card => {
-                const match = card.getAttribute('data-title').includes(q) || card.getAttribute('data-desc').includes(q);
-                card.style.display = match ? 'flex' : 'none';
+                const title = card.getAttribute('data-title') || '';
+                const desc = card.getAttribute('data-desc') || '';
+                card.style.display = (title.includes(q) || desc.includes(q)) ? 'flex' : 'none';
             });
         }
+
+        // ─── Init ──────────────────────────────────────────────────────
+        // Load blog by default (since "about" is active, but blog data isn't loaded until tab switch)
+        // We'll load blog data when the blog tab is first switched to.
+        // But to be safe, we can preload nothing and let switchTab handle it.
+        console.log('TheSudoLab · Enterprise Security · v2.0');
     </script>
 </body>
 </html>
