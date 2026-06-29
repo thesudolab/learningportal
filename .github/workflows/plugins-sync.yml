@@ -1,33 +1,59 @@
-- name: Plugins
-      run: |
-        node -e '
-        const fs = require("fs");
-        const path = require("path");
-        const txtPath = path.join(process.cwd(), "tabs", "plugins.txt");
-        
-        if (fs.existsSync(txtPath)) {
-          const content = fs.readFileSync(txtPath, "utf8");
-          const plugins = content.split("\n")
-            .filter(l => l.includes("||"))
-            .map(line => {
-              const [link, title, language, description] = line.split("||").map(p => p.trim());
-              return { link, title, language, description };
-            });
-            
-          const dir = path.join(process.cwd(), "project"); // Storing in /project as requested
-          if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-          fs.writeFileSync(path.join(dir, "plugins.json"), JSON.stringify(plugins, null, 2));
-          console.log("Successfully compiled project/plugins.json");
-        }
-        '
+name: Sync Plugins
 
-    - name: Commit and Push Plugin Changes
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git pull origin main --rebase
-        git add tabs/plugins.json
-        if ! git diff --staged --quiet; then
-          git commit -m "sys(automation): synced plugins.json [skip ci]"
-          git push origin main
-        fi
+on:
+  push:
+    paths:
+      - 'tabs/plugins.txt'   # Triggers only when this file changes
+  workflow_dispatch:         # Allows manual trigger
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0      # Ensures full history for rebase
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Compile plugins.txt to plugins.json
+        run: |
+          node -e '
+          const fs = require("fs");
+          const path = require("path");
+          const txtPath = path.join(process.cwd(), "tabs", "plugins.txt");
+          
+          if (fs.existsSync(txtPath)) {
+            const content = fs.readFileSync(txtPath, "utf8");
+            const plugins = content.split("\n")
+              .filter(l => l.includes("||"))
+              .map(line => {
+                const [link, title, language, description] = line.split("||").map(p => p.trim());
+                return { link, title, language, description };
+              });
+              
+            const dir = path.join(process.cwd(), "project");
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            fs.writeFileSync(path.join(dir, "plugins.json"), JSON.stringify(plugins, null, 2));
+            console.log("Successfully compiled project/plugins.json");
+          } else {
+            console.warn("tabs/plugins.txt not found, skipping compilation.");
+          }
+          '
+
+      - name: Commit and push plugin changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull origin main --rebase
+          git add project/plugins.json
+          if ! git diff --staged --quiet; then
+            git commit -m "sys(automation): synced plugins.json [skip ci]"
+            git push origin main
+          else
+            echo "No changes to plugins.json, skipping commit."
+          fi
