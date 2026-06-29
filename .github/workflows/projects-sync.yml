@@ -1,17 +1,60 @@
-- name: Parse and Compile Registry
-      run: |
-        node -e '
-        const fs = require("fs");
-        const path = require("path");
-        const input = fs.readFileSync("tabs/projects.txt", "utf8");
-        
-        const projects = input.split("\n")
-          .filter(l => l.includes("||"))
-          .map(line => {
-            const [link, title, language, description] = line.split("||").map(p => p.trim());
-            return { link, title, language, description };
-          });
+name: Sync Projects Registry
+
+on:
+  push:
+    paths:
+      - 'tabs/projects.txt'   # triggers only on changes to this file
+  workflow_dispatch:          # manual trigger (optional)
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Compile projects.txt → tabs/projects.json
+        run: |
+          node -e '
+          const fs = require("fs");
+          const path = require("path");
+          const txtPath = path.join(process.cwd(), "tabs", "projects.txt");
           
-        fs.mkdirSync("project", { recursive: true });
-        fs.writeFileSync("tabs/projects.json", JSON.stringify(projects, null, 2));
-        '
+          if (!fs.existsSync(txtPath)) {
+            console.warn("tabs/projects.txt not found, skipping.");
+            process.exit(0);
+          }
+          
+          const content = fs.readFileSync(txtPath, "utf8");
+          const projects = content.split("\n")
+            .filter(l => l.includes("||"))
+            .map(line => {
+              const [link, title, language, description] = line.split("||").map(p => p.trim());
+              return { link, title, language, description };
+            });
+          
+          const dir = path.join(process.cwd(), "tabs");
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+          fs.writeFileSync(path.join(dir, "projects.json"), JSON.stringify(projects, null, 2));
+          console.log("✅ Compiled tabs/projects.json");
+          '
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull origin main --rebase
+          git add tabs/projects.json
+          if ! git diff --staged --quiet; then
+            git commit -m "sys(automation): synced projects.json [skip ci]"
+            git push origin main
+          else
+            echo "No changes to projects.json, skipping commit."
+          fi
