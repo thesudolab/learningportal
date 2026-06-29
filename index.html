@@ -1,1266 +1,634 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TheSudoLab | Cyber Security & Penetration Testing</title>
+    <title>TheSudoLab | Global Enterprise Security & Threat Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#0B0F19',
+                            surface: '#151C2C',
+                            card: '#1E2640',
+                            accent: '#D4AF37', /* Premium Subtle Gold */
+                            accentHover: '#F3E5AB',
+                            crimson: '#E63946',
+                            textMain: '#F8FAFC',
+                            textMuted: '#94A3B8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        /* ==========================================================================
-           CYBERSECURITY THEME: DARK MATRIX TERMINAL
-           Professional cybersecurity learning platform & pentest service theme
-           ========================================================================== */
-        :root {
-            --bg: #0a0a0f;
-            --surface: #12121a;
-            --surface-card: #1a1a24;
-            --surface-hover: #252530;
-            --border: #2a2a3a;
-            --text-main: #e2e8f0;
-            --text-muted: #94a3b8;
-            --text-dim: #64748b;
-            --accent: #00ff88;
-            --accent-dim: #00cc6a;
-            --accent-blue: #00d4ff;
-            --accent-purple: #a855f7;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --font: 'Courier New', Courier, 'Fira Code', monospace;
-            --glow: 0 0 10px rgba(0, 255, 136, 0.3);
-            --glow-strong: 0 0 20px rgba(0, 255, 136, 0.5);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: var(--surface); }
-        ::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+        
         body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: var(--font);
-            line-height: 1.6;
-            padding: 1rem;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            background-image:
-                radial-gradient(ellipse at 10% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
-                radial-gradient(ellipse at 90% 80%, rgba(0, 212, 255, 0.05) 0%, transparent 50%);
+            background-color: #0B0F19;
+            font-family: 'Inter', sans-serif;
+            color: #F8FAFC;
+        }
+        
+        .custom-glow {
+            box-shadow: 0 4px 30px rgba(212, 169, 55, 0.05);
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 0, 0, 0.1) 0px,
-                rgba(0, 0, 0, 0.1) 1px,
-                transparent 1px,
-                transparent 2px
-            );
-            pointer-events: none;
-            z-index: 1000;
-            opacity: 0.3;
+        .active-nav {
+            color: #D4AF37 !important;
+            border-bottom: 2px solid #D4AF37;
         }
 
-        @media (min-width: 768px) { body { padding: 2rem; } }
-
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow:
-                0 0 30px rgba(0, 255, 136, 0.1),
-                inset 0 0 30px rgba(0, 255, 136, 0.03);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background:
-                linear-gradient(
-                    45deg,
-                    transparent 40%,
-                    rgba(0, 255, 136, 0.02) 45%,
-                    rgba(0, 255, 136, 0.05) 50%,
-                    rgba(0, 255, 136, 0.02) 55%,
-                    transparent 60%
-                );
-            animation: gridMove 20s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes gridMove { 0% { transform: translate(0, 0); } 100% { transform: translate(50px, 50px); } }
-
-        @media (min-width: 768px) { .container { padding: 2.5rem; } }
-
-        header {
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 2rem;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        .logo-area {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            align-items: center;
-            justify-content: space-between;
-            text-align: center;
-        }
-
-        @media (min-width: 768px) {
-            .logo-area { flex-direction: row; align-items: center; text-align: left; }
-        }
-
-        .logo {
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: var(--text-main);
-            text-decoration: none;
-            white-space: nowrap;
-            text-shadow: var(--glow);
-            transition: all 0.3s ease;
-        }
-
-        .logo:hover { text-shadow: var(--glow-strong); color: var(--accent); }
-
-        @media (min-width: 768px) { .logo { font-size: 2.2rem; } }
-
-        .logo span {
-            color: var(--accent);
-            text-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
-        }
-
-        .header-status-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            width: 100%;
-        }
-
-        @media (min-width: 768px) {
-            .header-status-group { align-items: flex-end; width: auto; }
-        }
-
-        .status-tag {
-            font-size: 0.8rem;
-            background: transparent;
-            border: 1px solid var(--accent);
-            padding: 0.4rem 1rem;
-            border-radius: 4px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--accent);
-            box-shadow: var(--glow);
-        }
-
-        .pulse {
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: blink 1.5s infinite;
-            box-shadow: 0 0 8px var(--accent), 0 0 15px var(--accent);
-        }
-
-        @keyframes blink {
-            0% { opacity: 0.3; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
-            100% { opacity: 0.3; transform: scale(0.8); }
-        }
-
-        .animated-logo-box { width: 140px; height: auto; }
-
-        .animated-thread {
-            stroke: var(--accent);
-            stroke-width: 5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            fill: none;
-            stroke-dasharray: 800;
-            stroke-dashoffset: 800;
-            animation: drawThread 6s linear infinite;
-            filter: drop-shadow(0 0 8px var(--accent));
-        }
-
-        .logo-subtext {
-            font-family: var(--font);
-            fill: var(--text-main);
-            opacity: 0;
-            animation: fadeInText 1s ease-out 1s forwards;
-            text-shadow: var(--glow);
-        }
-
-        @keyframes drawThread { 0% { stroke-dashoffset: 800; } 50% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -800; } }
-        @keyframes fadeInText { to { opacity: 1; } }
-
-        nav {
-            margin-top: 2rem;
-            display: flex;
-            flex-wrap: wrap;
-            width: 100%;
-            gap: 0.5rem;
-            position: relative;
-        }
-
-        .nav-btn {
-            flex: 1 1 auto;
-            min-width: 90px;
-            background: var(--surface-card);
-            border: 1px solid var(--border);
-            padding: 0.7rem 0.6rem;
-            cursor: pointer;
-            font-family: var(--font);
-            font-weight: bold;
-            color: var(--text-dim);
-            font-size: 0.82rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.04em;
-            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
-            transition: color 0.2s ease, border-color 0.2s ease;
-        }
-
-        .nav-btn .nav-label {
-            position: relative;
-            z-index: 2;
-            display: inline-block;
-            transition: transform 0.2s ease;
-        }
-
-        .nav-btn .nav-scan {
-            position: absolute;
-            top: 0; left: -100%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0,255,136,0.12), transparent);
-            transition: none;
-            z-index: 1;
-        }
-
-        .nav-btn .nav-top-line {
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 2px;
-            background: var(--accent);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-            box-shadow: 0 0 8px rgba(0,255,136,0.6);
-            z-index: 3;
-        }
-
-        .nav-btn .nav-corner {
-            position: absolute;
-            width: 6px; height: 6px;
-            border-color: var(--accent);
-            border-style: solid;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            z-index: 3;
-        }
-
-        .nav-btn .nav-corner.tl { top: 2px; left: 4px; border-width: 1px 0 0 1px; }
-        .nav-btn .nav-corner.br { bottom: 2px; right: 4px; border-width: 0 1px 1px 0; }
-
-        .nav-btn:hover .nav-corner,
-        .nav-btn.active .nav-corner { opacity: 1; }
-
-        .nav-btn:hover .nav-top-line,
-        .nav-btn.active .nav-top-line { transform: scaleX(1); }
-
-        .nav-btn.active {
-            border-color: rgba(0,255,136,0.4);
-            color: var(--accent);
-            text-shadow: 0 0 10px rgba(0,255,136,0.5);
-            background: rgba(0,255,136,0.06);
-        }
-
-        .nav-btn:hover:not(.active) {
-            border-color: rgba(0,255,136,0.25);
-            color: var(--text-main);
-        }
-
-        .nav-btn:hover .nav-label {
-            transform: translateY(-1px);
-        }
-
-        @keyframes navScan {
-            0%   { left: -60%; }
-            100% { left: 110%; }
-        }
-
-        .nav-btn:hover .nav-scan {
-            animation: navScan 0.6s ease forwards;
-        }
-
-        .nav-btn.active .nav-scan {
-            animation: navScan 1.8s ease infinite;
-        }
-
-        @keyframes navGlitch {
-            0%   { clip-path: inset(0 0 100% 0); opacity: 0; transform: translate(0,0); }
-            10%  { clip-path: inset(30% 0 40% 0); opacity: 1; transform: translate(-2px, 0); }
-            20%  { clip-path: inset(10% 0 70% 0); opacity: 1; transform: translate(2px, 0); }
-            30%  { clip-path: inset(60% 0 10% 0); opacity: 1; transform: translate(-1px, 0); }
-            40%  { clip-path: inset(0 0 0 0);     opacity: 1; transform: translate(0, 0); }
-            100% { clip-path: inset(0 0 0 0);     opacity: 1; transform: translate(0, 0); }
-        }
-
-        .nav-btn .nav-glitch {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font);
-            font-size: 0.82rem;
-            font-weight: bold;
-            color: var(--accent);
-            letter-spacing: 0.04em;
-            pointer-events: none;
-            z-index: 4;
-            opacity: 0;
-        }
-
-        .nav-btn:hover .nav-glitch {
-            animation: navGlitch 0.4s steps(1) forwards;
-        }
-
-        @media (max-width: 600px) {
-            .nav-btn { min-width: 70px; font-size: 0.74rem; padding: 0.65rem 0.4rem; }
-        }
-
-        .section { display: none; width: 100%; }
-        .section.active { display: block; animation: fadeInSection 0.4s ease; }
-        @keyframes fadeInSection { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .about-card {
-            background: var(--surface-card);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-left: 4px solid var(--accent);
-            margin-top: 1rem;
-            border-radius: 4px;
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.05);
-            position: relative;
-        }
-
-        .about-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--accent), var(--accent-dim));
-            animation: pulseBorder 2s ease-in-out infinite;
-        }
-
-        @keyframes pulseBorder { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-        @media (min-width: 768px) { .about-card { padding: 2.5rem; } }
-
-        .about-card h2 { margin-bottom: 1.25rem; font-size: 1.4rem; color: var(--accent); text-shadow: var(--glow); }
-        .about-card p { color: var(--text-main); font-size: 1rem; max-width: 1000px; line-height: 1.7; }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        @media (min-width: 768px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
-
-        .service-item {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .service-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-blue));
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.3s ease;
-        }
-
-        .service-item:hover { border-color: var(--accent-dim); box-shadow: 0 0 15px rgba(0, 255, 136, 0.1); }
-        .service-item:hover::before { transform: scaleX(1); }
-
-        .service-item h3 {
-            font-size: 1.1rem;
-            color: var(--accent-blue);
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .service-item h3::before { content: '>'; color: var(--accent); }
-
-        .search-container {
-            margin-top: 1rem;
-            margin-bottom: 2rem;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            background: var(--surface-card);
-            border: 1px solid var(--border);
-            padding: 0.75rem 1rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .search-container:focus-within {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2), inset 0 0 10px rgba(0, 255, 136, 0.05);
-        }
-
-        .search-prefix {
-            color: var(--accent);
-            font-weight: bold;
-            margin-right: 0.75rem;
-            user-select: none;
-            white-space: nowrap;
-            display: inline-block;
-        }
-
-        .search-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            font-family: var(--font);
-            font-size: 1rem;
-            color: var(--text-main);
-        }
-
-        .search-input::placeholder { color: var(--text-dim); }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.25rem;
-            margin-top: 1.5rem;
-        }
-
-        @media (min-width: 640px) {
-            .form-grid { grid-template-columns: repeat(2, 1fr); }
-            .form-full-width { grid-column: span 2; }
-        }
-
-        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
-
-        .form-group label {
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .form-group label span { color: var(--danger); }
-
-        .form-control {
-            font-family: var(--font);
-            font-size: 1rem;
-            padding: 0.75rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text-main);
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .form-control::placeholder { color: var(--text-dim); }
-
-        .form-control:focus {
-            border-color: var(--accent);
-            background: var(--surface-card);
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.15);
-        }
-
-        textarea.form-control { resize: vertical; min-height: 120px; }
-
-        .submit-btn {
-            background: linear-gradient(135deg, var(--accent-dim) 0%, var(--accent) 100%);
-            color: var(--bg);
-            border: none;
-            padding: 0.85rem 2rem;
-            font-family: var(--font);
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 0 25px rgba(0, 255, 136, 0.5), 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .submit-btn:active:not(:disabled) { transform: translateY(0); }
-
-        .submit-btn:disabled {
-            background: var(--border);
-            color: var(--text-dim);
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .form-status {
-            font-size: 0.9rem;
-            font-weight: bold;
-            margin-top: 1rem;
+        .tab-section {
             display: none;
-            padding: 0.5rem;
-            border-radius: 4px;
         }
 
-        .media-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-
-        @media (min-width: 640px) { .media-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1024px) { .media-grid { grid-template-columns: repeat(3, 1fr); } }
-
-        .media-card {
-            background: var(--surface-card);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            overflow: hidden;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .media-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-
-        .media-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent);
-            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.15), 0 0 20px rgba(0, 255, 136, 0.05);
-        }
-
-        .media-card:hover::before { opacity: 1; }
-        .media-card.hidden { display: none !important; }
-
-        .media-thumb {
-            width: 100%;
-            height: 180px;
-            background: linear-gradient(135deg, var(--surface) 0%, var(--border) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-muted);
-            font-weight: bold;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .media-thumb::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 40%, rgba(0, 255, 136, 0.05) 50%, transparent 60%);
-            pointer-events: none;
-        }
-
-        .blog-thumb {
-            background: linear-gradient(135deg, #0d0d18 0%, #12121a 50%, #0a0f14 100%);
-            cursor: default;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .blog-thumb-inner {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            z-index: 1;
-            position: relative;
-        }
-
-        .blog-thumb-icon {
-            font-size: 2rem;
-            line-height: 1;
-            filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.4));
-        }
-
-        .blog-thumb-label {
-            font-family: var(--font);
-            font-size: 0.75rem;
-            font-weight: bold;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            text-align: center;
-            max-width: 80%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
-        }
-
-        .blog-thumb-tag {
-            font-family: var(--font);
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            letter-spacing: 0.05em;
-        }
-
-        .media-card:hover .blog-thumb-label {
-            color: var(--accent-blue);
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
-        }
-
-        .media-card:hover .blog-thumb-tag {
-            color: var(--accent);
-        }
-
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            width: 100%;
-            background: #000;
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-
-        .media-content {
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .media-date {
-            font-size: 0.8rem;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
-        }
-
-        .media-title {
-            font-size: 1.15rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            line-height: 1.4;
-            color: var(--text-main);
-        }
-
-        .media-desc {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            flex-grow: 1;
-            line-height: 1.5;
-        }
-
-        .terminal-action-btn {
-            margin-top: 1.25rem;
+        .tab-section.active {
             display: block;
-            background: var(--surface);
-            color: var(--accent);
-            border: 1px solid var(--accent);
-            text-align: center;
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-            font-weight: bold;
-            text-decoration: none;
-            transition: all 0.3s;
-            border-radius: 4px;
+            animation: fadeIn 0.5s ease-in-out forwards;
         }
 
-        .terminal-action-btn:hover {
-            background: var(--accent);
-            color: var(--bg);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .play-overlay-btn {
+        /* Continuous Cyber Scanning Pulse Animation for Logo Node */
+        .radar-pulse {
+            position: relative;
+        }
+        .radar-pulse::before {
+            content: '';
             position: absolute;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 0.5rem 1rem;
+            inset: -4px;
+            border: 1px solid #D4AF37;
             border-radius: 4px;
-            font-size: 0.85rem;
-            font-family: var(--font);
-            pointer-events: none;
-            transition: all 0.3s;
-            font-weight: bold;
-            backdrop-filter: blur(5px);
+            opacity: 0;
+            animation: pulseScan 2.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
         }
-
-        .media-card:hover .play-overlay-btn {
-            background: var(--accent);
-            color: var(--bg);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        @keyframes pulseScan {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { opacity: 0.3; }
+            100% { transform: scale(1.25); opacity: 0; }
         }
-
-        #loading, #pdf-loading, #video-loading, #plugin-loading, #project-loading, .empty-msg {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-muted);
-            font-size: 1rem;
-        }
-
-        .pdf-list-wrapper {
-            background: var(--surface-card);
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--accent);
-            padding: 1.5rem;
-            margin-top: 1rem;
-            border-radius: 4px;
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.05);
-        }
-
-        @media (min-width: 768px) { .pdf-list-wrapper { padding: 2rem; } }
-
-        .pdf-list-wrapper h2 {
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
-            color: var(--accent-blue);
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-        }
-
-        .terminal-list { list-style: none; padding-left: 0; }
-
-        .terminal-item {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            padding: 1rem 0;
-            border-bottom: 1px dashed var(--border);
-            font-size: 0.95rem;
-            gap: 0.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .terminal-item:hover { background: rgba(0, 255, 136, 0.03); padding-left: 0.5rem; }
-
-        @media (min-width: 640px) {
-            .terminal-item { flex-direction: row; align-items: center; gap: 0; }
-        }
-
-        .terminal-item.hidden { display: none !important; }
-
-        .pdf-timestamp {
-            color: var(--text-muted);
-            margin-right: 1.5rem;
-            white-space: nowrap;
-            user-select: none;
-            font-weight: bold;
-        }
-
-        .pdf-hyperlink {
-            color: var(--accent-blue);
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            word-break: break-all;
-        }
-
-        .pdf-hyperlink:hover {
-            color: var(--accent);
-            text-decoration: underline;
-            text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-        }
-
-        footer {
-            margin-top: 4rem;
-            border-top: 1px dashed var(--border);
-            padding-top: 1.5rem;
-            text-align: center;
-            font-size: 0.85rem;
-            color: var(--text-dim);
-        }
-
-        footer::before { content: '>'; color: var(--accent); margin-right: 0.5rem; }
-
-        @media (max-width: 767px) {
-            .container { padding: 1rem; }
-            .logo-area { gap: 1rem; }
-            .about-card { padding: 1.25rem; }
-            .media-thumb { height: 140px; }
-            .media-content { padding: 1rem; }
-        }
-
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .loading-animation { animation: pulse 1.5s ease-in-out infinite; }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col antialiased">
 
-<div class="container">
-    <header>
-        <div class="logo-area">
-            <a href="https://thesudolab.github.io/learningportal/#" class="logo">$ sudo ./<span>TheSudoLab</span></a>
-            <div class="header-status-group">
-                <div class="status-tag"><div class="pulse"></div> SecOps Online | Pentest Ready</div>
-                <div class="animated-logo-box">
-                    <svg viewBox="150 170 550 330" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-                        <path class="animated-thread" d="M 250,250 C 220,200 170,220 180,260 C 190,300 240,240 250,280 C 260,320 200,350 180,310 C 160,270 210,230 230,210 C 260,180 320,220 310,270 C 300,320 240,310 230,340 C 210,380 290,380 310,330 C 320,300 300,270 330,270 C 360,270 390,360 450,340 C 510,320 520,220 590,220 C 660,220 680,290 660,340 C 630,400 550,380 540,300 C 530,240 610,240 630,280 C 650,320 600,340 580,310 C 560,280 580,260 600,270 C 610,275 610,290 600,290"></path>
-                        <text class="logo-subtext" x="425" y="450" font-size="52" text-anchor="middle" font-weight="bold">TheSudoLab</text>
-                    </svg>
+    <div class="bg-[#070A10] border-b border-slate-800 text-[11px] font-mono tracking-wider text-brand-textMuted px-4 py-2 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>SECURE BACKBONE ONLINE</span>
+        </div>
+        <div class="hidden sm:flex items-center gap-4">
+            <span>NODE: GLOBAL_HUB_01</span>
+            <span>EST. 2026</span>
+        </div>
+    </div>
+
+    <header class="sticky top-0 z-50 bg-brand-bg/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="radar-pulse w-10 h-10 rounded border border-brand-accent/40 bg-[#0F1524] flex flex-col items-center justify-center font-mono text-[10px] tracking-tighter text-brand-accent font-bold shadow-lg transition-all duration-300 group-hover:border-brand-accent">
+                    <span class="leading-none text-brand-textMain animate-pulse">SUDO</span>
+                    <span class="text-[8px] tracking-widest text-slate-500 -mt-0.5 font-normal">LAB</span>
                 </div>
+                <div>
+                    <span class="text-xl font-bold tracking-tight text-brand-textMain">TheSudo<span class="text-brand-accent">Lab</span></span>
+                    <p class="text-[10px] font-mono tracking-widest text-brand-textMuted uppercase -mt-1">Enterprise Security</p>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-1 font-medium text-sm">
+                <button id="nav-btn-about" onclick="switchTab('about')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors active-nav">/about</button>
+                <button id="nav-btn-services" onclick="switchTab('services')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/services</button>
+                <button id="nav-btn-blog" onclick="switchTab('blog')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/blog</button>
+                <button id="nav-btn-pdf" onclick="switchTab('pdf')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/publications</button>
+                <button id="nav-btn-videos" onclick="switchTab('videos')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/videos</button>
+                <button id="nav-btn-plugins" onclick="switchTab('plugins')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/modules</button>
+                <button id="nav-btn-projects" onclick="switchTab('projects')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/repositories</button>
+                <button id="nav-btn-contact" onclick="switchTab('contact')" class="ml-4 px-5 py-2 rounded bg-slate-800 text-brand-accent hover:bg-slate-700 font-mono transition-all text-xs border border-slate-700">/contact</button>
+            </nav>
+
+            <div class="md:hidden">
+                <select onchange="switchTab(this.value)" class="bg-brand-surface border border-slate-700 text-brand-accent text-xs rounded px-2 py-1.5 font-mono outline-none">
+                    <option value="about">/about</option>
+                    <option value="services">/services</option>
+                    <option value="blog">/blog</option>
+                    <option value="pdf">/publications</option>
+                    <option value="videos">/videos</option>
+                    <option value="plugins">/modules</option>
+                    <option value="projects">/repositories</option>
+                    <option value="contact">/contact</option>
+                </select>
             </div>
         </div>
-
-        <nav>
-            <button id="nav-btn-about"    class="nav-btn active" onclick="switchTab('about')">   <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/about</span>   <span class="nav-label">/about</span></button>
-            <button id="nav-btn-blog"     class="nav-btn"        onclick="switchTab('blog')">    <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/blog</span>    <span class="nav-label">/blog</span></button>
-            <button id="nav-btn-pdf"      class="nav-btn"        onclick="switchTab('pdf')">     <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/pdf</span>     <span class="nav-label">/pdf</span></button>
-            <button id="nav-btn-videos"   class="nav-btn"        onclick="switchTab('videos')">  <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/videos</span>  <span class="nav-label">/videos</span></button>
-            <button id="nav-btn-plugins"  class="nav-btn"        onclick="switchTab('plugins')"> <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/plugins</span> <span class="nav-label">/plugins</span></button>
-            <button id="nav-btn-projects" class="nav-btn"        onclick="switchTab('projects')"><span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/projects</span><span class="nav-label">/projects</span></button>
-            <button id="nav-btn-media"    class="nav-btn"        onclick="switchTab('media')">   <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/media</span>   <span class="nav-label">/media</span></button>
-            <button id="nav-btn-contact"  class="nav-btn"        onclick="switchTab('contact')"> <span class="nav-scan"></span><span class="nav-top-line"></span><span class="nav-corner tl"></span><span class="nav-corner br"></span><span class="nav-glitch">/contact</span> <span class="nav-label">/contact</span></button>
-        </nav>
     </header>
 
-    <main>
-        <section id="about" class="section active">
-            <div class="about-card">
-                <h2>&gt; Cybersecurity Learning & Penetration Testing Platform</h2>
-                <p><strong>TheSudoLab</strong> is a specialized security research collective offering <strong>adversary-simulation penetration testing</strong>, <strong>deep-dive vulnerability assessments</strong>, and <strong>strategic technology consulting</strong> with a focus on cybersecurity education and hands-on training.</p>
-                <div class="services-grid">
-                    <div class="service-item">
-                        <h3>01 // Penetration Testing</h3>
-                        <p style="font-size: 0.9rem; color: var(--text-muted);">Comprehensive infrastructure, mobile application, and API vulnerability assessments. We simulate real-world cyber attacks to identify and exploit security weaknesses before malicious actors can.</p>
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 w-full">
+        
+        <section id="about" class="tab-section active space-y-16">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-brand-accent/20 text-brand-accent text-xs font-mono">
+                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> Threat Intelligence & Advisory
                     </div>
-                    <div class="service-item">
-                        <h3>02 // Security Consulting</h3>
-                        <p style="font-size: 0.9rem; color: var(--text-muted);">Architecting secure baselines, access control paradigms, and threat modeling configurations. Our experts help you build security into your systems from the ground up.</p>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+                        Adversary Simulation <br>& Dynamic Defenses.
+                    </h1>
+                    <p class="text-lg text-brand-textMuted leading-relaxed max-w-2xl">
+                        <strong class="text-brand-textMain">TheSudoLab</strong> operates as an elite international security research collective. We offer high-fidelity adversary-simulation penetration testing, deep-dive vulnerability infrastructure assessments, and strategic technology consulting with a core mandate built around rigorous security training and systemic defense hardening.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button onclick="switchTab('services')" class="px-6 py-3 bg-gradient-to-r from-brand-accent to-amber-600 text-brand-bg font-semibold rounded hover:shadow-lg hover:shadow-brand-accent/20 transition-all text-sm">
+                            Explore Operational Capabilities
+                        </button>
+                        <button onclick="switchTab('contact')" class="px-6 py-3 bg-brand-surface border border-slate-700 text-brand-textMain rounded hover:bg-slate-800 transition-all text-sm font-medium">
+                            Initialize Engagement
+                        </button>
                     </div>
-                    <div class="service-item">
-                        <h3>03 // Cybersecurity Training</h3>
-                        <p style="font-size: 0.9rem; color: var(--text-muted);">Hands-on learning programs for security professionals. From ethical hacking to advanced pentesting techniques, we provide the knowledge to defend against modern threats.</p>
-                    </div>
-                    <div class="service-item">
-                        <h3>04 // Red Team Operations</h3>
-                        <p style="font-size: 0.9rem; color: var(--text-muted);">Full-scale attack simulations to test your organization's detection and response capabilities. We help you identify gaps in your security posture.</p>
+                </div>
+                <div class="lg:col-span-5 relative hidden lg:block">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-brand-accent/10 to-transparent rounded-full filter blur-3xl"></div>
+                    <div class="relative bg-brand-surface border border-slate-800 p-8 rounded-lg shadow-2xl font-mono text-xs text-slate-400 space-y-4 custom-glow">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div class="flex gap-1.5">
+                                <span class="w-3 h-3 rounded-full bg-slate-700"></span>
+                                <span class="w-3 h-3 rounded-full bg-slate-700"></span>
+                                <span class="w-3 h-3 rounded-full bg-slate-700"></span>
+                            </div>
+                            <span class="text-brand-accent text-[10px]">SYSTEM_OVERWATCH.SH</span>
+                        </div>
+                        <p class="text-emerald-500">$ sudo ./thesudolab --assess-posture</p>
+                        <p class="text-slate-500">[i] Initializing structural framework scans...</p>
+                        <p class="text-slate-500">[i] Mapping international threat surfaces...</p>
+                        <p class="text-brand-accent">[✓] 01 // Core Architecture hardiness verified.</p>
+                        <p class="text-brand-accent">[✓] 02 // Threat models structured.</p>
+                        <p class="text-brand-accent">[✓] 03 // Continuous training engines compiled.</p>
+                        <div class="pt-2 flex justify-between items-center text-[10px] text-slate-600">
+                            <span>BUFFERS: CLEAR</span>
+                            <span>STATUS: READY</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="blog" class="section">
-            <div class="search-container">
-                <span class="search-prefix">grep -i</span>
-                <input type="text" id="blog-search" class="search-input" placeholder="'keyword' directory..." oninput="filterBlogs()">
+        <section id="services" class="tab-section space-y-12">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Core Capabilities & Security Architecture</h2>
+                <p class="text-brand-textMuted">Tailored programmatic solutions built to neutralize sophisticated threat profiles before operational impact occurs.</p>
             </div>
-            <div class="media-grid" id="blog-container"></div>
-        </section>
 
-        <section id="pdf" class="section">
-            <div class="search-container">
-                <span class="search-prefix">grep -i</span>
-                <input type="text" id="pdf-search" class="search-input" placeholder="'document-name' directory..." oninput="filterPdfs()">
-            </div>
-            <div class="pdf-list-wrapper">
-                <h2>&gt; ls -la ./publications/</h2>
-                <ul class="terminal-list" id="pdf-container"></ul>
-            </div>
-        </section>
-
-        <section id="videos" class="section">
-            <div class="search-container">
-                <span class="search-prefix">grep -i</span>
-                <input type="text" id="video-search" class="search-input" placeholder="'video-title' lab logs..." oninput="filterVideos()">
-            </div>
-            <div class="media-grid" id="video-container"></div>
-        </section>
-
-        <section id="plugins" class="section">
-            <div class="search-container">
-                <span class="search-prefix">grep -i</span>
-                <input type="text" id="plugin-search" class="search-input" placeholder="'plugin-name' registry..." oninput="filterPlugins()">
-            </div>
-            <div class="media-grid" id="plugin-container"></div>
-        </section>
-
-        <section id="projects" class="section">
-            <div class="search-container">
-                <span class="search-prefix">grep -i</span>
-                <input type="text" id="project-search" class="search-input" placeholder="'project-name' tree..." oninput="filterProjects()">
-            </div>
-            <div class="media-grid" id="project-container"></div>
-        </section>
-
-        <section id="media" class="section">
-            <div class="about-card">
-                <h2>&gt; Social Media Feed</h2>
-                <a class="twitter-timeline" href="https://x.com/gb414ji?ref_src=twsrc%5Etfw">Posts by gb414ji</a>
-                <script async src="https://platform.x.com/widgets.js" charset="utf-8"></script>
-            </div>
-        </section>
-
-        <section id="contact" class="section">
-            <div class="about-card" style="border-left-color: var(--accent-blue);">
-                <h2>&gt; Initialize Secure Transmission Channels</h2>
-                <p>Contact our cybersecurity experts to discuss your security needs. Whether you require penetration testing, security consulting, or cybersecurity training, our team is ready to assist.</p>
-                
-                <form id="contact-form" action="https://formspree.io/f/mzdqogkd" method="POST" class="form-grid">
-                    <div class="form-group">
-                        <label for="first-name">First Name <span>*</span></label>
-                        <input type="text" id="first-name" name="name" class="form-control" placeholder="John" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required="">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="text-xs font-mono text-brand-accent tracking-widest uppercase">01 // Advanced Vector Assessment</div>
+                        <h3 class="text-xl font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors">Penetration Testing</h3>
+                        <p class="text-brand-textMuted text-sm leading-relaxed">Comprehensive structural environments, mobile applications, and high-throughput API vulnerability infrastructure diagnostics. We orchestrate simulated real-world cyber attack chains to identify and fortify deep programmatic weaknesses before adversaries can exploit them.</p>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="last-name">Last Name <span>*</span></label>
-                        <input type="text" id="last-name" name="subject" class="form-control" placeholder="Doe" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required="">
+                </div>
+                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="text-xs font-mono text-brand-accent tracking-widest uppercase">02 // Framework Infrastructure</div>
+                        <h3 class="text-xl font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors">Security Consulting</h3>
+                        <p class="text-brand-textMuted text-sm leading-relaxed">Architecting mathematically verified security baselines, zero-trust access control paradigms, and comprehensive continuous threat modeling profiles. Our industry experts work across sectors to integrate defenses directly into native logic pipelines.</p>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email Address <span>*</span></label>
-                        <input type="email" id="email" name="email" class="form-control" placeholder="name@domain.com" required="">
+                </div>
+                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="text-xs font-mono text-brand-accent tracking-widest uppercase">03 // Educational Vectors</div>
+                        <h3 class="text-xl font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors">Cybersecurity Training</h3>
+                        <p class="text-brand-textMuted text-sm leading-relaxed">Hands-on learning programs customized for enterprise security operations teams. Ranging from baseline ethical hacking frameworks to sophisticated reverse-engineering techniques, we arm teams with actionable operational counter-knowledge.</p>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="phone">Phone Number <span>*</span></label>
-                        <input type="text" id="phone" name="telephone" class="form-control" placeholder="+91 XXXXX XXXXX" pattern="[0-9+ ]*" title="Only numbers, spaces, and the plus (+) symbol are allowed." required="">
+                </div>
+                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="text-xs font-mono text-brand-accent tracking-widest uppercase">04 // Full-Scale Adversary Emulation</div>
+                        <h3 class="text-xl font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors">Red Team Operations</h3>
+                        <p class="text-brand-textMuted text-sm leading-relaxed">End-to-end unannounced operational active threat simulations crafted to run check-point diagnostics against internal incident response and network detection baselines. Discover visibility gaps before actual asset compromise occurs.</p>
                     </div>
-                    
-                    <div class="form-group form-full-width">
-                        <label for="message">Message Block <span>*</span></label>
-                        <textarea id="message" name="message" class="form-control" placeholder="Describe your cybersecurity needs, project requirements, or any specific concerns..." required=""></textarea>
+                </div>
+            </div>
+        </section>
+
+        <section id="blog" class="tab-section space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Intelligence Directory</h2>
+                    <p class="text-sm text-brand-textMuted">Operational analyses and security research updates.</p>
+                </div>
+                <div class="relative max-w-xs w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">grep:</span>
+                    <input type="text" id="blog-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-14 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="keyword..." oninput="filterBlogs()">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="blog-container"></div>
+        </section>
+
+        <section id="pdf" class="tab-section space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Strategic Whitepapers & Publications</h2>
+                    <p class="text-sm text-brand-textMuted">Formal corporate intelligence distributions and technology disclosures.</p>
+                </div>
+                <div class="relative max-w-xs w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">find:</span>
+                    <input type="text" id="pdf-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-14 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="document name..." oninput="filterPdfs()">
+                </div>
+            </div>
+            <div class="bg-brand-surface border border-slate-800 rounded-lg overflow-hidden custom-glow">
+                <div class="bg-slate-900 px-6 py-3 border-b border-slate-800 font-mono text-xs text-slate-400 flex items-center justify-between">
+                    <span>ls -la ./publications/</span>
+                    <span class="text-brand-accent text-[10px]">PDF DOCUMENTS</span>
+                </div>
+                <ul class="divide-y divide-slate-800/60 font-mono text-sm" id="pdf-container"></ul>
+            </div>
+        </section>
+
+        <section id="videos" class="tab-section space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Digital Broadcast Logs</h2>
+                    <p class="text-sm text-brand-textMuted">Technical demonstrations, active stream walk-throughs, and framework lectures.</p>
+                </div>
+                <div class="relative max-w-xs w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">query:</span>
+                    <input type="text" id="video-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-16 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="title name..." oninput="filterVideos()">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="video-container"></div>
+        </section>
+
+        <section id="plugins" class="tab-section space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Published Operational Modules</h2>
+                    <p class="text-sm text-brand-textMuted">Enterprise-grade utilities, security monitoring engines, and browser integration assets.</p>
+                </div>
+                <div class="relative max-w-xs w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">pkg:</span>
+                    <input type="text" id="plugin-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-12 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="registry entry..." oninput="filterPlugins()">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="plugin-container"></div>
+        </section>
+
+        <section id="projects" class="tab-section space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Infrastructure Core Repositories</h2>
+                    <p class="text-sm text-brand-textMuted">Open-source defensive tooling layers and system engines compiled by our collective.</p>
+                </div>
+                <div class="relative max-w-xs w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">git:</span>
+                    <input type="text" id="project-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-12 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="tree parameter..." oninput="filterProjects()">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="project-container"></div>
+        </section>
+
+        <section id="contact" class="tab-section max-w-4xl mx-auto space-y-8">
+            <div class="text-center space-y-3">
+                <h2 class="text-3xl font-bold tracking-tight">Secure Communications Interface</h2>
+                <p class="text-brand-textMuted text-sm max-w-2xl mx-auto">Establish encrypted routing pathways with our global intelligence teams. Fill out the validation fields below to securely transmit project scope configurations.</p>
+            </div>
+
+            <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg shadow-xl custom-glow">
+                <form id="contact-form" action="https://formspree.io/f/mzdqogkd" method="POST" class="space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="first-name" class="text-xs font-mono uppercase text-slate-400 block">First Name <span class="text-brand-crimson">*</span></label>
+                            <input type="text" id="first-name" name="name" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="John" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="last-name" class="text-xs font-mono uppercase text-slate-400 block">Last Name <span class="text-brand-crimson">*</span></label>
+                            <input type="text" id="last-name" name="subject" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="Doe" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required>
+                        </div>
                     </div>
-                    
-                    <div class="form-full-width">
-                        <button type="submit" id="submit-btn" class="submit-btn">$ dispatch --secure --payload</button>
-                        <div id="form-status" class="form-status"></div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="email" class="text-xs font-mono uppercase text-slate-400 block">Email Address <span class="text-brand-crimson">*</span></label>
+                            <input type="email" id="email" name="email" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="name@domain.com" required>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="phone" class="text-xs font-mono uppercase text-slate-400 block">Phone Vector <span class="text-brand-crimson">*</span></label>
+                            <input type="text" id="phone" name="telephone" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="+91 XXXXX XXXXX" pattern="[0-9+ ]*" title="Only numbers, spaces, and the plus (+) symbol are allowed." required>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="message" class="text-xs font-mono uppercase text-slate-400 block">Transmission Payload Block <span class="text-brand-crimson">*</span></label>
+                        <textarea id="message" name="message" rows="5" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors resize-y" placeholder="Describe your corporate security parameters, timelines, infrastructure footprint or dynamic requests..." required></textarea>
+                    </div>
+
+                    <div class="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <button type="submit" id="submit-btn" class="px-6 py-3 bg-slate-900 border border-brand-accent text-brand-accent font-mono text-xs uppercase tracking-wider rounded hover:bg-brand-accent hover:text-brand-bg transition-all duration-300 shadow-md">
+                            $ dispatch --secure --payload
+                        </button>
+                        <div id="form-status" class="hidden text-xs font-mono p-3 rounded bg-slate-900/80 border border-slate-800 max-w-md"></div>
                     </div>
                 </form>
             </div>
+
+            <div class="bg-brand-surface border border-slate-800 p-6 rounded-lg space-y-4">
+                <h3 class="text-sm font-mono uppercase tracking-wider text-brand-accent">// Live Threat Feed Stream</h3>
+                <div class="max-h-80 overflow-y-auto rounded bg-brand-bg/60 p-2 border border-slate-800/80">
+                    <a class="twitter-timeline" data-theme="dark" href="https://x.com/gb414ji?ref_src=twsrc%5Etfw">Posts by gb414ji</a>
+                    <script async src="https://platform.x.com/widgets.js" charset="utf-8"></script>
+                </div>
+            </div>
         </section>
+
     </main>
 
-    <footer>© 2026 TheSudoLab. All rights reserved. | Cybersecurity Learning & Penetration Testing Platform</footer>
-</div>
+    <footer class="bg-[#070A10] border-t border-slate-900 mt-20 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-brand-textMuted">
+            <div class="flex items-center gap-2">
+                <span class="text-brand-accent">&gt;</span>
+                <span>© 2026 TheSudoLab. All international rights reserved.</span>
+            </div>
+            <div class="flex gap-6 text-[11px]">
+                <span class="text-slate-700">CLASSIFICATION: PUBLIC ADVISORY</span>
+                <span class="hidden md:inline text-slate-700">|</span>
+                <span>We help to ensuring your security</span>
+            </div>
+        </div>
+    </footer>
 
-<script>
-    function switchTab(tabId) {
-        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        const btn = document.getElementById(`nav-btn-${tabId}`);
-        if (btn) btn.classList.add('active');
-
-        if (tabId === 'blog')     loadBlogs();
-        if (tabId === 'pdf')      loadPdfs();
-        if (tabId === 'videos')   loadVideos();
-        if (tabId === 'plugins')  loadPlugins();
-        if (tabId === 'projects') loadProjects();
-    }
-
-    document.getElementById('contact-form').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const form = event.target;
-        const button = document.getElementById('submit-btn');
-        const status = document.getElementById('form-status');
-
-        button.disabled = true;
-        button.innerText = '$ negotiating_handshake...';
-        status.style.display = 'block';
-        status.style.color = 'var(--text-muted)';
-        status.innerText = '> Broadcasting data packets...';
-
-        try {
-            const response = await fetch(form.action, {
-                method: form.method,
-                body: new FormData(form),
-                headers: { 'Accept': 'application/json' }
-            });
-            if (response.ok) {
-                status.style.color = 'var(--accent)';
-                status.innerText = '> [SUCCESS] Transmission acknowledged. Routing connection...';
-                form.reset();
-                setTimeout(() => { status.style.display = 'none'; switchTab('about'); }, 1500);
-            } else {
-                const err = await response.json().catch(() => ({}));
-                throw new Error(err.errors ? err.errors.map(e => e.message).join(', ') : 'Server validation rejected transport payload block.');
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('header nav button').forEach(el => el.classList.remove('active-nav'));
+            
+            let targetedSection = document.getElementById(tabId === 'services' ? 'services' : tabId);
+            if (targetedSection) {
+                targetedSection.classList.add('active');
             }
-        } catch (error) {
-            status.style.color = '#ef4444';
-            status.innerText = `[ERROR] Transport failed: ${error.message}`;
-        } finally {
-            button.disabled = false;
-            button.innerText = '$ dispatch --secure --payload';
+            
+            const nativeBtn = document.getElementById(`nav-btn-${tabId}`);
+            if (nativeBtn) nativeBtn.classList.add('active-nav');
+
+            if (tabId === 'blog')     loadBlogs();
+            if (tabId === 'pdf')      loadPdfs();
+            if (tabId === 'videos')   loadVideos();
+            if (tabId === 'plugins')  loadPlugins();
+            if (tabId === 'projects') loadProjects();
         }
-    });
 
-    async function fetchJSON(path) {
-        const res = await fetch(`${path}?_=${Date.now()}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status} – ${path}`);
-        return res.json();
-    }
+        document.getElementById('contact-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const form = event.target;
+            const button = document.getElementById('submit-btn');
+            const status = document.getElementById('form-status');
 
-    async function loadBlogs() {
-        const container = document.getElementById('blog-container');
-        container.innerHTML = '<div class="empty-msg loading-animation">> Scanning blog directory...</div>';
-        try {
-            const posts = await fetchJSON('./blog/blogs.json');
-            container.innerHTML = '';
-            if (!posts.length) { container.innerHTML = '<div class="empty-msg">[ Empty Directory ]</div>'; return; }
-            posts.forEach(post => {
-                const card = document.createElement('a');
-                card.className = 'media-card';
-                card.href = `./blog/${post.filename}`;
-                card.setAttribute('data-title', post.title.toLowerCase());
-                const postDate = post.date || post.published || post.time || post.created || '';
-                const dateDisplay = postDate ? `[🕒 ${postDate}]` : '[🕒 TheSudoLab]';
-                const titleWords = post.title ? post.title.trim().split(/\s+/) : [];
-                const thumbLabel = titleWords.slice(0, 3).join(' ') || 'BLOG POST';
-                card.innerHTML = `
-                    <div class="media-thumb blog-thumb">
-                        <div class="blog-thumb-inner">
-                            <div class="blog-thumb-icon">&#x1F4C4;</div>
-                            <div class="blog-thumb-label">${thumbLabel}</div>
-                            <div class="blog-thumb-tag">> read article</div>
+            button.disabled = true;
+            button.innerText = '$ negotiating_handshake...';
+            status.classList.remove('hidden');
+            status.className = "text-brand-textMuted text-xs font-mono p-3 rounded bg-slate-900/80 border border-slate-800";
+            status.innerText = '> Broadcasting cryptographically mapped packets...';
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: new FormData(form),
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (response.ok) {
+                    status.className = "text-emerald-500 text-xs font-mono p-3 rounded bg-emerald-950/20 border border-emerald-900/50";
+                    status.innerText = '> [SUCCESS] Transmission validated by remote peer node. Connection routed.';
+                    form.reset();
+                    setTimeout(() => { status.classList.add('hidden'); switchTab('about'); }, 2000);
+                } else {
+                    const err = await response.json().catch(() => ({}));
+                    throw new Error(err.errors ? err.errors.map(e => e.message).join(', ') : 'Infrastructure payload verification rejection block.');
+                }
+            } catch (error) {
+                status.className = "text-brand-crimson text-xs font-mono p-3 rounded bg-red-950/20 border border-red-900/50";
+                status.innerText = `[ERROR] Secure routing disruption: ${error.message}`;
+            } finally {
+                button.disabled = false;
+                button.innerText = '$ dispatch --secure --payload';
+            }
+        });
+
+        async function fetchJSON(path) {
+            const res = await fetch(`${path}?_=${Date.now()}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status} – ${path}`);
+            return res.json();
+        }
+
+        async function loadBlogs() {
+            const container = document.getElementById('blog-container');
+            container.innerHTML = '<div class="col-span-full text-center font-mono text-sm py-12 text-brand-textMuted animate-pulse">> Initializing blog data-structure scan...</div>';
+            try {
+                const posts = await fetchJSON('./blog/blogs.json');
+                container.innerHTML = '';
+                if (!posts.length) { container.innerHTML = '<div class="col-span-full text-center font-mono py-12 text-slate-600">[ Directory Structural State: Empty ]</div>'; return; }
+                posts.forEach(post => {
+                    const card = document.createElement('a');
+                    card.className = 'bg-brand-surface border border-slate-800 rounded-lg p-6 hover:border-brand-accent/40 transition-all group flex flex-col justify-between';
+                    card.href = `./blog/${post.filename}`;
+                    card.setAttribute('data-title', post.title.toLowerCase());
+                    const postDate = post.date || post.published || post.time || post.created || 'N/A';
+                    
+                    card.innerHTML = `
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between text-[11px] font-mono text-brand-accent">
+                                <span>[🕒 ${postDate}]</span>
+                                <span class="opacity-0 group-hover:opacity-100 transition-opacity">READ VECTOR →</span>
+                            </div>
+                            <h3 class="text-base font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors line-clamp-2">${post.title}</h3>
                         </div>
-                    </div>
-                    <div class="media-content">
-                        <span class="media-date">${dateDisplay}</span>
-                        <div class="media-title">${post.title}</div>
-                    </div>`;
-                container.appendChild(card);
-            });
-        } catch (e) {
-            container.innerHTML = '<div class="empty-msg">[ERROR] Directory scan failed.</div>';
-            console.error(e);
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (e) {
+                container.innerHTML = '<div class="col-span-full text-center font-mono text-brand-crimson py-12">[ERROR] Directory scan operation terminated prematurely.</div>';
+                console.error(e);
+            }
         }
-    }
 
-    function filterBlogs() {
-        const q = document.getElementById('blog-search').value.toLowerCase().trim();
-        document.querySelectorAll('#blog-container .media-card').forEach(card => {
-            card.classList.toggle('hidden', !card.getAttribute('data-title').includes(q));
-        });
-    }
-
-    async function loadPdfs() {
-        const container = document.getElementById('pdf-container');
-        container.innerHTML = '<div class="empty-msg loading-animation">> Indexing publications...</div>';
-        try {
-            const pdfs = await fetchJSON('./pdf/pdfs.json');
-            container.innerHTML = '';
-            if (!pdfs.length) { container.innerHTML = '<div class="empty-msg">total 0</div>'; return; }
-            pdfs.forEach(pdf => {
-                const li = document.createElement('li');
-                li.className = 'terminal-item';
-                li.setAttribute('data-title', pdf.title.toLowerCase());
-                li.innerHTML = `
-                    <div style="display:flex;align-items:center;">
-                        <span class="pdf-timestamp">[🕒 ${pdf.date}]</span>
-                        <span style="color:var(--accent);margin-right:0.5rem;">$ cat</span>
-                    </div>
-                    <a href="./pdf/${pdf.filename}" target="_blank" class="pdf-hyperlink">${pdf.title}</a>`;
-                container.appendChild(li);
+        function filterBlogs() {
+            const q = document.getElementById('blog-search').value.toLowerCase().trim();
+            document.querySelectorAll('#blog-container > a').forEach(card => {
+                card.style.display = card.getAttribute('data-title').includes(q) ? 'flex' : 'none';
             });
-        } catch (e) {
-            container.innerHTML = '<div class="empty-msg">[ERROR] Index parsing crash.</div>';
-            console.error(e);
         }
-    }
 
-    function filterPdfs() {
-        const q = document.getElementById('pdf-search').value.toLowerCase().trim();
-        document.querySelectorAll('#pdf-container .terminal-item').forEach(item => {
-            item.classList.toggle('hidden', !item.getAttribute('data-title').includes(q));
-        });
-    }
+        async function loadPdfs() {
+            const container = document.getElementById('pdf-container');
+            container.innerHTML = '<div class="text-center font-mono text-sm py-8 text-brand-textMuted animate-pulse">> Querying secure indexing files...</div>';
+            try {
+                const pdfs = await fetchJSON('./pdf/pdfs.json');
+                container.innerHTML = '';
+                if (!pdfs.length) { container.innerHTML = '<div class="p-6 text-slate-600">total 0 components discovered</div>'; return; }
+                pdfs.forEach(pdf => {
+                    const li = document.createElement('li');
+                    li.className = 'px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-slate-900/50 transition-colors';
+                    li.setAttribute('data-title', pdf.title.toLowerCase());
+                    li.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="text-slate-600 text-xs">[🕒 ${pdf.date}]</span>
+                            <span class="text-brand-accent font-medium text-xs">CAT_LOG //</span>
+                            <span class="text-brand-textMain font-medium font-sans">${pdf.title}</span>
+                        </div>
+                        <a href="./pdf/${pdf.filename}" target="_blank" class="text-xs text-slate-400 hover:text-brand-accent underline font-medium">Download Secure Copy</a>
+                    `;
+                    container.appendChild(li);
+                });
+            } catch (e) {
+                container.innerHTML = '<div class="p-6 text-brand-crimson">[ERROR] Core architecture validation failure. Internal pointer exception.</div>';
+                console.error(e);
+            }
+        }
 
-    async function loadVideos() {
-        const container = document.getElementById('video-container');
-        container.innerHTML = '<div class="empty-msg loading-animation">> Compiling digital learning logs...</div>';
-        try {
-            const videos = await fetchJSON('./tabs/videos.json');
-            container.innerHTML = '';
-            if (!videos.length) { container.innerHTML = '<div class="empty-msg">> No dynamic video logs tracked.</div>'; return; }
-            videos.forEach((video, index) => {
-                const card = document.createElement('div');
-                card.className = 'media-card';
-                card.setAttribute('data-title', video.title.toLowerCase());
-                card.setAttribute('data-desc', video.description.toLowerCase());
-                card.innerHTML = `
-                    <div class="media-thumb" id="thumb-container-${index}"
-                         style="background-image:url('https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg');background-size:cover;background-position:center;"
-                         onclick="activateVideoPlayer(${index}, '${video.youtubeId}')">
-                        <div class="play-overlay-btn">$ run ./stream_logs</div>
-                    </div>
-                    <div class="media-content">
-                        <span class="media-date">[🕒 ${video.date}]</span>
-                        <div class="media-title">${video.title}</div>
-                        <p class="media-desc">${video.description}</p>
-                    </div>`;
-                container.appendChild(card);
+        function filterPdfs() {
+            const q = document.getElementById('pdf-search').value.toLowerCase().trim();
+            document.querySelectorAll('#pdf-container > li').forEach(item => {
+                item.style.display = item.getAttribute('data-title').includes(q) ? 'flex' : 'none';
             });
-        } catch (e) {
-            container.innerHTML = '<div class="empty-msg">[ERROR] Failed to load tabs/videos.json.</div>';
-            console.error(e);
         }
-    }
 
-    function activateVideoPlayer(index, videoId) {
-        const box = document.getElementById(`thumb-container-${index}`);
-        box.removeAttribute('onclick');
-        box.className = 'video-wrapper';
-        box.style.backgroundImage = 'none';
-        box.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen></iframe>`;
-    }
+        async function loadVideos() {
+            const container = document.getElementById('video-container');
+            container.innerHTML = '<div class="col-span-full text-center font-mono text-sm py-12 text-brand-textMuted animate-pulse">> Aggregating educational streaming arrays...</div>';
+            try {
+                const videos = await fetchJSON('./tabs/videos.json');
+                container.innerHTML = '';
+                if (!videos.length) { container.innerHTML = '<div class="col-span-full text-center font-mono py-12 text-slate-600">> No active distribution streams recorded.</div>'; return; }
+                videos.forEach((video, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-brand-surface border border-slate-800 rounded-lg overflow-hidden shadow-md flex flex-col';
+                    card.setAttribute('data-title', video.title.toLowerCase());
+                    card.setAttribute('data-desc', video.description.toLowerCase());
+                    card.innerHTML = `
+                        <div class="relative aspect-video bg-black flex items-center justify-center group" id="thumb-container-${index}">
+                            <img src="https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg" class="absolute w-full h-full object-cover opacity-60 group-hover:scale-102 transition-transform duration-500" alt="Video thumbnail">
+                            <button onclick="activateVideoPlayer(${index}, '${video.youtubeId}')" class="relative z-10 px-4 py-2.5 bg-brand-bg/90 border border-brand-accent text-brand-accent font-mono text-xs rounded hover:bg-brand-accent hover:text-brand-bg transition-all">
+                                execute ./stream_logs
+                            </button>
+                        </div>
+                        <div class="p-6 space-y-2 flex-grow flex flex-col justify-between">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-mono text-brand-accent">[LOG DATE: ${video.date}]</span>
+                                <h3 class="text-base font-semibold text-brand-textMain">${video.title}</h3>
+                                <p class="text-xs text-brand-textMuted leading-relaxed line-clamp-3">${video.description}</p>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (e) {
+                container.innerHTML = '<div class="col-span-full text-center font-mono text-brand-crimson py-12">[ERROR] Streaming payload map assembly fault.</div>';
+                console.error(e);
+            }
+        }
 
-    function filterVideos() {
-        const q = document.getElementById('video-search').value.toLowerCase().trim();
-        document.querySelectorAll('#video-container .media-card').forEach(card => {
-            card.classList.toggle('hidden',
-                !card.getAttribute('data-title').includes(q) && !card.getAttribute('data-desc').includes(q));
-        });
-    }
+        function activateVideoPlayer(index, videoId) {
+            const box = document.getElementById(`thumb-container-${index}`);
+            box.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" class="w-full h-full absolute inset-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        }
 
-    async function loadPlugins() {
-        const container = document.getElementById('plugin-container');
-        container.innerHTML = '<div class="empty-msg loading-animation">> Fetching Web Store modules...</div>';
-        try {
-            const plugins = await fetchJSON('./tabs/plugins.json');
-            container.innerHTML = '';
-            if (!plugins.length) { container.innerHTML = '<div class="empty-msg">> No published plugins on record.</div>'; return; }
-            plugins.forEach(plugin => {
-                const card = document.createElement('div');
-                card.className = 'media-card';
-                card.setAttribute('data-title', plugin.title.toLowerCase());
-                card.setAttribute('data-desc', plugin.description.toLowerCase());
-                card.innerHTML = `
-                    <div class="media-content">
-                        <span class="media-date">[ Build: ${plugin.version} ]</span>
-                        <div class="media-title">${plugin.title}</div>
-                        <p class="media-desc">${plugin.description}</p>
-                        <a href="${plugin.link}" target="_blank" class="terminal-action-btn">> View inside Chrome Web Store</a>
-                    </div>`;
-                container.appendChild(card);
+        function filterVideos() {
+            const q = document.getElementById('video-search').value.toLowerCase().trim();
+            document.querySelectorAll('#video-container > div').forEach(card => {
+                const match = card.getAttribute('data-title').includes(q) || card.getAttribute('data-desc').includes(q);
+                card.style.display = match ? 'flex' : 'none';
             });
-        } catch (e) {
-            container.innerHTML = '<div class="empty-msg">[ERROR] Failed to load tabs/plugins.json.</div>';
-            console.error(e);
         }
-    }
 
-    function filterPlugins() {
-        const q = document.getElementById('plugin-search').value.toLowerCase().trim();
-        document.querySelectorAll('#plugin-container .media-card').forEach(card => {
-            card.classList.toggle('hidden',
-                !card.getAttribute('data-title').includes(q) && !card.getAttribute('data-desc').includes(q));
-        });
-    }
+        async function loadPlugins() {
+            const container = document.getElementById('plugin-container');
+            container.innerHTML = '<div class="col-span-full text-center font-mono text-sm py-12 text-brand-textMuted animate-pulse">> Querying peripheral modules tree...</div>';
+            try {
+                const plugins = await fetchJSON('./tabs/plugins.json');
+                container.innerHTML = '';
+                if (!plugins.length) { container.innerHTML = '<div class="col-span-full text-center font-mono py-12 text-slate-600">> No active structural records verified.</div>'; return; }
+                plugins.forEach(plugin => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-brand-surface border border-slate-800 p-6 rounded-lg flex flex-col justify-between hover:border-brand-accent/30 transition-colors';
+                    card.setAttribute('data-title', plugin.title.toLowerCase());
+                    card.setAttribute('data-desc', plugin.description.toLowerCase());
+                    card.innerHTML = `
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-[10px] font-mono text-slate-500">
+                                <span>BUILD: v${plugin.version}</span>
+                                <span class="text-brand-accent">MODULE</span>
+                            </div>
+                            <h3 class="text-base font-semibold text-brand-textMain">${plugin.title}</h3>
+                            <p class="text-xs text-brand-textMuted leading-relaxed">${plugin.description}</p>
+                        </div>
+                        <a href="${plugin.link}" target="_blank" class="mt-6 block text-center px-4 py-2 bg-slate-900 border border-slate-800 rounded text-xs text-slate-300 font-medium hover:border-brand-accent transition-colors">
+                            View Extension Ledger
+                        </a>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (e) {
+                container.innerHTML = '<div class="col-span-full text-center font-mono text-brand-crimson py-12">[ERROR] Module register evaluation failure.</div>';
+                console.error(e);
+            }
+        }
 
-    async function loadProjects() {
-        const container = document.getElementById('project-container');
-        container.innerHTML = '<div class="empty-msg loading-animation">> Parsing repository trees...</div>';
-        try {
-            const projects = await fetchJSON('./tabs/projects.json');
-            container.innerHTML = '';
-            if (!projects.length) { container.innerHTML = '<div class="empty-msg">> No mapped operational projects.</div>'; return; }
-            projects.forEach(project => {
-                const card = document.createElement('div');
-                card.className = 'media-card';
-                card.setAttribute('data-title', project.title.toLowerCase());
-                card.setAttribute('data-desc', project.description.toLowerCase());
-                card.innerHTML = `
-                    <div class="media-content">
-                        <span class="media-date">[ Core Engine: ${project.language} ]</span>
-                        <div class="media-title">${project.title}</div>
-                        <p class="media-desc">${project.description}</p>
-                        <a href="${project.link}" target="_blank" class="terminal-action-btn">> Clone Repository Source</a>
-                    </div>`;
-                container.appendChild(card);
+        function filterPlugins() {
+            const q = document.getElementById('plugin-search').value.toLowerCase().trim();
+            document.querySelectorAll('#plugin-container > div').forEach(card => {
+                const match = card.getAttribute('data-title').includes(q) || card.getAttribute('data-desc').includes(q);
+                card.style.display = match ? 'flex' : 'none';
             });
-        } catch (e) {
-            container.innerHTML = '<div class="empty-msg">[ERROR] Failed to load tabs/projects.json.</div>';
-            console.error(e);
         }
-    }
 
-    function filterProjects() {
-        const q = document.getElementById('project-search').value.toLowerCase().trim();
-        document.querySelectorAll('#project-container .media-card').forEach(card => {
-            card.classList.toggle('hidden',
-                !card.getAttribute('data-title').includes(q) && !card.getAttribute('data-desc').includes(q));
-        });
-    }
-</script>
+        async function loadProjects() {
+            const container = document.getElementById('project-container');
+            container.innerHTML = '<div class="col-span-full text-center font-mono text-sm py-12 text-brand-textMuted animate-pulse">> Fetching core code matrix systems...</div>';
+            try {
+                const projects = await fetchJSON('./tabs/projects.json');
+                container.innerHTML = '';
+                if (!projects.length) { container.innerHTML = '<div class="col-span-full text-center font-mono py-12 text-slate-600">> No open operational targets allocated.</div>'; return; }
+                projects.forEach(project => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-brand-surface border border-slate-800 p-6 rounded-lg flex flex-col justify-between hover:border-brand-accent/30 transition-colors';
+                    card.setAttribute('data-title', project.title.toLowerCase());
+                    card.setAttribute('data-desc', project.description.toLowerCase());
+                    card.innerHTML = `
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-[10px] font-mono text-slate-500">
+                                <span>ENGINE: ${project.language}</span>
+                                <span class="text-brand-accent">REPOSITORY</span>
+                            </div>
+                            <h3 class="text-base font-semibold text-brand-textMain">${project.title}</h3>
+                            <p class="text-xs text-brand-textMuted leading-relaxed">${project.description}</p>
+                        </div>
+                        <a href="${project.link}" target="_blank" class="mt-6 block text-center px-4 py-2 bg-slate-900 border border-slate-800 rounded text-xs text-brand-accent font-mono hover:bg-brand-accent hover:text-brand-bg transition-all">
+                            $ git clone source_tree
+                        </a>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (e) {
+                container.innerHTML = '<div class="col-span-full text-center font-mono text-brand-crimson py-12">[ERROR] Repository connection path timeout.</div>';
+                console.error(e);
+            }
+        }
+
+        function filterProjects() {
+            const q = document.getElementById('project-search').value.toLowerCase().trim();
+            document.querySelectorAll('#project-container > div').forEach(card => {
+                const match = card.getAttribute('data-title').includes(q) || card.getAttribute('data-desc').includes(q);
+                card.style.display = match ? 'flex' : 'none';
+            });
+        }
+    </script>
 </body>
 </html>
