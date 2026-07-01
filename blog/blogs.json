@@ -15,6 +15,11 @@
     "filename": "pentest_roadmap.html"
   },
   {
+    "title": "Copilot Commands Lab",
+    "slug": "copilot-commands-lab",
+    "filename": "copilot_commands_lab.html"
+  },
+  {
     "title": "Cyber Kill Chain · MITRE ATT&CK · TheSudoLab",
     "slug": "cyber-kill-chain",
     "filename": "Cyber-kill-chain.html"
