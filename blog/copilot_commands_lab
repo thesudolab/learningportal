@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Copilot Commands Lab</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fafc;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #2d3e50;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    section {
+      padding: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+    h2 {
+      color: #2d3e50;
+    }
+    .example {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 6px;
+    }
+    .prompt {
+      font-weight: bold;
+      color: #333;
+    }
+    .response {
+      margin-top: 8px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Copilot Commands Lab</h1>
+    <p>Explore how Microsoft Copilot responds to different prompts</p>
+  </header>
+
+  <section>
+    <h2>Information Queries</h2>
+    <div class="example">
+      <div class="prompt">Prompt: Explain quantum entanglement in simple terms.</div>
+      <div class="response">Copilot Response: A clear, concise explanation with analogies and citations.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Productivity Tasks</h2>
+    <div class="example">
+      <div class="prompt">Prompt: Draft a polite decline email for a meeting request.</div>
+      <div class="response">Copilot Response: A professional email draft ready to send.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Creative Writing</h2>
+    <div class="example">
+      <div class="prompt">Prompt: Write a short poem about monsoon rain.</div>
+      <div class="response">Copilot Response: A 4-line poem with vivid imagery.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Study & Learning</h2>
+    <div class="example">
+      <div class="prompt">Prompt: Make 5 flashcards for French verbs.</div>
+      <div class="response">Copilot Response: A set of flashcards with verb conjugations.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Comparisons</h2>
+    <div class="example">
+      <div class="prompt">Prompt: Compare electric cars vs hybrid cars.</div>
+      <div class="response">Copilot Response: A side-by-side comparison table with pros and cons.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Shopping & Deals</h2>
+    <div class="example">
+      <div class="prompt">Prompt: Best deal on wireless headphones right now.</div>
+      <div class="response">Copilot Response: Current offers with links to discounts.</div>
+    </div>
+  </section>
+
+  <footer style="text-align:center; padding:20px; background:#2d3e50; color:#fff;">
+    <p>Copilot Commands Lab © 2026</p>
+  </footer>
+</body>
+</html>
