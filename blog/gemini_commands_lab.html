@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Sudo Lab // Gemini Command Cheatsheet</title>
+    <style>
+        :root {
+            --bg-main: #0a0e14;
+            --bg-card: #111622;
+            --bg-terminal: #070a0f;
+            --accent-green: #00ff66;
+            --accent-cyan: #00f0ff;
+            --text-main: #abb2bf;
+            --text-bright: #ffffff;
+            --border-color: #1f293d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'SF Mono', Monaco, Consolas, 'Fira Code', monospace;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header Style */
+        header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo {
+            color: var(--accent-green);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--accent-cyan);
+        }
+
+        h1 {
+            color: var(--text-bright);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #5c6370;
+            font-size: 0.95rem;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .full-width {
+                grid-column: span 2;
+            }
+        }
+
+        /* Card System */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.5rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .card-title {
+            color: var(--text-bright);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 3px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .badge-core { background: rgba(0, 240, 255, 0.1); color: var(--accent-cyan); border: 1px solid rgba(0, 240, 255, 0.3); }
+        .badge-slash { background: rgba(0, 255, 102, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 255, 102, 0.3); }
+        .badge-advanced { background: rgba(255, 170, 0, 0.1); color: #ffaa00; border: 1px solid rgba(255, 170, 0, 0.3); }
+
+        /* Commands List */
+        .cmd-group {
+            margin-bottom: 1rem;
+        }
+
+        .cmd-row {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(31, 41, 61, 0.5);
+        }
+
+        .cmd-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        code {
+            background-color: var(--bg-terminal);
+            color: var(--accent-green);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            width: fit-content;
+            margin-bottom: 0.3rem;
+            border: 1px solid rgba(0, 255, 102, 0.15);
+        }
+
+        .cmd-desc {
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        /* Terminal block for math/parameters */
+        .terminal-block {
+            background-color: var(--bg-terminal);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            color: #a0aec0;
+        }
+
+        .terminal-block span.param { color: var(--accent-cyan); }
+        .terminal-block span.val { color: #ffaa00; }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #5c6370;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo">sudo lab // <span>gemini.edu</span></div>
+            <h1>Gemini CLI & Agentic Commands Reference</h1>
+            <div class="subtitle">Advanced environmental directives, low-level engine parameters, and shortcut indices for developers.</div>
+        </header>
+
+        <div class="grid">
+            
+            <!-- SECTION 1: CONTEXT PREFIXES -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Context & Execution Prefixes</div>
+                    <span class="badge badge-core">Core</span>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd-row">
+                        <code>@&lt;path&gt;</code>
+                        <div class="cmd-desc">Context Tag. Embeds a target file or folder directly into Gemini's context window (e.g., <code>@src/main.py</code>).</div>
+                    </div>
+                    <div class="cmd-row">
+                        <code>! &lt;command&gt;</code>
+                        <div class="cmd-desc">Shell Mode. Runs a raw terminal command (e.g., <code>!git diff</code>) and automatically injects stdout back into the chat.</div>
+                    </div>
+                    <div class="cmd-row">
+                        <code>/</code>
+                        <div class="cmd-desc">Slash Command Prefix. Alerts the interface that the input string is a control mechanism instead of a text prompt.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: WORKSPACE STATE -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Workspace & State Control</div>
+                    <span class="badge badge-slash">Slash</span>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd-row">
+                        <code>/init</code>
+                        <div class="cmd-desc">Scans the working directory and initializes a localized system instruction layer via a <code>GEMINI.md</code> file.</div>
+                    </div>
+                    <div class="cmd-row">
+                        <code>/memory</code>
+                        <div class="cmd-desc">Displays or refreshes active environmental constraints and instructions loaded from project directories.</div>
+                    </div>
+                    <div class="cmd-row">
+                        <code>/compress</code>
+                        <div class="cmd-desc">Condenses active chat logs into a highly summarized token representation to conserve context workspace.</div>
+                    </div>
+                    <div class="cmd-row">
+                        <code>/stats</code>
+                        <div class="cmd-desc">Outputs performance diagnostics: active models, generation token metrics, and infrastructure latency.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: AGENTIC NAVIGATION -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Session Navigation & Agents</div>
+                    <span class="badge badge-slash">Slash</span>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd-row">
+                        <code>/plan [goal]</code>
+                        <div class="cmd-desc">Enters Plan Mode. Forces the engine into a read-only architecture state to map logic maps before altering files.</div>
+                    </div>
+                    <div class="cmd-row">
+                        <code>/model &lt;name&gt;</code>
+                        <div class="cmd-desc">Dynamically switches the active underlying model variant (e.g., trading off speed for deep reasoning).</div>
+                    </div>
+                    <div class="cmd-row">
+                        <code>/save [tag] / /resume [tag]</code>
+                        <div class="cmd-desc">Creates or loads scoped checkpoints of the conversational state and project tree.</div>
+                    </div>
+                    <div class="cmd-row">
+                        <code>/clear</code>
+                        <div class="cmd-desc">Flushes the active terminal UI session buffer clean.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: KEYBOARD SHORTCUTS -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Operational Operational Shortcuts</div>
+                    <span class="badge badge-advanced">Hotkeys</span>
+                </div>
+                <div class="cmd-group">
+                    <div class="cmd-row">
+                        <code>Ctrl + Y</code>
+                        <div class="cmd-desc">Enables "YOLO Mode". Disables the interactive prompt step and allows automated tools to run autonomously.</div>
+                    </div>
+                    <div class="cmd-row">
+                        <code>Esc + Esc</code>
+                        <div class="cmd-desc">The rollback command. Immediately unwinds text mutations and code blocks to the previous system state.</div>
+                    </div>
+                    <div class="cmd-row">
+                        <code>Shift + Tab</code>
+                        <div class="cmd-desc">Cycles interface operational tracking parameters (Manual Review &harr; Auto-Edit &harr; Read-Only).</div>
+                    </div>
+                    <div class="cmd-row">
+                        <code>Ctrl + X</code>
+                        <div class="cmd-desc">Splits the active multi-line text buffer outwards into your local native terminal editor (Vim/Nano).</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 5: ADVANCED TUNING PARAMETERS (FULL WIDTH) -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <div class="card-title">Low-Level API Engine Tuning Parameters</div>
+                    <span class="badge badge-advanced">Hyperparameters</span>
+                </div>
+                <p style="font-size: 0.9rem; margin-bottom: 1rem; color: #8892b0;">For programmatic integration, these variables manage the probability mathematics of token decoding architectures:</p>
+                <div class="terminal-block">
+                    <div>// Controls randomness. Near-deterministic outcomes at 0.0, creative exploration as it scales.</div>
+                    <div><span class="param">Temperature:</span> <span class="val">0.0 &le; T &le; 2.0</span></div>
+                    <br>
+                    <div>// Nucleus Sampling limit. Restricts calculations strictly to top cumulative mass distribution.</div>
+                    <div><span class="param">Top-P:</span> <span class="val">0.1 &le; P &le; 1.0</span></div>
+                    <br>
+                    <div>// Allocation configuration for frontier reasoning engines. Allocates compute tokens prior to returning prose.</div>
+                    <div><span class="param">Reasoning Effort:</span> <span class="val">[ Low | Medium | High ]</span></div>
+                    <br>
+                    <div>// Structured Output Parsing constraint template.</div>
+                    <div><span class="param">responseSchema:</span> <span class="val">JSON / Pydantic Interface Definition</span></div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            THE SUDO LAB &copy; 2026 // SYSTEM TERMINAL EDUCATION FRAMEWORK
+        </footer>
+    </div>
+
+</body>
+</html>
