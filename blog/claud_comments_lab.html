@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sudo Lab // Claude Code Command Cheatsheet</title>
+<style>
+  :root{
+    --bg:#0a0d0b;
+    --panel:#0f1310;
+    --line:#1e2620;
+    --text:#c7d0c8;
+    --dim:#6f7d72;
+    --accent:#d97757;   /* claude coral */
+    --accent-dim:#8a5340;
+    --core:#d97757;     /* Core = coral */
+    --slash:#7fb4c9;    /* Slash = steel cyan */
+    --hotkey:#c99bd9;   /* Hotkeys = violet */
+    --hyper:#e0b563;    /* Hyperparams = amber */
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(180deg, rgba(217,119,87,0.04), transparent 200px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px),
+      var(--bg);
+    color:var(--text);
+    font-family:'JetBrains Mono','IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    line-height:1.5;
+    padding:0 0 80px 0;
+  }
+  a{color:var(--accent);}
+  .wrap{max-width:880px;margin:0 auto;padding:56px 24px 0;}
+
+  .crumb{
+    color:var(--dim);
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    margin-bottom:28px;
+  }
+  .crumb span{color:var(--accent);}
+
+  h1{
+    font-size:clamp(26px,4vw,38px);
+    line-height:1.15;
+    margin:0 0 14px;
+    color:#eef1ee;
+    letter-spacing:-0.01em;
+  }
+  h1::before{
+    content:"$ ";
+    color:var(--accent);
+  }
+
+  .lede{
+    color:var(--dim);
+    font-size:14.5px;
+    max-width:62ch;
+    margin:0 0 46px;
+    border-left:2px solid var(--line);
+    padding-left:14px;
+  }
+
+  section{margin-bottom:52px;}
+
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    padding:3px 9px;
+    border:1px solid currentColor;
+    border-radius:2px;
+    margin-bottom:14px;
+  }
+  .eyebrow::before{content:"▸";}
+  .eyebrow.core{color:var(--core);}
+  .eyebrow.slash{color:var(--slash);}
+  .eyebrow.hotkey{color:var(--hotkey);}
+  .eyebrow.hyper{color:var(--hyper);}
+
+  h2{
+    font-size:19px;
+    color:#eef1ee;
+    margin:0 0 4px;
+    font-weight:600;
+  }
+  .sec-note{
+    color:var(--dim);
+    font-size:13px;
+    margin:0 0 20px;
+  }
+
+  .row{
+    display:grid;
+    grid-template-columns:230px 1fr;
+    gap:18px;
+    padding:14px 0;
+    border-top:1px solid var(--line);
+  }
+  .row:last-child{border-bottom:1px solid var(--line);}
+
+  .cmd{
+    font-weight:600;
+    font-size:14px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  section[data-cat="core"] .cmd{color:var(--core);}
+  section[data-cat="slash"] .cmd{color:var(--slash);}
+  section[data-cat="hotkey"] .cmd{color:var(--hotkey);}
+  section[data-cat="hyper"] .cmd{color:var(--hyper);}
+
+  .desc{
+    color:var(--text);
+    font-size:13.5px;
+  }
+  .desc code{
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:1px 5px;
+    border-radius:3px;
+    color:#eef1ee;
+    font-size:12.5px;
+  }
+
+  .kbd{
+    display:inline-block;
+    padding:1px 7px;
+    border:1px solid var(--line);
+    border-bottom-width:2px;
+    border-radius:3px;
+    background:var(--panel);
+    font-size:12px;
+  }
+
+  .hyper-block{
+    border:1px solid var(--line);
+    background:var(--panel);
+    border-radius:4px;
+    padding:16px 18px;
+    margin-top:14px;
+  }
+  .hyper-block + .hyper-block{margin-top:12px;}
+  .hyper-block .flag{
+    color:var(--hyper);
+    font-weight:600;
+    font-size:14px;
+  }
+  .hyper-block .range{
+    color:var(--dim);
+    font-size:12px;
+    float:right;
+  }
+  .hyper-block p{
+    margin:8px 0 0;
+    color:var(--text);
+    font-size:13.5px;
+  }
+
+  footer{
+    max-width:880px;
+    margin:60px auto 0;
+    padding:24px 24px 0;
+    border-top:1px solid var(--line);
+    color:var(--dim);
+    font-size:11.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    text-align:center;
+  }
+
+  @media (max-width:600px){
+    .row{grid-template-columns:1fr;gap:4px;}
+    .cmd{white-space:normal;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="crumb">sudo lab // <span>claude.edu</span></div>
+
+  <h1>Claude Code &amp; Agentic Commands Reference</h1>
+  <p class="lede">
+    Session controls, subagent orchestration, and low-level reasoning parameters
+    for students running Claude Code from the terminal.
+  </p>
+
+  <section data-cat="core">
+    <div class="eyebrow core">Core</div>
+    <h2>Context &amp; Execution Prefixes</h2>
+    <p class="sec-note">The three symbols that change how your input is interpreted.</p>
+
+    <div class="row">
+      <div class="cmd">@&lt;path&gt;</div>
+      <div class="desc">File Reference Mention. Pulls a file or folder into context and triggers path autocomplete (e.g. <code>@src/main.py</code>).</div>
+    </div>
+    <div class="row">
+      <div class="cmd">! &lt;command&gt;</div>
+      <div class="desc">Shell Mode. Runs a raw terminal command directly (e.g. <code>!git status</code>) and adds its output to the conversation without asking Claude to interpret it.</div>
+    </div>
+    <div class="row">
+      <div class="cmd">/</div>
+      <div class="desc">Slash Command Prefix. Opens the command menu — filters live as you type, showing built-in commands, skills, and plugin/MCP commands.</div>
+    </div>
+  </section>
+
+  <section data-cat="slash">
+    <div class="eyebrow slash">Slash</div>
+    <h2>Workspace &amp; State Control</h2>
+    <p class="sec-note">Manage project memory, context load, and installation health.</p>
+
+    <div class="row">
+      <div class="cmd">/init</div>
+      <div class="desc">Scans the project and generates a starter <code>CLAUDE.md</code> file — the persistent instruction layer Claude reads on every session.</div>
+    </div>
+    <div class="row">
+      <div class="cmd">/memory</div>
+      <div class="desc">Opens <code>CLAUDE.md</code> for editing, and lets you view or toggle auto-memory entries Claude has saved on its own.</div>
+    </div>
+    <div class="row">
+      <div class="cmd">/compact [instructions]</div>
+      <div class="desc">Condenses the active conversation into a summary to free up context, optionally focused with your own instructions.</div>
+    </div>
+    <div class="row">
+      <div class="cmd">/context</div>
+      <div class="desc">Renders current context usage as a colored grid — flags memory bloat and heavy tool output before you hit the limit.</div>
+    </div>
+    <div class="row">
+      <div class="cmd">/cost</div>
+      <div class="desc">Prints token usage statistics for the current session.</div>
+    </div>
+    <div class="row">
+      <div class="cmd">/doctor</div>
+      <div class="desc">Diagnoses your Claude Code installation and settings — the first stop for any environment issue.</div>
+    </div>
+  </section>
+
+  <section data-cat="slash">
+    <div class="eyebrow slash">Slash</div>
+    <h2>Session Navigation &amp; Agents</h2>
+    <p class="sec-note">Move between models, delegate to subagents, and checkpoint your work.</p>
+
+    <div class="row">
+      <div class="cmd">/agents</div>
+      <div class="desc">Manage subagent configurations — specialized, isolated-context assistants for tasks like code review or debugging.</div>
+    </div>
+    <div class="row">
+      <div class="cmd">/model [name]</div>
+      <div class="desc">Switch the active model (<code>sonnet</code>, <code>opus</code>, <code>haiku</code>). Use arrow keys inside the picker to adjust effort level for models that support it.</div>
+    </div>
+    <div class="row">
+      <div class="cmd">/plan [description]</div>
+      <div class="desc">Enters Plan Mode directly — a read-only state where Claude maps out an approach before touching any files.</div>
+    </div>
+    <div class="row">
+      <div class="cmd">/resume [session]</div>
+      <div class="desc">Resumes a previous conversation by ID or name, or opens the session picker. Alias: <code>/continue</code>.</div>
+    </div>
+    <div class="row">
+      <div class="cmd">/rewind</div>
+      <div class="desc">Rewinds the conversation and/or code to a prior checkpoint, or summarizes from a selected message. Alias: <code>/checkpoint</code>.</div>
+    </div>
+    <div class="row">
+      <div class="cmd">/clear</div>
+      <div class="desc">Clears conversation history and frees context for a fresh session. Aliases: <code>/reset</code>, <code>/new</code>.</div>
+    </div>
+  </section>
+
+  <section data-cat="hotkey">
+    <div class="eyebrow hotkey">Hotkeys</div>
+    <h2>Operational Shortcuts</h2>
+    <p class="sec-note">Keyboard-only controls for permission modes, history, and reasoning.</p>
+
+    <div class="row">
+      <div class="cmd"><span class="kbd">Shift</span>+<span class="kbd">Tab</span></div>
+      <div class="desc">Cycles permission modes: <code>default</code> → <code>acceptEdits</code> → <code>plan</code> → any enabled custom modes.</div>
+    </div>
+    <div class="row">
+      <div class="cmd"><span class="kbd">Esc</span> <span class="kbd">Esc</span></div>
+      <div class="desc">With text in the prompt, clears the draft. With an empty prompt, opens the rewind menu to restore or summarize a previous point in the session.</div>
+    </div>
+    <div class="row">
+      <div class="cmd"><span class="kbd">Ctrl</span>+<span class="kbd">R</span></div>
+      <div class="desc">Reverse search through command history, scoped to session, project, or all projects.</div>
+    </div>
+    <div class="row">
+      <div class="cmd"><span class="kbd">Ctrl</span>+<span class="kbd">O</span></div>
+      <div class="desc">Toggles the transcript viewer — expands collapsed tool calls and MCP output for full visibility.</div>
+    </div>
+    <div class="row">
+      <div class="cmd"><span class="kbd">Alt</span>+<span class="kbd">T</span></div>
+      <div class="desc">Toggles extended thinking for the current session (macOS: <span class="kbd">Option</span>+<span class="kbd">T</span>).</div>
+    </div>
+    <div class="row">
+      <div class="cmd"><span class="kbd">Ctrl</span>+<span class="kbd">B</span></div>
+      <div class="desc">Backgrounds a running Bash command so you can keep working while it finishes.</div>
+    </div>
+  </section>
+
+  <section data-cat="hyper">
+    <div class="eyebrow hyper">Hyperparameters</div>
+    <h2>Low-Level Reasoning &amp; Model Tuning Parameters</h2>
+    <p class="sec-note">For programmatic use and tuning how deeply Claude reasons before it responds.</p>
+
+    <div class="hyper-block">
+      <span class="flag">/effort</span><span class="range">low · medium · high · xhigh · max</span>
+      <p>Sets adaptive reasoning depth. Lower effort is faster and cheaper for routine tasks; higher effort trades tokens for deeper multi-step reasoning on hard problems.</p>
+    </div>
+    <div class="hyper-block">
+      <span class="flag">ultrathink</span><span class="range">keyword, one-off</span>
+      <p>Drop this word anywhere in a prompt to request deeper reasoning on that single turn, without changing your session's persistent effort setting.</p>
+    </div>
+    <div class="hyper-block">
+      <span class="flag">--fallback-model</span><span class="range">comma-separated list</span>
+      <p>Defines a fallback chain Claude Code tries in order if the primary model is overloaded or unavailable, e.g. <code>claude --fallback-model sonnet,haiku</code>.</p>
+    </div>
+    <div class="hyper-block">
+      <span class="flag">context window</span><span class="range">up to 1M tokens</span>
+      <p>Long sessions on supported models auto-compact as the window fills — <code>/context</code> shows live usage before that threshold is hit.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>THE SUDO LAB © 2026 // SYSTEM TERMINAL EDUCATION FRAMEWORK</footer>
+
+</body>
+</html>
