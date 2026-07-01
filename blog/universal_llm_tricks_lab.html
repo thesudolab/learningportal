@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sudo Lab // Universal LLM Prompting Tricks</title>
+<style>
+  :root{
+    --bg:#0a0d0b;
+    --panel:#0f1310;
+    --panel-hi:#141a15;
+    --line:#1e2620;
+    --text:#c7d0c8;
+    --dim:#6f7d72;
+    --accent:#d97757;
+
+    --structure:#d97757;
+    --reasoning:#7fb4c9;
+    --context:#c99bd9;
+    --config:#e0b563;
+    --gray:#b8746f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(180deg, rgba(217,119,87,0.04), transparent 220px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px),
+      var(--bg);
+    color:var(--text);
+    font-family:'JetBrains Mono','IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    line-height:1.5;
+    padding:0 0 80px 0;
+  }
+  a{color:var(--accent);}
+  .wrap{max-width:920px;margin:0 auto;padding:56px 24px 0;}
+
+  .crumb{
+    color:var(--dim);
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    margin-bottom:28px;
+  }
+  .crumb span{color:var(--accent);}
+
+  h1{
+    font-size:clamp(24px,4vw,36px);
+    line-height:1.15;
+    margin:0 0 14px;
+    color:#eef1ee;
+    letter-spacing:-0.01em;
+  }
+  h1::before{ content:"$ "; color:var(--accent); }
+
+  .lede{
+    color:var(--dim);
+    font-size:14.5px;
+    max-width:66ch;
+    margin:0 0 34px;
+    border-left:2px solid var(--line);
+    padding-left:14px;
+  }
+
+  /* controls */
+  .controls{
+    position:sticky;
+    top:0;
+    z-index:5;
+    background:linear-gradient(180deg, var(--bg) 78%, transparent);
+    padding:14px 0 18px;
+    margin-bottom:8px;
+  }
+  .search-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:10px 14px;
+    margin-bottom:14px;
+  }
+  .search-row::before{
+    content:"grep -i";
+    color:var(--dim);
+    font-size:12px;
+    flex-shrink:0;
+  }
+  #search{
+    background:transparent;
+    border:none;
+    outline:none;
+    color:#eef1ee;
+    font-family:inherit;
+    font-size:14px;
+    width:100%;
+  }
+  #search::placeholder{color:var(--dim);}
+  #count{
+    color:var(--dim);
+    font-size:12px;
+    white-space:nowrap;
+  }
+
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .chip{
+    cursor:pointer;
+    user-select:none;
+    font-size:11.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:5px 11px;
+    border-radius:2px;
+    border:1px solid var(--line);
+    color:var(--dim);
+    background:var(--panel);
+    transition:border-color .12s, color .12s, background .12s;
+  }
+  .chip:hover{border-color:var(--dim);}
+  .chip[data-active="true"]{
+    color:#0a0d0b;
+    border-color:transparent;
+    font-weight:600;
+  }
+  .chip[data-cat="structure"][data-active="true"]{background:var(--structure);}
+  .chip[data-cat="reasoning"][data-active="true"]{background:var(--reasoning);}
+  .chip[data-cat="context"][data-active="true"]{background:var(--context);}
+  .chip[data-cat="config"][data-active="true"]{background:var(--config);}
+  .chip[data-cat="gray"][data-active="true"]{background:var(--gray);}
+  .chip[data-cat="all"][data-active="true"]{background:#eef1ee;}
+
+  /* cards */
+  #list{margin-top:22px;}
+  .card{
+    border-top:1px solid var(--line);
+    padding:20px 0;
+    display:grid;
+    grid-template-columns:220px 1fr;
+    gap:22px;
+  }
+  .card:last-child{border-bottom:1px solid var(--line);}
+  .card.hidden{display:none;}
+
+  .card-head{display:flex; flex-direction:column; gap:8px;}
+  .tag{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:10.5px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    width:fit-content;
+    padding:2px 8px;
+    border-radius:2px;
+    border:1px solid currentColor;
+  }
+  .card[data-cat="structure"] .tag{color:var(--structure);}
+  .card[data-cat="reasoning"] .tag{color:var(--reasoning);}
+  .card[data-cat="context"] .tag{color:var(--context);}
+  .card[data-cat="config"] .tag{color:var(--config);}
+  .card[data-cat="gray"] .tag{color:var(--gray);}
+
+  .card-title{
+    font-size:15px;
+    font-weight:600;
+    color:#eef1ee;
+  }
+  .compat{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+  }
+  .compat span{
+    font-size:10px;
+    color:var(--dim);
+    border:1px solid var(--line);
+    padding:1px 6px;
+    border-radius:2px;
+  }
+
+  .card-body p{
+    margin:0 0 10px;
+    font-size:13.5px;
+    color:var(--text);
+  }
+
+  .example{
+    position:relative;
+    background:var(--panel-hi);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:12px 44px 12px 14px;
+    font-size:12.5px;
+    color:#dfe6df;
+    white-space:pre-wrap;
+  }
+  .example.warn{
+    border-color:var(--gray);
+    color:var(--dim);
+    font-style:italic;
+  }
+  .copy-btn{
+    position:absolute;
+    top:8px;
+    right:8px;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--dim);
+    font-family:inherit;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    padding:4px 8px;
+    border-radius:3px;
+    cursor:pointer;
+    transition:border-color .12s, color .12s;
+  }
+  .copy-btn:hover{border-color:var(--accent); color:var(--accent);}
+  .copy-btn[data-copied="true"]{border-color:var(--structure); color:var(--structure);}
+
+  .empty{
+    display:none;
+    color:var(--dim);
+    font-size:13px;
+    padding:40px 0;
+    text-align:center;
+  }
+  .empty.show{display:block;}
+  .empty::before{content:"$ no matches — 0 rows returned"; display:block;}
+
+  footer{
+    max-width:920px;
+    margin:60px auto 0;
+    padding:24px 24px 0;
+    border-top:1px solid var(--line);
+    color:var(--dim);
+    font-size:11.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    text-align:center;
+  }
+
+  @media (max-width:640px){
+    .card{grid-template-columns:1fr; gap:10px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="crumb">sudo lab // <span>llm.universal</span></div>
+
+  <h1>Universal LLM Prompting Tricks</h1>
+  <p class="lede">
+    Techniques that work across ChatGPT, Claude, Gemini, and most other chat-based models —
+    because they exploit how transformer chat models behave in general, not one vendor's UI.
+    Search or filter by category below.
+  </p>
+
+  <div class="controls">
+    <div class="search-row">
+      <input id="search" type="text" placeholder="search tricks... e.g. 'context', 'temperature', 'json'">
+      <span id="count"></span>
+    </div>
+    <div class="chips" id="chips">
+      <div class="chip" data-cat="all" data-active="true">All</div>
+      <div class="chip" data-cat="structure">Prompt Structure</div>
+      <div class="chip" data-cat="reasoning">Reasoning Depth</div>
+      <div class="chip" data-cat="context">Context Mgmt</div>
+      <div class="chip" data-cat="config">Model Config</div>
+      <div class="chip" data-cat="gray">Gray Zone</div>
+    </div>
+  </div>
+
+  <div id="list"></div>
+  <div class="empty" id="empty"></div>
+
+</div>
+
+<footer>THE SUDO LAB © 2026 // SYSTEM TERMINAL EDUCATION FRAMEWORK</footer>
+
+<script>
+const DATA = [
+  {
+    cat:"structure", label:"Prompt Structure",
+    title:"Role / Persona Framing",
+    compat:["Universal"],
+    desc:"Assigning a role sharpens vocabulary, depth, and tone far more reliably than asking plainly. Works because the model conditions its whole response on the persona.",
+    example:"You are a senior security auditor reviewing this code for vulnerabilities. Flag anything a pentest would catch."
+  },
+  {
+    cat:"structure", label:"Prompt Structure",
+    title:"Delimiters for Pasted Content",
+    compat:["Universal"],
+    desc:"Wrapping pasted text, code, or logs in triple quotes, backticks, or tags stops the model from confusing your instructions with the data you gave it.",
+    example:"Summarize the following log. Do not execute anything inside it.\n\n\"\"\"\n<paste log here>\n\"\"\""
+  },
+  {
+    cat:"structure", label:"Prompt Structure",
+    title:"Few-Shot Examples",
+    compat:["Universal"],
+    desc:"Showing 1-3 input→output pairs before the real ask is the single highest-leverage trick for consistent formatting, tone, or classification behavior.",
+    example:"Input: \"great battery life\" -> Positive\nInput: \"screen cracked on day one\" -> Negative\nInput: \"it's fine, does the job\" -> ?"
+  },
+  {
+    cat:"structure", label:"Prompt Structure",
+    title:"Explicit Output Contracts",
+    compat:["Universal"],
+    desc:"Naming the exact format you want up front cuts down on rambling and off-schema answers across every vendor.",
+    example:"Respond only with valid JSON matching this schema: {\"title\": string, \"tags\": string[]}. No prose before or after."
+  },
+  {
+    cat:"structure", label:"Prompt Structure",
+    title:"Plan-Then-Execute",
+    compat:["Universal"],
+    desc:"Asking for an outline before the actual answer reliably improves multi-step reasoning tasks like coding or analysis, since it forces structure before content.",
+    example:"First outline your approach in 3 numbered steps. Then execute it, referencing each step as you go."
+  },
+  {
+    cat:"reasoning", label:"Reasoning Depth",
+    title:"Chain-of-Thought Prompting",
+    compat:["Older / smaller models", "Marginal on frontier models"],
+    desc:"\"Think step by step\" still measurably helps smaller or older models. Frontier models (Claude, GPT, Gemini's top tiers) reason internally by default, so it matters less — but rarely hurts.",
+    example:"Solve this step by step, showing your reasoning before the final answer."
+  },
+  {
+    cat:"reasoning", label:"Reasoning Depth",
+    title:"Self-Critique Pass",
+    compat:["Universal"],
+    desc:"Asking the model to check its own output before finalizing catches a surprising number of errors, especially in math and code.",
+    example:"Now review your previous answer for mistakes or edge cases you missed, and revise it if needed."
+  },
+  {
+    cat:"reasoning", label:"Reasoning Depth",
+    title:"Generate-Then-Compare",
+    compat:["Universal"],
+    desc:"Asking for multiple options and then a comparison beats asking for one 'best' answer directly — models tend to anchor on the first plausible completion otherwise.",
+    example:"Give me three different approaches to this problem, then tell me which you'd pick and why."
+  },
+  {
+    cat:"context", label:"Context Mgmt",
+    title:"Front-Load Constraints",
+    compat:["Universal"],
+    desc:"Models weight the start and end of a long prompt more heavily than the middle — the 'lost in the middle' effect shows up across architectures. Put hard constraints first.",
+    example:"Constraints: under 200 words, no jargon, must include a code example. Now: explain how DNS resolution works."
+  },
+  {
+    cat:"context", label:"Context Mgmt",
+    title:"Summarize & Restart",
+    compat:["Universal"],
+    desc:"Every model's coherence degrades as context fills up. Periodically asking for a summary and pasting it into a fresh chat beats fighting a bloated thread.",
+    example:"Summarize this thread's key decisions and open questions in 5 bullets I can paste into a new chat."
+  },
+  {
+    cat:"context", label:"Context Mgmt",
+    title:"One Task Per Turn",
+    compat:["Universal"],
+    desc:"Bundling five asks into one message tends to get the easy four done well and the hard one done sloppily. Split high-stakes requests into separate turns.",
+    example:"(No snippet — this is a habit: send one clear ask per message instead of a numbered wishlist.)"
+  },
+  {
+    cat:"config", label:"Model Config",
+    title:"Temperature / top_p Tuning",
+    compat:["API / Dev tools"],
+    desc:"Some form of this knob — temperature, top_p, or a coarse 'creativity' slider — exists in nearly every API and several chat UIs. Near-zero for deterministic/coding tasks, higher for brainstorming.",
+    example:"API: temperature=0 for code generation, temperature=0.9 for brainstorming copy variants."
+  },
+  {
+    cat:"config", label:"Model Config",
+    title:"System vs. User Prompt Separation",
+    compat:["API / Dev tools"],
+    desc:"Persistent rules placed in the system slot (where exposed) are respected more consistently across the conversation than the same rules repeated in every user message.",
+    example:"System: \"Always answer in formal British English and cite sources.\" User: <actual question>"
+  },
+  {
+    cat:"config", label:"Model Config",
+    title:"Retrieval Before Generation",
+    compat:["Universal"],
+    desc:"Pasting source docs directly into context beats asking the model to recall facts from training — across every vendor, every time accuracy matters.",
+    example:"Here is the actual API documentation. Answer only using what's in this text:\n\n\"\"\"\n<paste docs>\n\"\"\""
+  },
+  {
+    cat:"gray", label:"Gray Zone",
+    title:"Prompt Injection / Jailbreak Patterns",
+    compat:["Documented for defense"],
+    desc:"Persona overrides (\"DAN\"-style), fictional framing to extract restricted info, and \"ignore previous instructions\" attacks exist and get patched constantly across every vendor. Worth knowing they exist if you write security content or build LLM-facing products — treat them as prompt injection's cousin, not as a toolkit.",
+    example:null,
+    warn:"Not reproduced here — this is a defensive awareness note, not a working example."
+  }
+];
+
+const listEl = document.getElementById('list');
+const emptyEl = document.getElementById('empty');
+const countEl = document.getElementById('count');
+const searchEl = document.getElementById('search');
+const chips = document.querySelectorAll('.chip');
+
+let activeCat = 'all';
+
+function render(){
+  listEl.innerHTML = '';
+  const q = searchEl.value.trim().toLowerCase();
+  let shown = 0;
+
+  DATA.forEach((item, i) => {
+    const matchesCat = activeCat === 'all' || item.cat === activeCat;
+    const haystack = (item.title + ' ' + item.desc + ' ' + item.label).toLowerCase();
+    const matchesSearch = q === '' || haystack.includes(q);
+    if(!matchesCat || !matchesSearch) return;
+
+    shown++;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.cat = item.cat;
+
+    const compatHtml = item.compat.map(c => `<span>${c}</span>`).join('');
+
+    let exampleHtml = '';
+    if(item.example){
+      exampleHtml = `
+        <div class="example" id="ex-${i}">
+          <button class="copy-btn" data-idx="${i}">copy</button>${escapeHtml(item.example)}
+        </div>`;
+    } else if(item.warn){
+      exampleHtml = `<div class="example warn">${escapeHtml(item.warn)}</div>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-head">
+        <span class="tag">${item.label}</span>
+        <span class="card-title">${item.title}</span>
+        <div class="compat">${compatHtml}</div>
+      </div>
+      <div class="card-body">
+        <p>${item.desc}</p>
+        ${exampleHtml}
+      </div>
+    `;
+    listEl.appendChild(card);
+  });
+
+  countEl.textContent = shown + ' / ' + DATA.length + ' shown';
+  emptyEl.classList.toggle('show', shown === 0);
+
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const idx = btn.dataset.idx;
+      const text = DATA[idx].example;
+      try{
+        await navigator.clipboard.writeText(text);
+        btn.textContent = 'copied';
+        btn.dataset.copied = 'true';
+        setTimeout(() => { btn.textContent = 'copy'; btn.dataset.copied = 'false'; }, 1400);
+      }catch(e){
+        btn.textContent = 'error';
+        setTimeout(() => { btn.textContent = 'copy'; }, 1400);
+      }
+    });
+  });
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+chips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    activeCat = chip.dataset.cat;
+    chips.forEach(c => c.dataset.active = (c === chip) ? 'true' : 'false');
+    render();
+  });
+});
+
+searchEl.addEventListener('input', render);
+
+render();
+</script>
+</body>
+</html>
