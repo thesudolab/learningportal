@@ -58,5 +58,10 @@
     "title": "The Sudo Lab // Gemini Command Cheatsheet",
     "slug": "gemini-commands-lab",
     "filename": "gemini_commands_lab.html"
+  },
+  {
+    "title": "The Sudo Lab // Universal LLM Prompting Tricks",
+    "slug": "universal-llm-tricks-lab",
+    "filename": "universal_llm_tricks_lab.html"
   }
 ]
