@@ -43,5 +43,10 @@
     "title": "The Linux Filesystem | TheSudoLab",
     "slug": "linux-file-system",
     "filename": "Linux_File_System.html"
+  },
+  {
+    "title": "The Sudo Lab // Gemini Command Cheatsheet",
+    "slug": "gemini-commands-lab",
+    "filename": "gemini_commands_lab.html"
   }
 ]
