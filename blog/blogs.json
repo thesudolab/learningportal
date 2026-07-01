@@ -45,6 +45,11 @@
     "filename": "Linux_File_System.html"
   },
   {
+    "title": "The Sudo Lab // Claude Code Command Cheatsheet",
+    "slug": "claud-comments-lab",
+    "filename": "claud_comments_lab.html"
+  },
+  {
     "title": "The Sudo Lab // Gemini Command Cheatsheet",
     "slug": "gemini-commands-lab",
     "filename": "gemini_commands_lab.html"
