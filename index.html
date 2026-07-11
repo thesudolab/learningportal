@@ -12,46 +12,52 @@
                 extend: {
                     colors: {
                         brand: {
-                            bg: '#0B0F19',
-                            surface: '#151C2C',
-                            card: '#1E2640',
-                            accent: '#D4AF37',
-                            accentHover: '#F3E5AB',
-                            crimson: '#E63946',
-                            textMain: '#F8FAFC',
-                            textMuted: '#94A3B8'
+                            bg: '#0A0A0A',
+                            surface: '#111111',
+                            card: '#161616',
+                            accent: '#E10600',
+                            accentHover: '#FF3B30',
+                            crimson: '#EF4444',
+                            textMain: '#F4F4F5',
+                            textMuted: '#A1A1AA'
                         }
                     },
                     fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                        mono: ['Fira Code', 'monospace']
+                        sans: ['IBM Plex Sans', 'system-ui', 'sans-serif'],
+                        display: ['Archivo', 'sans-serif'],
+                        mono: ['IBM Plex Mono', 'monospace']
                     }
                 }
             }
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Archivo:wght@600;700;800;900&display=swap');
 
         * {
             box-sizing: border-box;
         }
 
         body {
-            background-color: #0B0F19;
-            font-family: 'Inter', sans-serif;
-            color: #F8FAFC;
+            background-color: #0A0A0A;
+            font-family: 'IBM Plex Sans', sans-serif;
+            color: #F4F4F5;
             margin: 0;
             padding: 0;
         }
 
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Archivo', sans-serif;
+            letter-spacing: -0.02em;
+        }
+
         .custom-glow {
-            box-shadow: 0 4px 30px rgba(212, 169, 55, 0.05);
+            box-shadow: 0 4px 30px rgba(225, 6, 0, 0.05);
         }
 
         .active-nav {
-            color: #D4AF37 !important;
-            border-bottom: 2px solid #D4AF37;
+            color: #E10600 !important;
+            border-bottom: 2px solid #E10600;
         }
 
         .tab-section {
@@ -81,7 +87,7 @@
             content: '';
             position: absolute;
             inset: -4px;
-            border: 1px solid #D4AF37;
+            border: 1px solid #E10600;
             border-radius: 4px;
             opacity: 0;
             animation: pulseScan 2.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
@@ -117,7 +123,7 @@
         }
 
         .thread-gold {
-            stroke: #D4AF37;
+            stroke: #E10600;
             stroke-width: 4.5;
             stroke-linecap: round;
             stroke-linejoin: round;
@@ -125,7 +131,7 @@
             stroke-dasharray: 800;
             stroke-dashoffset: 800;
             animation: drawThreadGold 6s linear infinite;
-            filter: drop-shadow(0 0 8px rgba(212, 169, 55, 0.35));
+            filter: drop-shadow(0 0 8px rgba(225, 6, 0, 0.35));
         }
 
         @keyframes drawThreadGold {
@@ -144,7 +150,7 @@
             position: absolute;
             inset: -8px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(212, 169, 55, 0.08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(225, 6, 0, 0.08) 0%, transparent 70%);
             pointer-events: none;
             animation: pulseGlow 3s ease-in-out infinite;
         }
@@ -167,14 +173,14 @@
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #0B0F19;
+            background: #0A0A0A;
         }
         ::-webkit-scrollbar-thumb {
-            background: #2a3250;
+            background: #3F3F46;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #D4AF37;
+            background: #E10600;
         }
 
         /* ── Back to top ── */
@@ -186,9 +192,9 @@
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            background: #1E2640;
-            border: 1px solid #D4AF37;
-            color: #D4AF37;
+            background: #161616;
+            border: 1px solid #E10600;
+            color: #E10600;
             font-size: 1.25rem;
             cursor: pointer;
             opacity: 0;
@@ -204,8 +210,8 @@
             transform: scale(1);
         }
         #back-to-top:hover {
-            background: #D4AF37;
-            color: #0B0F19;
+            background: #E10600;
+            color: #FFFFFF;
         }
 
         /* ── Professional PDF table ── */
@@ -221,42 +227,42 @@
             font-weight: 600;
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            color: #94A3B8;
-            border-bottom: 1px solid #1e2a3a;
-            background: #0f1624;
+            color: #A1A1AA;
+            border-bottom: 1px solid #27272A;
+            background: #111111;
         }
         .pdf-table tbody td {
             padding: 0.75rem 1rem;
-            border-bottom: 1px solid #1a2333;
+            border-bottom: 1px solid #27272A;
             vertical-align: middle;
-            color: #E2E8F0;
+            color: #E4E4E7;
         }
         .pdf-table tbody tr:hover {
-            background: rgba(30, 38, 64, 0.5);
+            background: rgba(22, 22, 22, 0.7);
         }
         .pdf-table .file-size {
-            color: #64748b;
+            color: #71717A;
             font-size: 0.7rem;
-            font-family: 'Fira Code', monospace;
+            font-family: 'IBM Plex Mono', monospace;
         }
         .pdf-table .download-link {
-            color: #D4AF37;
+            color: #E10600;
             text-decoration: none;
             font-size: 0.7rem;
-            font-family: 'Fira Code', monospace;
+            font-family: 'IBM Plex Mono', monospace;
             padding: 0.3rem 0.9rem;
-            border: 1px solid #D4AF37;
-            border-radius: 4px;
+            border: 1px solid #E10600;
+            border-radius: 6px;
             transition: all 0.2s;
             display: inline-block;
         }
         .pdf-table .download-link:hover {
-            background: #D4AF37;
-            color: #0B0F19;
+            background: #E10600;
+            color: #FFFFFF;
         }
         .pdf-table .badge-new {
-            background: rgba(212, 169, 55, 0.15);
-            color: #D4AF37;
+            background: rgba(225, 6, 0, 0.15);
+            color: #E10600;
             font-size: 0.55rem;
             font-weight: 600;
             padding: 0.15rem 0.6rem;
@@ -264,7 +270,7 @@
             letter-spacing: 0.05em;
             text-transform: uppercase;
             margin-left: 0.5rem;
-            border: 1px solid rgba(212, 169, 55, 0.2);
+            border: 1px solid rgba(225, 6, 0, 0.2);
         }
         .pdf-table .doc-icon {
             opacity: 0.5;
@@ -273,10 +279,10 @@
 
         /* ── Blog card date fix ── */
         .blog-date-placeholder {
-            color: #64748b;
+            color: #71717A;
             font-size: 0.6rem;
             letter-spacing: 0.05em;
-            font-family: 'Fira Code', monospace;
+            font-family: 'IBM Plex Mono', monospace;
         }
 
         /* ── Terminal cursor blink ── */
@@ -301,12 +307,12 @@
             transform: translateX(-50%);
             background: rgba(15, 22, 36, 0.85);
             backdrop-filter: blur(8px);
-            border: 1px solid #1e2a3a;
+            border: 1px solid #27272A;
             border-radius: 8px;
             padding: 0.4rem 1rem;
             font-size: 0.6rem;
-            font-family: 'Fira Code', monospace;
-            color: #64748b;
+            font-family: 'IBM Plex Mono', monospace;
+            color: #71717A;
             letter-spacing: 0.04em;
             pointer-events: none;
             z-index: 50;
@@ -320,13 +326,13 @@
             }
         }
         .kbd-hint kbd {
-            background: #1a2333;
+            background: #27272A;
             padding: 0.1rem 0.4rem;
             border-radius: 3px;
-            color: #D4AF37;
+            color: #E10600;
             font-size: 0.6rem;
             margin: 0 0.1rem;
-            border: 1px solid #2a3250;
+            border: 1px solid #3F3F46;
         }
 
         /* ── Responsive tweaks ── */
@@ -337,7 +343,7 @@
             .pdf-table tbody tr {
                 display: block;
                 padding: 0.75rem 1rem;
-                border-bottom: 1px solid #1a2333;
+                border-bottom: 1px solid #27272A;
             }
             .pdf-table tbody td {
                 display: block;
@@ -346,7 +352,7 @@
             }
             .pdf-table tbody td:first-child {
                 font-weight: 600;
-                color: #D4AF37;
+                color: #E10600;
             }
             .pdf-table .file-size,
             .pdf-table .badge-new {
@@ -357,7 +363,7 @@
 
         /* ── Loading shimmer ── */
         .shimmer {
-            background: linear-gradient(90deg, #151C2C 25%, #1E2640 50%, #151C2C 75%);
+            background: linear-gradient(90deg, #111111 25%, #161616 50%, #111111 75%);
             background-size: 200% 100%;
             animation: shimmer 1.8s infinite;
         }
@@ -383,7 +389,7 @@
 <body class="min-h-screen flex flex-col antialiased">
 
     <!-- ===== TOP STATUS BAR ===== -->
-    <div class="bg-[#070A10] border-b border-slate-800 text-[11px] font-mono tracking-wider text-brand-textMuted px-4 py-2 flex justify-between items-center">
+    <div class="bg-[#050505] border-b border-zinc-800 text-[11px] font-mono tracking-wider text-brand-textMuted px-4 py-2 flex justify-between items-center">
         <div class="flex items-center gap-2">
             <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>SECURE BACKBONE ONLINE</span>
@@ -395,7 +401,7 @@
     </div>
 
     <!-- ===== HEADER ===== -->
-    <header class="sticky top-0 z-50 bg-brand-bg/90 backdrop-blur-md border-b border-slate-800">
+    <header class="sticky top-0 z-50 bg-brand-bg/90 backdrop-blur-md border-b border-zinc-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
 
             <a href="/" class="flex items-center gap-3 group">
@@ -419,11 +425,11 @@
                 <button data-tab="videos"   onclick="switchTab('videos')"   class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/videos</button>
                 <button data-tab="plugins"  onclick="switchTab('plugins')"  class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/modules</button>
                 <button data-tab="projects" onclick="switchTab('projects')" class="px-4 py-2 text-brand-textMuted hover:text-brand-accent transition-colors">/repositories</button>
-                <button data-tab="contact"  onclick="switchTab('contact')"  class="ml-4 px-5 py-2 rounded bg-slate-800 text-brand-accent hover:bg-slate-700 font-mono transition-all text-xs border border-slate-700">/contact</button>
+                <button data-tab="contact"  onclick="switchTab('contact')"  class="ml-4 px-5 py-2 rounded bg-zinc-800 text-brand-accent hover:bg-zinc-700 font-mono transition-all text-xs border border-zinc-700">/contact</button>
             </nav>
 
             <div class="md:hidden">
-                <select onchange="switchTab(this.value)" class="bg-brand-surface border border-slate-700 text-brand-accent text-xs rounded px-2 py-1.5 font-mono outline-none">
+                <select onchange="switchTab(this.value)" class="bg-brand-surface border border-zinc-700 text-brand-accent text-xs rounded px-2 py-1.5 font-mono outline-none">
                     <option value="about">/about</option>
                     <option value="services">/services</option>
                     <option value="blog">/blog</option>
@@ -456,7 +462,7 @@
         <section id="about" class="tab-section active space-y-16">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                 <div class="lg:col-span-7 space-y-6">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-brand-accent/20 text-brand-accent text-xs font-mono">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-brand-accent/20 text-brand-accent text-xs font-mono">
                         <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> Threat Intelligence & Advisory
                     </div>
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
@@ -466,32 +472,32 @@
                         <strong class="text-brand-textMain">TheSudoLab</strong> operates as an elite international security research collective. We offer high-fidelity adversary-simulation penetration testing, deep-dive vulnerability infrastructure assessments, and strategic technology consulting with a core mandate built around rigorous security training and systemic defense hardening.
                     </p>
                     <div class="flex flex-wrap gap-4 pt-4">
-                        <button onclick="switchTab('services')" class="px-6 py-3 bg-gradient-to-r from-brand-accent to-amber-600 text-brand-bg font-semibold rounded hover:shadow-lg hover:shadow-brand-accent/20 transition-all text-sm">
+                        <button onclick="switchTab('services')" class="px-6 py-3 bg-brand-accent text-white font-semibold rounded-md hover:bg-brand-accentHover hover:shadow-lg hover:shadow-brand-accent/20 transition-all text-sm">
                             Explore Operational Capabilities
                         </button>
-                        <button onclick="switchTab('contact')" class="px-6 py-3 bg-brand-surface border border-slate-700 text-brand-textMain rounded hover:bg-slate-800 transition-all text-sm font-medium">
+                        <button onclick="switchTab('contact')" class="px-6 py-3 bg-brand-surface border border-zinc-700 text-brand-textMain rounded-md hover:bg-zinc-800 transition-all text-sm font-medium">
                             Initialize Engagement
                         </button>
                     </div>
                 </div>
                 <div class="lg:col-span-5 relative hidden lg:block">
                     <div class="absolute inset-0 bg-gradient-to-tr from-brand-accent/10 to-transparent rounded-full filter blur-3xl"></div>
-                    <div class="relative bg-brand-surface border border-slate-800 p-8 rounded-lg shadow-2xl font-mono text-xs text-slate-400 space-y-4 custom-glow">
-                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div class="relative bg-brand-surface border border-zinc-800 p-8 rounded-md shadow-2xl font-mono text-xs text-zinc-400 space-y-4 custom-glow">
+                        <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
                             <div class="flex gap-1.5">
-                                <span class="w-3 h-3 rounded-full bg-slate-700"></span>
-                                <span class="w-3 h-3 rounded-full bg-slate-700"></span>
-                                <span class="w-3 h-3 rounded-full bg-slate-700"></span>
+                                <span class="w-3 h-3 rounded-full bg-zinc-700"></span>
+                                <span class="w-3 h-3 rounded-full bg-zinc-700"></span>
+                                <span class="w-3 h-3 rounded-full bg-zinc-700"></span>
                             </div>
                             <span class="text-brand-accent text-[10px]">SYSTEM_OVERWATCH.SH</span>
                         </div>
                         <p class="text-emerald-500">$ sudo ./thesudolab --assess-posture</p>
-                        <p class="text-slate-500">[i] Initializing structural framework scans...</p>
-                        <p class="text-slate-500">[i] Mapping international threat surfaces...</p>
+                        <p class="text-zinc-500">[i] Initializing structural framework scans...</p>
+                        <p class="text-zinc-500">[i] Mapping international threat surfaces...</p>
                         <p class="text-brand-accent">[✓] 01 // Core Architecture hardiness verified.</p>
                         <p class="text-brand-accent">[✓] 02 // Threat models structured.</p>
                         <p class="text-brand-accent">[✓] 03 // Continuous training engines compiled.</p>
-                        <div class="pt-2 flex justify-between items-center text-[10px] text-slate-600">
+                        <div class="pt-2 flex justify-between items-center text-[10px] text-zinc-600">
                             <span>BUFFERS: CLEAR</span>
                             <span>STATUS: READY</span>
                         </div>
@@ -509,28 +515,28 @@
                 <p class="text-brand-textMuted">Tailored programmatic solutions built to neutralize sophisticated threat profiles before operational impact occurs.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between card-lift">
+                <div class="bg-brand-surface border border-zinc-800 p-8 rounded-md hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between card-lift">
                     <div class="space-y-4">
                         <div class="text-xs font-mono text-brand-accent tracking-widest uppercase">01 // Advanced Vector Assessment</div>
                         <h3 class="text-xl font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors">Penetration Testing</h3>
                         <p class="text-brand-textMuted text-sm leading-relaxed">Comprehensive structural environments, mobile applications, and high-throughput API vulnerability infrastructure diagnostics. We orchestrate simulated real-world cyber attack chains to identify and fortify deep programmatic weaknesses before adversaries can exploit them.</p>
                     </div>
                 </div>
-                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between card-lift">
+                <div class="bg-brand-surface border border-zinc-800 p-8 rounded-md hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between card-lift">
                     <div class="space-y-4">
                         <div class="text-xs font-mono text-brand-accent tracking-widest uppercase">02 // Framework Infrastructure</div>
                         <h3 class="text-xl font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors">Security Consulting</h3>
                         <p class="text-brand-textMuted text-sm leading-relaxed">Architecting mathematically verified security baselines, zero-trust access control paradigms, and comprehensive continuous threat modeling profiles. Our industry experts work across sectors to integrate defenses directly into native logic pipelines.</p>
                     </div>
                 </div>
-                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between card-lift">
+                <div class="bg-brand-surface border border-zinc-800 p-8 rounded-md hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between card-lift">
                     <div class="space-y-4">
                         <div class="text-xs font-mono text-brand-accent tracking-widest uppercase">03 // Educational Vectors</div>
                         <h3 class="text-xl font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors">Cybersecurity Training</h3>
                         <p class="text-brand-textMuted text-sm leading-relaxed">Hands-on learning programs customized for enterprise security operations teams. Ranging from baseline ethical hacking frameworks to sophisticated reverse-engineering techniques, we arm teams with actionable operational counter-knowledge.</p>
                     </div>
                 </div>
-                <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between card-lift">
+                <div class="bg-brand-surface border border-zinc-800 p-8 rounded-md hover:border-brand-accent/40 transition-all group duration-300 flex flex-col justify-between card-lift">
                     <div class="space-y-4">
                         <div class="text-xs font-mono text-brand-accent tracking-widest uppercase">04 // Full-Scale Adversary Emulation</div>
                         <h3 class="text-xl font-semibold text-brand-textMain group-hover:text-brand-accent transition-colors">Red Team Operations</h3>
@@ -544,14 +550,14 @@
         <!-- BLOG -->
         <!-- ============================================================ -->
         <section id="blog" class="tab-section space-y-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-6">
                 <div>
                     <h2 class="text-2xl font-bold tracking-tight">Intelligence Directory</h2>
                     <p class="text-sm text-brand-textMuted">Operational analyses and security research updates.</p>
                 </div>
                 <div class="relative max-w-xs w-full">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">grep:</span>
-                    <input type="text" id="blog-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-14 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="keyword..." oninput="filterBlogs()" />
+                    <input type="text" id="blog-search" class="w-full bg-brand-surface border border-zinc-800 rounded pl-14 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="keyword..." oninput="filterBlogs()" />
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="blog-container"></div>
@@ -561,19 +567,19 @@
         <!-- PDF / PUBLICATIONS  (PROFESSIONAL TABLE) -->
         <!-- ============================================================ -->
         <section id="pdf" class="tab-section space-y-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-6">
                 <div>
                     <h2 class="text-2xl font-bold tracking-tight">Strategic Whitepapers & Publications</h2>
                     <p class="text-sm text-brand-textMuted">Formal corporate intelligence distributions and technology disclosures.</p>
                 </div>
                 <div class="relative max-w-xs w-full">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">find:</span>
-                    <input type="text" id="pdf-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-14 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="document name..." oninput="filterPdfs()" />
+                    <input type="text" id="pdf-search" class="w-full bg-brand-surface border border-zinc-800 rounded pl-14 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="document name..." oninput="filterPdfs()" />
                 </div>
             </div>
 
-            <div class="bg-brand-surface border border-slate-800 rounded-lg overflow-hidden custom-glow">
-                <div class="bg-slate-900/70 px-6 py-3 border-b border-slate-800 font-mono text-xs text-slate-400 flex items-center justify-between">
+            <div class="bg-brand-surface border border-zinc-800 rounded-md overflow-hidden custom-glow">
+                <div class="bg-zinc-900/70 px-6 py-3 border-b border-zinc-800 font-mono text-xs text-zinc-400 flex items-center justify-between">
                     <span>ls -la ./publications/</span>
                     <span class="text-brand-accent text-[10px]">PDF DOCUMENTS</span>
                 </div>
@@ -600,14 +606,14 @@
         <!-- VIDEOS -->
         <!-- ============================================================ -->
         <section id="videos" class="tab-section space-y-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-6">
                 <div>
                     <h2 class="text-2xl font-bold tracking-tight">Digital Broadcast Logs</h2>
                     <p class="text-sm text-brand-textMuted">Technical demonstrations, active stream walk-throughs, and framework lectures.</p>
                 </div>
                 <div class="relative max-w-xs w-full">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">query:</span>
-                    <input type="text" id="video-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-16 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="title name..." oninput="filterVideos()" />
+                    <input type="text" id="video-search" class="w-full bg-brand-surface border border-zinc-800 rounded pl-16 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="title name..." oninput="filterVideos()" />
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="video-container"></div>
@@ -617,14 +623,14 @@
         <!-- PLUGINS / MODULES -->
         <!-- ============================================================ -->
         <section id="plugins" class="tab-section space-y-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-6">
                 <div>
                     <h2 class="text-2xl font-bold tracking-tight">Published Operational Modules</h2>
                     <p class="text-sm text-brand-textMuted">Enterprise-grade utilities, security monitoring engines, and browser integration assets.</p>
                 </div>
                 <div class="relative max-w-xs w-full">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">pkg:</span>
-                    <input type="text" id="plugin-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-12 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="registry entry..." oninput="filterPlugins()" />
+                    <input type="text" id="plugin-search" class="w-full bg-brand-surface border border-zinc-800 rounded pl-12 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="registry entry..." oninput="filterPlugins()" />
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="plugin-container"></div>
@@ -634,14 +640,14 @@
         <!-- PROJECTS / REPOSITORIES -->
         <!-- ============================================================ -->
         <section id="projects" class="tab-section space-y-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-6">
                 <div>
                     <h2 class="text-2xl font-bold tracking-tight">Infrastructure Core Repositories</h2>
                     <p class="text-sm text-brand-textMuted">Open-source defensive tooling layers and system engines compiled by our collective.</p>
                 </div>
                 <div class="relative max-w-xs w-full">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs text-brand-accent">git:</span>
-                    <input type="text" id="project-search" class="w-full bg-brand-surface border border-slate-800 rounded pl-12 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="tree parameter..." oninput="filterProjects()" />
+                    <input type="text" id="project-search" class="w-full bg-brand-surface border border-zinc-800 rounded pl-12 pr-4 py-2 text-sm font-mono focus:border-brand-accent focus:outline-none transition-colors" placeholder="tree parameter..." oninput="filterProjects()" />
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="project-container"></div>
@@ -656,47 +662,47 @@
                 <p class="text-brand-textMuted text-sm max-w-2xl mx-auto">Establish encrypted routing pathways with our global intelligence teams. Fill out the validation fields below to securely transmit project scope configurations.</p>
             </div>
 
-            <div class="bg-brand-surface border border-slate-800 p-8 rounded-lg shadow-xl custom-glow">
+            <div class="bg-brand-surface border border-zinc-800 p-8 rounded-md shadow-xl custom-glow">
                 <form id="contact-form" action="https://formspree.io/f/mzdqogkd" method="POST" class="space-y-6">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="space-y-2">
-                            <label for="first-name" class="text-xs font-mono uppercase text-slate-400 block">First Name <span class="text-brand-crimson">*</span></label>
-                            <input type="text" id="first-name" name="name" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="John" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required />
+                            <label for="first-name" class="text-xs font-mono uppercase text-zinc-400 block">First Name <span class="text-brand-crimson">*</span></label>
+                            <input type="text" id="first-name" name="name" class="w-full bg-brand-bg border border-zinc-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="John" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required />
                         </div>
                         <div class="space-y-2">
-                            <label for="last-name" class="text-xs font-mono uppercase text-slate-400 block">Last Name <span class="text-brand-crimson">*</span></label>
-                            <input type="text" id="last-name" name="subject" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="Doe" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required />
+                            <label for="last-name" class="text-xs font-mono uppercase text-zinc-400 block">Last Name <span class="text-brand-crimson">*</span></label>
+                            <input type="text" id="last-name" name="subject" class="w-full bg-brand-bg border border-zinc-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="Doe" pattern="[A-Za-z\s]*" title="Only alphabets and spaces are permitted." required />
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="space-y-2">
-                            <label for="email" class="text-xs font-mono uppercase text-slate-400 block">Email Address <span class="text-brand-crimson">*</span></label>
-                            <input type="email" id="email" name="email" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="name@domain.com" required />
+                            <label for="email" class="text-xs font-mono uppercase text-zinc-400 block">Email Address <span class="text-brand-crimson">*</span></label>
+                            <input type="email" id="email" name="email" class="w-full bg-brand-bg border border-zinc-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="name@domain.com" required />
                         </div>
                         <div class="space-y-2">
-                            <label for="phone" class="text-xs font-mono uppercase text-slate-400 block">Phone Vector <span class="text-brand-crimson">*</span></label>
-                            <input type="text" id="phone" name="telephone" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="+91 XXXXX XXXXX" pattern="[0-9+ ]*" title="Only numbers, spaces, and the plus (+) symbol are allowed." required />
+                            <label for="phone" class="text-xs font-mono uppercase text-zinc-400 block">Phone Vector <span class="text-brand-crimson">*</span></label>
+                            <input type="text" id="phone" name="telephone" class="w-full bg-brand-bg border border-zinc-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors" placeholder="+91 XXXXX XXXXX" pattern="[0-9+ ]*" title="Only numbers, spaces, and the plus (+) symbol are allowed." required />
                         </div>
                     </div>
 
                     <div class="space-y-2">
-                        <label for="message" class="text-xs font-mono uppercase text-slate-400 block">Transmission Payload Block <span class="text-brand-crimson">*</span></label>
-                        <textarea id="message" name="message" rows="5" class="w-full bg-brand-bg border border-slate-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors resize-y" placeholder="Describe your corporate security parameters, timelines, infrastructure footprint or dynamic requests..." required></textarea>
+                        <label for="message" class="text-xs font-mono uppercase text-zinc-400 block">Transmission Payload Block <span class="text-brand-crimson">*</span></label>
+                        <textarea id="message" name="message" rows="5" class="w-full bg-brand-bg border border-zinc-800 rounded px-4 py-2.5 text-sm focus:border-brand-accent focus:outline-none transition-colors resize-y" placeholder="Describe your corporate security parameters, timelines, infrastructure footprint or dynamic requests..." required></textarea>
                     </div>
 
                     <div class="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <button type="submit" id="submit-btn" class="px-6 py-3 bg-slate-900 border border-brand-accent text-brand-accent font-mono text-xs uppercase tracking-wider rounded hover:bg-brand-accent hover:text-brand-bg transition-all duration-300 shadow-md">
+                        <button type="submit" id="submit-btn" class="px-6 py-3 bg-zinc-900 border border-brand-accent text-brand-accent font-mono text-xs uppercase tracking-wider rounded hover:bg-brand-accent hover:text-white transition-all duration-300 shadow-md">
                             $ dispatch --secure --payload
                         </button>
-                        <div id="form-status" class="hidden text-xs font-mono p-3 rounded bg-slate-900/80 border border-slate-800 max-w-md"></div>
+                        <div id="form-status" class="hidden text-xs font-mono p-3 rounded bg-zinc-900/80 border border-zinc-800 max-w-md"></div>
                     </div>
                 </form>
             </div>
 
-            <div class="bg-brand-surface border border-slate-800 p-6 rounded-lg space-y-4">
+            <div class="bg-brand-surface border border-zinc-800 p-6 rounded-md space-y-4">
                 <h3 class="text-sm font-mono uppercase tracking-wider text-brand-accent">// Live Threat Feed Stream</h3>
-                <div class="max-h-80 overflow-y-auto rounded bg-brand-bg/60 p-2 border border-slate-800/80">
+                <div class="max-h-80 overflow-y-auto rounded bg-brand-bg/60 p-2 border border-zinc-800/80">
                     <a class="twitter-timeline" data-theme="dark" href="https://x.com/gb414ji?ref_src=twsrc%5Etfw">Posts by gb414ji</a>
                     <script async src="https://platform.x.com/widgets.js" charset="utf-8">
                     </script>
@@ -707,15 +713,15 @@
     </main>
 
     <!-- ===== FOOTER ===== -->
-    <footer class="bg-[#070A10] border-t border-slate-900 mt-20 py-8">
+    <footer class="bg-[#050505] border-t border-zinc-900 mt-20 py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-brand-textMuted">
             <div class="flex items-center gap-2">
                 <span class="text-brand-accent">&gt;</span>
                 <span>© 2026 TheSudoLab. All international rights reserved.</span>
             </div>
             <div class="flex gap-6 text-[11px]">
-                <span class="text-slate-700">CLASSIFICATION: PUBLIC ADVISORY</span>
-                <span class="hidden md:inline text-slate-700">|</span>
+                <span class="text-zinc-700">CLASSIFICATION: PUBLIC ADVISORY</span>
+                <span class="hidden md:inline text-zinc-700">|</span>
                 <span>We help to ensuring your security</span>
             </div>
         </div>
@@ -787,7 +793,7 @@
             button.disabled = true;
             button.innerText = '$ negotiating_handshake...';
             status.classList.remove('hidden');
-            status.className = "text-brand-textMuted text-xs font-mono p-3 rounded bg-slate-900/80 border border-slate-800";
+            status.className = "text-brand-textMuted text-xs font-mono p-3 rounded bg-zinc-900/80 border border-zinc-800";
             status.innerText = '> Broadcasting cryptographically mapped packets...';
 
             try {
@@ -834,13 +840,13 @@
                 container.innerHTML = '';
                 if (!posts || !posts.length) {
                     container.innerHTML =
-                        '<div class="col-span-full text-center font-mono py-12 text-slate-600">[ Directory Structural State: Empty ]</div>';
+                        '<div class="col-span-full text-center font-mono py-12 text-zinc-600">[ Directory Structural State: Empty ]</div>';
                     return;
                 }
                 posts.forEach(post => {
                     const card = document.createElement('a');
                     card.className =
-                        'bg-brand-surface border border-slate-800 rounded-lg p-6 hover:border-brand-accent/40 transition-all group flex flex-col justify-between card-lift';
+                        'bg-brand-surface border border-zinc-800 rounded-md p-6 hover:border-brand-accent/40 transition-all group flex flex-col justify-between card-lift';
                     card.href = `./blog/${post.filename}`;
                     card.setAttribute('data-title', (post.title || '').toLowerCase());
 
@@ -884,7 +890,7 @@
                 tbody.innerHTML = '';
                 if (!pdfs || !pdfs.length) {
                     tbody.innerHTML =
-                        '<tr><td colspan="5" class="text-center font-mono py-8 text-slate-600">total 0 components discovered</td></tr>';
+                        '<tr><td colspan="5" class="text-center font-mono py-8 text-zinc-600">total 0 components discovered</td></tr>';
                     return;
                 }
                 pdfs.forEach((pdf, idx) => {
@@ -895,8 +901,8 @@
                     const date = pdf.date || '—';
 
                     tr.innerHTML = `
-                        <td><span class="text-slate-500 text-xs font-mono">${String(idx + 1).padStart(2, '0')}</span></td>
-                        <td class="text-slate-400 text-xs font-mono">${date}</td>
+                        <td><span class="text-zinc-500 text-xs font-mono">${String(idx + 1).padStart(2, '0')}</span></td>
+                        <td class="text-zinc-400 text-xs font-mono">${date}</td>
                         <td>
                             <span class="doc-icon">📄</span>
                             <span class="font-medium text-brand-textMain">${pdf.title || 'Untitled'}</span>
@@ -934,13 +940,13 @@
                 container.innerHTML = '';
                 if (!videos || !videos.length) {
                     container.innerHTML =
-                        '<div class="col-span-full text-center font-mono py-12 text-slate-600">> No active distribution streams recorded.</div>';
+                        '<div class="col-span-full text-center font-mono py-12 text-zinc-600">> No active distribution streams recorded.</div>';
                     return;
                 }
                 videos.forEach((video, index) => {
                     const card = document.createElement('div');
                     card.className =
-                        'bg-brand-surface border border-slate-800 rounded-lg overflow-hidden shadow-md flex flex-col card-lift';
+                        'bg-brand-surface border border-zinc-800 rounded-md overflow-hidden shadow-md flex flex-col card-lift';
                     card.setAttribute('data-title', (video.title || '').toLowerCase());
                     card.setAttribute('data-desc', (video.description || '').toLowerCase());
 
@@ -949,7 +955,7 @@
                     card.innerHTML = `
                         <div class="relative aspect-video bg-black flex items-center justify-center group" id="thumb-container-${index}">
                             <img src="https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg" class="absolute w-full h-full object-cover opacity-60 group-hover:scale-102 transition-transform duration-500" alt="Video thumbnail" loading="lazy">
-                            <button onclick="activateVideoPlayer(${index}, '${video.youtubeId}')" class="relative z-10 px-4 py-2.5 bg-brand-bg/90 border border-brand-accent text-brand-accent font-mono text-xs rounded hover:bg-brand-accent hover:text-brand-bg transition-all">
+                            <button onclick="activateVideoPlayer(${index}, '${video.youtubeId}')" class="relative z-10 px-4 py-2.5 bg-brand-bg/90 border border-brand-accent text-brand-accent font-mono text-xs rounded hover:bg-brand-accent hover:text-white transition-all">
                                 execute ./stream_logs
                             </button>
                         </div>
@@ -996,13 +1002,13 @@
                 container.innerHTML = '';
                 if (!plugins || !plugins.length) {
                     container.innerHTML =
-                        '<div class="col-span-full text-center font-mono py-12 text-slate-600">> No active structural records verified.</div>';
+                        '<div class="col-span-full text-center font-mono py-12 text-zinc-600">> No active structural records verified.</div>';
                     return;
                 }
                 plugins.forEach(plugin => {
                     const card = document.createElement('div');
                     card.className =
-                        'bg-brand-surface border border-slate-800 p-6 rounded-lg flex flex-col justify-between hover:border-brand-accent/30 transition-colors card-lift';
+                        'bg-brand-surface border border-zinc-800 p-6 rounded-md flex flex-col justify-between hover:border-brand-accent/30 transition-colors card-lift';
                     card.setAttribute('data-title', (plugin.title || '').toLowerCase());
                     card.setAttribute('data-desc', (plugin.description || '').toLowerCase());
 
@@ -1010,14 +1016,14 @@
 
                     card.innerHTML = `
                         <div class="space-y-2">
-                            <div class="flex justify-between items-center text-[10px] font-mono text-slate-500">
+                            <div class="flex justify-between items-center text-[10px] font-mono text-zinc-500">
                                 <span>BUILD: v${version}</span>
                                 <span class="text-brand-accent">MODULE</span>
                             </div>
                             <h3 class="text-base font-semibold text-brand-textMain">${plugin.title || 'Untitled'}</h3>
                             <p class="text-xs text-brand-textMuted leading-relaxed">${plugin.description || ''}</p>
                         </div>
-                        <a href="${plugin.link || '#'}" target="_blank" class="mt-6 block text-center px-4 py-2 bg-slate-900 border border-slate-800 rounded text-xs text-slate-300 font-medium hover:border-brand-accent transition-colors">
+                        <a href="${plugin.link || '#'}" target="_blank" class="mt-6 block text-center px-4 py-2 bg-zinc-900 border border-zinc-800 rounded text-xs text-zinc-300 font-medium hover:border-brand-accent transition-colors">
                             View Extension Ledger
                         </a>
                     `;
@@ -1049,13 +1055,13 @@
                 container.innerHTML = '';
                 if (!projects || !projects.length) {
                     container.innerHTML =
-                        '<div class="col-span-full text-center font-mono py-12 text-slate-600">> No open operational targets allocated.</div>';
+                        '<div class="col-span-full text-center font-mono py-12 text-zinc-600">> No open operational targets allocated.</div>';
                     return;
                 }
                 projects.forEach(project => {
                     const card = document.createElement('div');
                     card.className =
-                        'bg-brand-surface border border-slate-800 p-6 rounded-lg flex flex-col justify-between hover:border-brand-accent/30 transition-colors card-lift';
+                        'bg-brand-surface border border-zinc-800 p-6 rounded-md flex flex-col justify-between hover:border-brand-accent/30 transition-colors card-lift';
                     card.setAttribute('data-title', (project.title || '').toLowerCase());
                     card.setAttribute('data-desc', (project.description || '').toLowerCase());
 
@@ -1063,14 +1069,14 @@
 
                     card.innerHTML = `
                         <div class="space-y-2">
-                            <div class="flex justify-between items-center text-[10px] font-mono text-slate-500">
+                            <div class="flex justify-between items-center text-[10px] font-mono text-zinc-500">
                                 <span>ENGINE: ${lang}</span>
                                 <span class="text-brand-accent">REPOSITORY</span>
                             </div>
                             <h3 class="text-base font-semibold text-brand-textMain">${project.title || 'Untitled'}</h3>
                             <p class="text-xs text-brand-textMuted leading-relaxed">${project.description || ''}</p>
                         </div>
-                        <a href="${project.link || '#'}" target="_blank" class="mt-6 block text-center px-4 py-2 bg-slate-900 border border-slate-800 rounded text-xs text-brand-accent font-mono hover:bg-brand-accent hover:text-brand-bg transition-all">
+                        <a href="${project.link || '#'}" target="_blank" class="mt-6 block text-center px-4 py-2 bg-zinc-900 border border-zinc-800 rounded text-xs text-brand-accent font-mono hover:bg-brand-accent hover:text-white transition-all">
                             $ git clone source_tree
                         </a>
                     `;
