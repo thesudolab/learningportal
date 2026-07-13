@@ -1,3 +1,2 @@
-cado_V78eBk || Getting Started with Snort IDS | Step-by-Step Demo (Part 1) || An introductory practical guide to setting up Snort IDS, configuring rule baselines, and monitoring real-time network traffic logs.
-
-https://youtu.be/9SJn9dIMNS4?si=8ZSUhHOBqpSS4Xk3 || Learn Wireshark Basics in Tamil | Cyber Security & Networking  || Welcome to this complete Wireshark tutorial for beginners in Tamil! In this video, we cover the basics of network analysis, packet sniffing, and how to use Wireshark for troubleshooting and cyber security.
+https://youtu.be/cado_V78eBk?si=PdfqlVy7IiAjDPCI
+https://youtu.be/9SJn9dIMNS4?si=s4snqQYhriBtB2Cc
