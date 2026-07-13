@@ -13,45 +13,62 @@ jobs:
   sync-videos:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Parse and Compile Video Logs
-      run: |
-        node -e '
-        const fs = require("fs");
-        const path = require("path");
-        const txtPath = path.join(process.cwd(), "tabs", "videos.txt");
-        
-        if (fs.existsSync(txtPath)) {
-          const content = fs.readFileSync(txtPath, "utf8");
-          const videos = content.split("\n").map(l => l.trim()).filter(l => l.length > 0).map(line => {
-            const parts = line.split("||").map(p => p.trim());
-            return { 
-              youtubeId: parts[0] || "", 
-              title: parts[1] || "Untitled Video Log", 
-              description: parts[2] || "No description provided.", 
-              date: new Date().toISOString().split("T")[0] 
-            };
-          });
-          // FIXED: Saves directly into the /tabs/ directory
-          fs.writeFileSync(path.join(process.cwd(), "tabs", "videos.json"), JSON.stringify(videos, null, 2));
-          console.log("Successfully compiled tabs/videos.json");
-        } else {
-          console.error("Error: tabs/videos.txt not found.");
-        }
-        '
+      - name: Parse and Compile Video Logs
+        run: |
+          node -e '
+          const fs = require("fs");
+          const path = require("path");
+          const https = require("https");
 
-    - name: Commit and Push Video Changes
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git pull origin main --rebase
-        
-        # FIXED: Stages the correct file from the tabs directory
-        git add tabs/videos.json
-        
-        if ! git diff --staged --quiet; then
-          git commit -m "sys(automation): synced changes to tabs/videos.json [skip ci]"
-          git push origin main
-        fi
+          async function getYouTubeTitle(url) {
+            const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+            return new Promise((resolve) => {
+              https.get(oembedUrl, (res) => {
+                let data = "";
+                res.on("data", (chunk) => data += chunk);
+                res.on("end", () => {
+                  try {
+                    const json = JSON.parse(data);
+                    resolve(json.title);
+                  } catch { resolve("Untitled Video Log"); }
+                });
+              }).on("error", () => resolve("Untitled Video Log"));
+            });
+          }
+
+          (async () => {
+            const txtPath = path.join(process.cwd(), "tabs", "videos.txt");
+            if (fs.existsSync(txtPath)) {
+              const content = fs.readFileSync(txtPath, "utf8");
+              const urls = content.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+              const videos = [];
+
+              for (const url of urls) {
+                const title = await getYouTubeTitle(url);
+                const videoId = url.split("v=")[1]?.split("&")[0] || url.split("/").pop();
+                
+                videos.push({
+                  youtubeId: videoId,
+                  title: title,
+                  description: "Automatically synced from YouTube",
+                  date: new Date().toISOString().split("T")[0]
+                });
+              }
+              fs.writeFileSync(path.join(process.cwd(), "tabs", "videos.json"), JSON.stringify(videos, null, 2));
+              console.log("Successfully compiled tabs/videos.json");
+            }
+          })();
+          '
+
+      - name: Commit and Push Video Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tabs/videos.json
+          if ! git diff --staged --quiet; then
+            git commit -m "sys(automation): synced video titles to tabs/videos.json [skip ci]"
+            git push
+          fi
