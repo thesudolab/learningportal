@@ -1,13 +1,15 @@
 [
   {
-    "youtubeId": "cado_V78eBk?si=PdfqlVy7IiAjDPCI",
+    "youtubeId": "cado_V78eBk",
     "title": "Getting Started with Snort IDS | Step-by-Step Demo (Part 1)",
+    "thumbnail": "https://img.youtube.com/vi/cado_V78eBk/hqdefault.jpg",
     "description": "Automatically synced from YouTube",
     "date": "2026-07-13"
   },
   {
-    "youtubeId": "9SJn9dIMNS4?si=s4snqQYhriBtB2Cc",
+    "youtubeId": "9SJn9dIMNS4",
     "title": "Learn Wireshark Basics in Tamil | Cyber Security & Networking",
+    "thumbnail": "https://img.youtube.com/vi/9SJn9dIMNS4/hqdefault.jpg",
     "description": "Automatically synced from YouTube",
     "date": "2026-07-13"
   }
