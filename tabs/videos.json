@@ -5,12 +5,7 @@
     "description": "An introductory practical guide to setting up Snort IDS, configuring rule baselines, and monitoring real-time network traffic logs.",
     "date": "2026-06-15"
   }
-  {
-    "youtubeId": "https://youtu.be/9SJn9dIMNS4?si=8ZSUhHOBqpSS4Xk3",
-    "title": "Learn Wireshark Basics in Tamil | Cyber Security & Networking",
-    "description": "Welcome to this complete Wireshark tutorial for beginners in Tamil! In this video, we cover the basics of network analysis, packet sniffing, and how to use Wireshark for troubleshooting and cyber security.",
-    "date": "2026-07-13"
-  }
+
 
   
 ]
