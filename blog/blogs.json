@@ -35,6 +35,11 @@
     "filename": "mcp-flow.html"
   },
   {
+    "title": "Modern WPA/WPA2 Wi-Fi Cracking Guide",
+    "slug": "wificracking-hashcat",
+    "filename": "wificracking-hashcat.html"
+  },
+  {
     "title": "NTLM & Kerberos · TheSudoLab",
     "slug": "ntlm-kerberos",
     "filename": "NTLM_Kerberos.html"
@@ -63,5 +68,10 @@
     "title": "The Sudo Lab // Universal LLM Prompting Tricks",
     "slug": "universal-llm-tricks-lab",
     "filename": "universal_llm_tricks_lab.html"
+  },
+  {
+    "title": "Wifite for WPA/WPA2 – Structured Notes",
+    "slug": "wifite-guide",
+    "filename": "wifite_guide.html"
   }
 ]
